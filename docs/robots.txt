@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://edujourney.co.kr/sitemap.xml
+Sitemap: https://edujourney.co.kr/rss.xml
