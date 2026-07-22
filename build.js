@@ -89,7 +89,7 @@ function footer() {
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="footer-word">에듀<em>저니</em></div>
-        <p>아이의 첫 해외 경험을 설계합니다.<br>16,000명 이상의 학생과 함께해 온<br>해외캠프 운영 경험으로 안전하게 안내합니다.</p>
+        <p>캐나다·뉴질랜드·일본 해외캠프를 운영합니다.<br>지금까지 16,000명 넘는 학생들과 다녀왔고,<br>그 경험이 저희가 가진 전부이자 자랑입니다.</p>
         <a class="btn btn-coral footer-cta" href="#consult">상담 신청하기</a>
       </div>
       <div class="footer-links">
@@ -139,8 +139,8 @@ function compareTable() {
 function safetySection() {
   return `<section class="section alt">
   <div class="wrap">
-    <h2 class="sec-title">안전은 시스템으로 지킵니다</h2>
-    <p class="sec-sub">16,000명 이상의 학생과 캠프를 운영하며 다듬어 온 안전 체계입니다.</p>
+    <h2 class="sec-title">안전 관리는 이렇게 하고 있습니다</h2>
+    <p class="sec-sub">16,000명 넘는 학생들과 캠프를 다니며 하나씩 자리잡은 규칙들입니다.</p>
     <ul class="safe-list">
       ${COMMON.safety.map((s) => `<li>${s}</li>`).join("\n")}
     </ul>
@@ -236,9 +236,9 @@ function consultSection(preset = {}) {
 function buildIndex() {
   const hero = `<section class="hero">
   <div class="wrap hero-inner">
-    <p class="hero-kicker">${SEASON_LABEL} 해외캠프 모집 · Winter Journey</p>
-    <h1>이번 겨울,<br>아이의 세계가 넓어집니다</h1>
-    <p class="hero-sub">캐나다 학교의 교실에서, 뉴질랜드의 여름에서, 교토의 골목에서 —<br>16,000명 이상이 함께해 온 안전한 해외캠프.</p>
+    <p class="hero-kicker">${SEASON_LABEL} 해외캠프 모집</p>
+    <h1>겨울방학 3주,<br>캐나다 학교에 다녀보면 어떨까요</h1>
+    <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링 캠프입니다. 캐나다·뉴질랜드·일본 4개 과정,<br>신청부터 귀국까지 한국인 인솔자가 붙어 있습니다.</p>
     <div class="hero-actions">
       <a class="btn btn-coral" href="#camps">${SEASON_LABEL} 캠프 보기</a>
       <a class="btn btn-line" href="compare.html">한눈에 비교하기</a>
@@ -268,12 +268,12 @@ ${safetySection()}
 
 <section class="section">
   <div class="wrap">
-    <h2 class="sec-title">이런 아이에게 이런 캠프</h2>
+    <h2 class="sec-title">어떤 캠프를 골라야 할지 모르겠다면</h2>
     <div class="fit-grid">
-      <div><strong>처음 떠나는 초등학생</strong><p>3주가 정답입니다. 버디 친구와 홈스테이 가족이 있는 <a href="canada-3week.html">캐나다 3주</a> 또는 여름 날씨의 <a href="newzealand.html">뉴질랜드</a>부터.</p></div>
-      <div><strong>유학을 고민 중인 가정</strong><p>결정 전에 살아보게 하세요. 사립학교 정규과정 <a href="canada-7week.html">캐나다 7주</a>가 가장 정확한 리트머스입니다.</p></div>
-      <div><strong>영어가 아직 자신 없는 아이</strong><p>오전 영어수업 + 오후 활동으로 시작해 정규과정으로 이어지는 <a href="newzealand.html">뉴질랜드 캠프</a>가 부담이 적습니다.</p></div>
-      <div><strong>일본어·일본 문화에 빠진 중고생</strong><p>천년 고도에서 배우는 <a href="japan.html">교토 2주 캠프</a> — 진로 탐색을 겸한 어학연수입니다.</p></div>
+      <div><strong>처음 나가는 초등학생이라면</strong><p>3주짜리가 무난합니다. 학교에서 버디 친구를 붙여주는 <a href="canada-3week.html">캐나다 3주</a>나, 1월이 여름이라 지내기 좋은 <a href="newzealand.html">뉴질랜드</a>로 시작하는 집이 많습니다.</p></div>
+      <div><strong>유학을 진지하게 고민 중이라면</strong><p>바로 보내지 마시고 <a href="canada-7week.html">캐나다 7주</a>부터 겪어보게 하세요. 사립학교 수업을 그대로 다녀보고 결정해도 늦지 않습니다.</p></div>
+      <div><strong>영어가 아직 자신 없다면</strong><p><a href="newzealand.html">뉴질랜드 캠프</a>가 부담이 덜합니다. 1월엔 캠프생끼리 영어수업으로 몸을 풀고, 2월에 현지 수업에 들어가는 순서라서요.</p></div>
+      <div><strong>일본어에 빠진 중고생이라면</strong><p><a href="japan.html">교토 2주</a> 다녀오면 일본어 진로를 계속 갈지 본인 입으로 답이 나옵니다.</p></div>
     </div>
   </div>
 </section>
@@ -413,12 +413,12 @@ function buildCompare() {
   <p class="sec-sub" style="margin-top:18px">항공료는 별도이며 단체 예약으로 진행합니다 (개별 발권 가능). 어떤 캠프가 맞을지 고민되시면 아이 학년·영어 수준을 적어 상담을 남겨 주세요.</p>
 </div></section>
 <section class="section alt"><div class="wrap">
-  <h2 class="sec-title">고르기 어려울 때의 기준</h2>
+  <h2 class="sec-title">고르기 어려울 때 참고하세요</h2>
   <div class="fit-grid">
-    <div><strong>첫 해외 경험이라면</strong><p>3주가 표준입니다 — 적응·개화·아쉬움의 사이클이 3주에 완성됩니다.</p></div>
-    <div><strong>유학 사전 점검이라면</strong><p>7주 — 손님이 아니라 생활자가 되어보는 길이입니다.</p></div>
-    <div><strong>영어 기초가 걱정이라면</strong><p>뉴질랜드 — 오전 영어수업으로 시작해 정규과정으로 이어집니다.</p></div>
-    <div><strong>일본어 진로 탐색이라면</strong><p>교토 2주 — 중2~고2 대상 어학+문화 집중형입니다.</p></div>
+    <div><strong>첫 해외 경험이라면</strong><p>3주면 충분합니다. 첫 주에 적응하고, 둘째 주부터 재미를 붙이고, 셋째 주엔 아쉬워하면서 돌아옵니다.</p></div>
+    <div><strong>유학 보내기 전 점검이라면</strong><p>7주를 권합니다. 한 달을 넘겨야 손님 대접이 끝나고 진짜 생활이 시작되거든요.</p></div>
+    <div><strong>영어 기초가 걱정이라면</strong><p>뉴질랜드로 보내세요. 영어수업으로 시작해서 현지 수업으로 넘어가는 순서라 덜 힘들어합니다.</p></div>
+    <div><strong>일본어 진로를 알아보는 중이라면</strong><p>교토 2주가 맞습니다. 중2~고2만 받는 소수 정예 과정입니다.</p></div>
   </div>
 </div></section>
 ${consultSection()}`;
@@ -433,12 +433,13 @@ ${consultSection()}`;
 function buildAbout() {
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
     <p class="hero-kicker">Why EduJourney</p>
-    <h1>아이의 첫 해외 경험,<br>운영의 깊이가 다릅니다</h1>
+    <h1>16,000명을 데리고<br>다녀온 팀이 만드는 캠프</h1>
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap narrow">
-  <p class="lead">에듀저니는 16,000명 이상의 학생과 해외캠프를 운영해 온 교육 전문팀이 만든 해외캠프 브랜드입니다.
-  화려한 일정표보다 중요한 것은, 아이가 아플 때 30분 안에 도착하는 어른이 현지에 있는가 — 저희는 그 질문에서 캠프를 설계합니다.</p>
+  <p class="lead">캠프를 고를 때 일정표는 사실 큰 차이가 없습니다. 차이가 나는 건 사고가 났을 때입니다.
+  아이가 한밤중에 아프면 누가 몇 분 안에 오는지, 홈스테이와 갈등이 생기면 누가 중간에서 풀어주는지 —
+  저희는 여기에 답할 수 있느냐를 기준으로 프로그램을 짜 왔습니다. 아래가 그 답입니다.</p>
 </div></section>
 <section class="section alt"><div class="wrap">
   <h2 class="sec-title">에듀저니 캠프의 운영 원칙</h2>
