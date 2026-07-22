@@ -8,7 +8,7 @@ const BASE_URL = "https://edujourney.co.kr";
 const SEASON_LABEL = "2027 겨울";
 
 // 상담 접수 GAS 웹앱 URL — gas-form.gs 배포 후 /exec 주소 입력 (비면 데모 모드)
-const FORM_ENDPOINT = "";
+const FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbwWEdDyQ6kDDqBpTpHKkfOfRyicCRYAj6wivIv3FK4ILzfO5eMWgMRAwZg05DO29dyZ/exec";
 
 // ------------------------------------------------------------
 // 캠프 4종 (2027 겨울 시즌)
