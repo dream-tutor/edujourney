@@ -18,7 +18,7 @@
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=msob880p">
+<link rel="stylesheet" href="style.css?v=msock31n">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"캠프에서 돌아온 뒤, 영어를 이어가는 법","description":"3주 캠프로 올라온 영어 자신감을 일상에서 이어가는 방법 — 홈스테이 가족과의 연락, 관심사 영어 콘텐츠, 다음 목표 설정.","datePublished":"2026-07-25","author":{"@type":"Organization","name":"에듀저니"}}</script>
 </head>
 <body>
@@ -82,8 +82,8 @@
     </div>
     <form class="consult-form" id="consultForm" autocomplete="off">
       <div class="form-row two">
-        <label>학생 이름 <span>*</span><input type="text" name="이름" required placeholder="이름"></label>
-        <label>연락처 <span>*</span><input type="tel" name="연락처" required placeholder="010-0000-0000"></label>
+        <label><span class="lab">학생 이름 <b class="req">*</b></span><input type="text" name="이름" required placeholder="이름"></label>
+        <label><span class="lab">연락처 <b class="req">*</b></span><input type="tel" name="연락처" required placeholder="010-0000-0000"></label>
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option><option value="초등 4학년">초등 4학년</option><option value="초등 5학년">초등 5학년</option><option value="초등 6학년">초등 6학년</option><option value="중학교 1학년">중학교 1학년</option><option value="중학교 2학년">중학교 2학년</option><option value="중학교 3학년">중학교 3학년</option><option value="고등학교 1학년">고등학교 1학년</option><option value="고등학교 2학년">고등학교 2학년</option><option value="기타">기타</option></select></label>
@@ -173,6 +173,18 @@
   var consult = document.getElementById('consult');
   if(!fc || !consult || !('IntersectionObserver' in window)) return;
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
+})();
+(function(){
+  function isFormEl(t){ return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'); }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'F12' ||
+       (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+       (e.ctrlKey && (e.key === 'u' || e.key === 'U'))){
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+  document.addEventListener('selectstart', function(e){ if(!isFormEl(e.target)) e.preventDefault(); });
 })();
 </script>
 </body>

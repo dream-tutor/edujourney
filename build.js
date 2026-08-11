@@ -80,6 +80,18 @@ ${footer()}
   if(!fc || !consult || !('IntersectionObserver' in window)) return;
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
 })();
+(function(){
+  function isFormEl(t){ return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'); }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'F12' ||
+       (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+       (e.ctrlKey && (e.key === 'u' || e.key === 'U'))){
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+  document.addEventListener('selectstart', function(e){ if(!isFormEl(e.target)) e.preventDefault(); });
+})();
 </script>
 </body>
 </html>`,
@@ -181,8 +193,8 @@ function consultSection(preset = {}) {
     </div>
     <form class="consult-form" id="consultForm" autocomplete="off">
       <div class="form-row two">
-        <label>학생 이름 <span>*</span><input type="text" name="이름" required placeholder="이름"></label>
-        <label>연락처 <span>*</span><input type="tel" name="연락처" required placeholder="010-0000-0000"></label>
+        <label><span class="lab">학생 이름 <b class="req">*</b></span><input type="text" name="이름" required placeholder="이름"></label>
+        <label><span class="lab">연락처 <b class="req">*</b></span><input type="tel" name="연락처" required placeholder="010-0000-0000"></label>
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
@@ -990,13 +1002,16 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .form-row.two{grid-template-columns:1fr 1fr}
 @media(max-width:560px){.form-row.two{grid-template-columns:1fr}}
 .consult-form label{display:grid;gap:6px;font-size:13.5px;font-weight:700;color:#3b4754}
-.consult-form label span{color:#c0392b}
+.consult-form .req{color:#c0392b;font-weight:700}
 .consult-form input,.consult-form select,.consult-form textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;background:#fafbfc;color:var(--ink)}
 .consult-form input:focus,.consult-form select:focus,.consult-form textarea:focus{outline:none;border-color:var(--sky);background:#fff}
 .consult-form textarea{resize:vertical}
 .form-submit{width:100%;border:none;cursor:pointer;font-size:16px;padding:15px}
 .form-submit:disabled{opacity:.6;cursor:default}
 .form-fine{margin-top:12px;font-size:12.5px;color:#8a95a1;text-align:center}
+body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
+input,textarea,select{-webkit-user-select:text;-moz-user-select:text;user-select:text}
+img{-webkit-user-drag:none;user-drag:none}
 .form-done{text-align:center;padding:34px 10px}
 .form-done strong{display:block;font-size:19px;color:var(--navy);margin-bottom:8px}
 .form-done p{color:var(--muted);font-size:14.5px}
