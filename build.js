@@ -4,7 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES } = require("./data.js");
-const GUIDES = require("./guides.js");
+const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
 
 const OUT = path.join(__dirname, "docs");
 fs.mkdirSync(OUT, { recursive: true });
@@ -30,6 +30,9 @@ function page({ file, title, desc, body, hero = "", jsonld = null }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
+<meta property="og:image" content="${BASE_URL}/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
 <meta name="google-site-verification" content="Og-iGasiwVbAcetzn0H82vPY5damjOoCzdJTnbObbFE">
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
@@ -96,7 +99,7 @@ function footer() {
       </div>
       <div class="footer-links">
         <h3>캠프 안내</h3>
-        <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a></div>
+        <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
       </div>
     </div>
     <p class="footer-fine">에듀저니 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.</p>
@@ -178,7 +181,7 @@ function consultSection(preset = {}) {
     </div>
     <form class="consult-form" id="consultForm" autocomplete="off">
       <div class="form-row two">
-        <label>보호자 성함 <span>*</span><input type="text" name="이름" required placeholder="성함"></label>
+        <label>학생 이름 <span>*</span><input type="text" name="이름" required placeholder="이름"></label>
         <label>연락처 <span>*</span><input type="tel" name="연락처" required placeholder="010-0000-0000"></label>
       </div>
       <div class="form-row two">
@@ -262,7 +265,8 @@ function buildIndex() {
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
     <p class="sec-sub">스쿨링·영어캠프·어학연수 — 아이의 나이와 목적에 맞는 캠프를 고르세요. 모두 인솔자 동행, 선착순 마감입니다.</p>
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="compare.html">4개 캠프 한눈에 비교하기 →</a></p>
+    <p style="margin-top:22px"><a class="btn btn-navy" href="compare.html">4개 캠프 한눈에 비교하기 →</a>
+    <a class="btn btn-coral" style="margin-left:8px" href="summer.html">2027 여름캠프 사전 상담 →</a></p>
   </div>
 </section>
 
@@ -596,6 +600,7 @@ function buildGrade(g) {
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title-sm">비슷한 또래 페이지</h2>
   <p class="sec-sub">${GRADES.filter((x) => x.slug !== g.slug).map((x) => `<a href="${x.slug}.html">${x.label}</a>`).join(" · ")}</p>
+  <p class="sec-sub">${g.label} 나라별로 보기: ${COUNTRIES.map((ct) => `<a href="${g.slug}-${ct.slug}.html">${g.label} ${ct.name} 캠프</a>`).join(" · ")}</p>
   <p class="sec-sub">읽어보면 좋은 글: <a href="guide-first-camp-age.html">첫 해외캠프, 몇 살이 적당할까</a> · <a href="guide-duration.html">기간은 어떻게 고를까</a></p>
 </div></section>
 ${consultSection({ grade: g.key })}`;
@@ -603,6 +608,155 @@ ${consultSection({ grade: g.key })}`;
     file: `${g.slug}.html`,
     title: `${g.label} 해외캠프 | ${g.label} 겨울 어학연수·스쿨링 캠프 ${fits.length}종`,
     desc: `${g.label} 학생이 참가할 수 있는 ${SEASON_LABEL} 해외캠프 — ${fits.map((c) => c.name).join(", ")}. 대상 학년·비용·기간 안내와 상담 신청.`,
+    hero, body,
+  });
+}
+
+// ------------------------------------------------------------
+// 학년 × 국가 조합 페이지
+// ------------------------------------------------------------
+function buildGradeCountry(g, ct) {
+  const camps = ct.camps.map((k) => CAMPS[k]).filter((c) => c.targetGrades.includes(g.key));
+  const otherCountries = COUNTRIES.filter((x) => x.slug !== ct.slug)
+    .map((x) => ({ ct: x, camps: x.camps.map((k) => CAMPS[k]).filter((c) => c.targetGrades.includes(g.key)) }))
+    .filter((x) => x.camps.length);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${g.label} · ${ct.name}</p>
+    <h1>${g.label} ${ct.name} 캠프</h1>
+    <p class="hero-sub">${SEASON_LABEL} 시즌, ${g.label} 학생이 갈 수 있는 ${ct.name} 캠프를 정리했습니다.</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap">
+  ${camps.length ? `
+  <h2 class="sec-title">${g.label}이 참가 가능한 ${ct.name} 캠프 ${camps.length}종</h2>
+  <div class="camp-grid">${camps.map(campCard).join("\n")}</div>` : `
+  <h2 class="sec-title">${g.label} ${ct.name} 캠프 안내</h2>
+  <p class="lead" style="max-width:760px">${SEASON_LABEL} 시즌 ${ct.name} 캠프는 ${g.label} 학년이 참가 대상에 포함되지 않습니다.
+  같은 학년이 참가할 수 있는 다른 나라 캠프를 아래에서 확인하시거나, 상담을 남겨 주시면 다음 시즌 개설 소식과 함께 맞는 과정을 안내해 드립니다.</p>
+  ${otherCountries.length ? `<h2 class="sec-title-sm" style="margin-top:30px">${g.label}이 갈 수 있는 다른 나라 캠프</h2>
+  <div class="camp-grid">${otherCountries.flatMap((x) => x.camps).map(campCard).join("\n")}</div>` : ""}`}
+</div></section>
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">더 살펴보기</h2>
+  <p class="sec-sub">
+    ${g.label} 전체 캠프: <a href="${g.slug}.html">${g.label} 캠프 모아보기</a> ·
+    ${ct.name} 전체: <a href="country-${ct.slug}.html">${ct.name} 캠프 안내</a> ·
+    <a href="compare.html">4개 캠프 비교표</a></p>
+  <p class="sec-sub">다른 학년 × ${ct.name}: ${GRADES.filter((x) => x.slug !== g.slug).map((x) => `<a href="${x.slug}-${ct.slug}.html">${x.label}</a>`).join(" · ")}</p>
+</div></section>
+${consultSection({ grade: g.key, camp: camps.length ? camps[0].slug : undefined })}`;
+  return page({
+    file: `${g.slug}-${ct.slug}.html`,
+    title: `${g.label} ${ct.name} 캠프 | ${g.label} ${ct.name} 겨울 어학연수·스쿨링`,
+    desc: `${g.label} 학생의 ${ct.name} 해외캠프 — ${camps.length ? camps.map((c) => `${c.name}(${c.price})`).join(", ") + " 참가 가능." : "이번 시즌 대상 과정과 대안 캠프 안내."} 상담 신청 가능.`,
+    hero, body,
+  });
+}
+
+// ------------------------------------------------------------
+// 여름캠프 페이지 (2027 여름 사전 상담)
+// ------------------------------------------------------------
+const SUMMER_COUNTRIES = [
+  { slug: "canada", name: "캐나다", note: "여름의 캐나다는 날씨가 가장 좋은 계절입니다. 스쿨링은 현지 방학과 겹쳐 서머스쿨·액티비티 중심 프로그램으로 구성됩니다." },
+  { slug: "newzealand", name: "뉴질랜드", note: "우리 여름은 뉴질랜드의 겨울 학기 중이라, 현지 학교 정규수업 참여(스쿨링)에 가장 좋은 시즌입니다." },
+  { slug: "japan", name: "일본", note: "여름방학 단기 일본어 연수 수요가 가장 몰리는 시즌입니다. 교토 과정의 여름 기수를 준비하고 있습니다." },
+];
+
+function buildSummerHub() {
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">Summer 2027 · 사전 상담</p>
+    <h1>2027 여름 해외캠프,<br>미리 준비하는 분들께</h1>
+    <p class="hero-sub">여름 시즌은 자리가 빨리 찹니다. 일정 확정 전에 사전 상담을 남겨두시면 모집 시작과 동시에 먼저 안내드립니다.</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <p class="lead">여름 해외캠프는 방학이 짧아 2~4주 과정 중심으로 운영됩니다. 2027 여름 시즌의 국가·학교·일정은 확정 단계에 있으며,
+  겨울캠프와 동일한 운영 원칙(인솔자 동행, 검증된 홈스테이, 학부모 실시간 공유)이 그대로 적용됩니다.</p>
+  <h2 class="sec-title-sm" style="margin-top:26px">국가별 여름 캠프 방향</h2>
+  <div class="fit-grid">
+    ${SUMMER_COUNTRIES.map((s) => `<div><strong><a href="summer-${s.slug}.html">${s.name} 여름캠프</a></strong><p>${s.note}</p></div>`).join("\n")}
+    <div><strong>겨울이 더 맞다면</strong><p>기간이 긴 겨울 시즌이 스쿨링에는 더 유리합니다. <a href="index.html#camps">${SEASON_LABEL} 캠프</a>를 먼저 보세요.</p></div>
+  </div>
+  <h2 class="sec-title-sm" style="margin-top:34px">사전 상담을 남겨두면</h2>
+  <ul class="check-list">
+    <li>일정·비용 확정 즉시 가장 먼저 안내받습니다 (모집은 선착순입니다)</li>
+    <li>아이 학년·영어 수준에 맞는 국가와 기간을 미리 좁혀둘 수 있습니다</li>
+    <li>겨울캠프와 여름캠프 중 어느 시즌이 맞는지도 함께 판단해 드립니다</li>
+  </ul>
+</div></section>
+${consultSection()}`;
+  return page({
+    file: "summer.html",
+    title: "여름 해외캠프 2027 | 초등·중등 여름방학 어학연수 사전 상담",
+    desc: "2027 여름방학 해외캠프 사전 상담 — 캐나다·뉴질랜드·일본 2~4주 과정 준비 중. 인솔자 동행, 홈스테이, 선착순 모집. 일정 확정 시 우선 안내.",
+    hero, body,
+  });
+}
+
+function buildSummerCountry(s) {
+  const winterCamps = (COUNTRIES.find((c) => c.slug === s.slug)?.camps || []).map((k) => CAMPS[k]);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">Summer 2027 · ${s.name}</p>
+    <h1>${s.name} 여름캠프</h1>
+    <p class="hero-sub">2027 여름 시즌 사전 상담 접수 중</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <p class="lead">${s.note}</p>
+  <p>2027 여름 ${s.name} 과정은 일정 확정 단계입니다. 사전 상담을 남겨두시면 모집 시작과 동시에 일정·비용을 가장 먼저 안내드리고,
+  아이 학년과 목적에 맞는지 함께 판단해 드립니다. 운영 방식은 겨울 시즌과 동일합니다 — 인솔자 동행, 교육기관 검증 숙소, 학부모 실시간 공유.</p>
+  ${winterCamps.length ? `<h2 class="sec-title-sm" style="margin-top:30px">겨울 시즌 ${s.name} 캠프를 먼저 볼 수도 있습니다</h2>
+  <div class="camp-grid">${winterCamps.map(campCard).join("\n")}</div>` : ""}
+  <p class="sec-sub" style="margin-top:20px">다른 나라 여름캠프: ${SUMMER_COUNTRIES.filter((x) => x.slug !== s.slug).map((x) => `<a href="summer-${x.slug}.html">${x.name}</a>`).join(" · ")} · <a href="summer.html">여름캠프 전체 안내</a></p>
+</div></section>
+${consultSection()}`;
+  return page({
+    file: `summer-${s.slug}.html`,
+    title: `${s.name} 여름캠프 2027 | 여름방학 ${s.name} 어학연수·스쿨링 사전 상담`,
+    desc: `2027 여름방학 ${s.name} 캠프 사전 상담 — ${s.note} 일정 확정 시 우선 안내, 선착순 모집.`,
+    hero, body,
+  });
+}
+
+// ------------------------------------------------------------
+// 확장 국가 정보 가이드 (정규 모집 외 국가 — 맞춤 상담 안내)
+// ------------------------------------------------------------
+const INFO_COUNTRIES = [
+  { slug: "usa", name: "미국", flag: "🇺🇸", intro: "미국은 서머캠프의 본고장입니다. 대학 기숙사 캠프, 스포츠·STEM 특화 캠프까지 폭이 가장 넓지만, 그만큼 비용대도 높고 프로그램 편차가 큽니다.",
+    points: ["보스턴·뉴욕 등 동부는 명문대 캠퍼스 투어와 묶기 좋음", "비용대는 주요국 중 최상위 (2~3주 1,000만원 이상이 보통)", "ESTA 전자여행허가 필요 — 수속은 어렵지 않음", "저희 캐나다 캠프는 뉴욕·보스턴·아이비리그 투어가 포함되어 미국 경험을 함께 얻는 구성입니다"] },
+  { slug: "uk", name: "영국", flag: "🇬🇧", intro: "영국은 전통적인 보딩스쿨 서머코스가 강점입니다. 영국식 영어와 기숙사 문화를 경험할 수 있지만 비용이 높고 비행이 깁니다.",
+    points: ["보딩스쿨 캠퍼스에서 숙식하는 기숙형이 표준", "예절·토론 중심의 클래식한 교육 문화", "비용은 미국과 비슷한 최상위권", "첫 캠프보다는 두 번째 이후, 또는 영국 유학을 겨냥한 가정에 적합"] },
+  { slug: "australia", name: "호주", flag: "🇦🇺", intro: "호주는 뉴질랜드와 같은 남반구라 우리 겨울에 현지 학기가 시작됩니다. 스쿨링 환경이 좋고 도시 인프라가 발달해 있습니다.",
+    points: ["우리 겨울 = 현지 여름~새 학년, 스쿨링에 유리한 학사일정", "시차 1~2시간으로 부모와 소통이 편함", "대도시 중심이라 뉴질랜드보다 도시적인 환경", "같은 남반구 스쿨링이라면 저희는 유학생 비율이 낮은 뉴질랜드 소도시 학교를 우선 추천합니다"] },
+  { slug: "philippines", name: "필리핀", flag: "🇵🇭", intro: "필리핀은 1:1 수업 중심의 스파르타식 어학연수로 유명합니다. 비용 대비 수업량이 가장 많은 나라입니다.",
+    points: ["1:1 맞춤 수업 4~6시간 — 말하기 훈련량은 최고 수준", "비용이 주요국의 절반 이하", "생활·문화 체험보다는 학습 집중형", "영어 몰입 '생활'을 원하면 영미권 홈스테이형, '훈련량'을 원하면 필리핀형 — 목적이 다릅니다"] },
+  { slug: "singapore", name: "싱가포르", flag: "🇸🇬", intro: "싱가포르는 아시아에서 가장 안전한 영어권 도시국가입니다. 비행 6시간대에 치안·위생 걱정이 적어 저학년 첫 해외로 거론됩니다.",
+    points: ["영어+중국어 이중언어 환경", "치안·위생 최상위, 도시 전체가 깨끗하고 안전", "국토가 작아 프로그램이 도시 탐방 중심 — 자연·스포츠형과는 결이 다름", "짧은 비행의 안전한 첫 경험이 목적이라면 일본 교토 과정도 함께 비교해 보세요"] },
+];
+
+function buildInfoCountry(ic) {
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${ic.flag} Country Guide</p>
+    <h1>${ic.name} 캠프·어학연수 가이드</h1>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <p class="lead">${ic.intro}</p>
+  <h2 class="sec-title-sm" style="margin-top:26px">${ic.name}, 이것만은 알고 결정하세요</h2>
+  <ul class="check-list">${ic.points.map((p) => `<li>${p}</li>`).join("")}</ul>
+  <div class="guide-cta" style="margin-top:30px">
+    <span>${ic.name}을 포함해 아이에게 맞는 나라를 찾고 있다면</span>
+    <a class="btn btn-navy" href="#consult">맞춤 상담 남기기 →</a>
+  </div>
+  <p class="sec-sub" style="margin-top:24px">현재 정규 모집 중인 캠프는 <a href="country-canada.html">캐나다</a> · <a href="country-newzealand.html">뉴질랜드</a> · <a href="country-japan.html">일본</a>입니다.
+  ${ic.name} 프로그램은 시즌·학년에 따라 맞춤 상담으로 안내해 드립니다.
+  다른 나라 가이드: ${INFO_COUNTRIES.filter((x) => x.slug !== ic.slug).map((x) => `<a href="info-${x.slug}.html">${x.name}</a>`).join(" · ")}</p>
+</div></section>
+${consultSection()}`;
+  return page({
+    file: `info-${ic.slug}.html`,
+    title: `${ic.name} 어학연수·캠프 가이드 | ${ic.name} 주니어 캠프 알아보기`,
+    desc: `${ic.intro} 장단점과 비용감, 우리 아이에게 맞는지 판단 기준을 정리했습니다.`,
     hero, body,
   });
 }
@@ -878,6 +1032,10 @@ for (const k of Object.keys(CAMPS)) pages.push(buildCamp(k));
 for (const ct of COUNTRIES) pages.push(buildCountry(ct));
 for (const a of AGE_GROUPS) pages.push(buildAgeGroup(a));
 for (const g of GRADES) pages.push(buildGrade(g));
+for (const g of GRADES) for (const ct of COUNTRIES) pages.push(buildGradeCountry(g, ct));
+pages.push(buildSummerHub());
+for (const s of SUMMER_COUNTRIES) pages.push(buildSummerCountry(s));
+for (const ic of INFO_COUNTRIES) pages.push(buildInfoCountry(ic));
 pages.push(buildGuideIndex());
 for (const g of GUIDES) pages.push(buildGuideArticle(g));
 
