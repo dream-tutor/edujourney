@@ -31,7 +31,7 @@ function page({ file, title, desc, body, hero = "", jsonld = null }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${BASE_URL}/og-image.png">
+<meta property="og:image" content="${BASE_URL}/og-image.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
@@ -257,16 +257,77 @@ function consultSection(preset = {}) {
 // 홈
 // ------------------------------------------------------------
 function buildIndex() {
-  const hero = `<section class="hero">
-  <div class="wrap hero-inner">
-    <p class="hero-kicker">${SEASON_LABEL} 해외캠프 모집</p>
-    <h1>겨울방학 3주,<br>캐나다 학교에 다녀보면 어떨까요</h1>
-    <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링부터 대학 캠퍼스 영어캠프까지 — 캐나다·뉴질랜드·일본·말레이시아·필리핀 ${CAMP_COUNT}개 과정,<br>신청부터 귀국까지 한국인 인솔자가 붙어 있습니다.</p>
-    <div class="hero-actions">
-      <a class="btn btn-coral" href="#camps">${SEASON_LABEL} 캠프 보기</a>
-      <a class="btn btn-line" href="compare.html">한눈에 비교하기</a>
+  const hero = `<section class="hero hero-slider" id="heroSlider">
+  <div class="hs-track">
+    <div class="hs-slide">
+      <div class="wrap hero-inner">
+        <p class="hero-kicker">${SEASON_LABEL} 해외캠프 모집</p>
+        <h1>겨울방학 3주,<br>캐나다 학교에 다녀보면 어떨까요</h1>
+        <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링부터 대학 캠퍼스 영어캠프까지 — 캐나다·뉴질랜드·일본·말레이시아·필리핀 ${CAMP_COUNT}개 과정,<br>신청부터 귀국까지 한국인 인솔자가 붙어 있습니다.</p>
+        <div class="hero-actions">
+          <a class="btn btn-coral" href="#camps">${SEASON_LABEL} 캠프 보기</a>
+          <a class="btn btn-line" href="compare.html">한눈에 비교하기</a>
+        </div>
+      </div>
+    </div>
+    <div class="hs-slide">
+      <div class="wrap hero-inner">
+        <p class="hero-kicker">중·고등 유학</p>
+        <h1>캠프로 확인했다면,<br>유학으로 이어갑니다</h1>
+        <p class="hero-sub">뉴질랜드는 캠프와 같은 학교로, 캐나다는 같은 교육청으로 —<br>10주 한 텀부터 졸업까지, 법적 가디언과 월간 리포트가 붙는 관리형 유학입니다.</p>
+        <div class="hero-actions">
+          <a class="btn btn-coral" href="study.html">유학 과정 보기</a>
+          <a class="btn btn-line" href="#consult">상담 신청</a>
+        </div>
+      </div>
+    </div>
+    <div class="hs-slide">
+      <div class="wrap hero-inner">
+        <p class="hero-kicker">세인트폴 아카데미 대치</p>
+        <h1>유학 없이 대치동에서<br>미국 교과과정 그대로</h1>
+        <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스 — 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 2월·8월 학기 모집.</p>
+        <div class="hero-actions">
+          <a class="btn btn-coral" href="stpaul.html">학교 안내 보기</a>
+          <a class="btn btn-line" href="#consult">상담 신청</a>
+        </div>
+      </div>
     </div>
   </div>
+  <button class="hs-arrow hs-prev" type="button" aria-label="이전 화면">‹</button>
+  <button class="hs-arrow hs-next" type="button" aria-label="다음 화면">›</button>
+  <div class="hs-dots" role="tablist">
+    <button type="button" class="on" aria-label="1번 화면"></button>
+    <button type="button" aria-label="2번 화면"></button>
+    <button type="button" aria-label="3번 화면"></button>
+  </div>
+  <script>
+  (function(){
+    var root = document.getElementById('heroSlider');
+    var track = root.querySelector('.hs-track');
+    var dots = root.querySelectorAll('.hs-dots button');
+    var n = dots.length, i = 0, timer = null;
+    function go(to){
+      i = (to + n) % n;
+      track.style.transform = 'translateX(-' + (i * 100) + '%)';
+      for (var d = 0; d < n; d++) dots[d].classList.toggle('on', d === i);
+    }
+    function auto(){ clearInterval(timer); timer = setInterval(function(){ go(i + 1); }, 6000); }
+    root.querySelector('.hs-prev').addEventListener('click', function(){ go(i - 1); auto(); });
+    root.querySelector('.hs-next').addEventListener('click', function(){ go(i + 1); auto(); });
+    for (var d = 0; d < n; d++) (function(d){ dots[d].addEventListener('click', function(){ go(d); auto(); }); })(d);
+    var sx = null;
+    root.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; }, {passive:true});
+    root.addEventListener('touchend', function(e){
+      if (sx === null) return;
+      var dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 40) { go(dx < 0 ? i + 1 : i - 1); auto(); }
+      sx = null;
+    }, {passive:true});
+    root.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    root.addEventListener('mouseleave', auto);
+    auto();
+  })();
+  </script>
 </section>
 <section class="stats">
   <div class="wrap stats-grid">
@@ -372,8 +433,8 @@ ${consultSection()}`;
 
   return page({
     file: "index.html",
-    title: `에듀저니 | ${SEASON_LABEL} 해외캠프 — 캐나다·뉴질랜드·일본·말레이시아·필리핀`,
-    desc: `초등·중등·고등 해외 겨울캠프 ${CAMP_COUNT}종과 중·고등 유학. 캐나다 스쿨링, 뉴질랜드 영어캠프, 일본 교토 어학연수, 말레이시아 래플즈·필리핀 클락 영어캠프 — 인솔자 동행, 학부모 실시간 공유. ${SEASON_LABEL} 시즌 선착순 모집.`,
+    title: `에듀저니 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 아카데미 대치`,
+    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 대치동 세인트폴 아카데미까지 — 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
     hero,
     body,
     jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "에듀저니", url: BASE_URL },
@@ -1103,6 +1164,18 @@ a{color:inherit;text-decoration:none}
 .hero h1{font-size:clamp(30px,5vw,52px);line-height:1.22;font-weight:800;letter-spacing:-.02em}
 .hero-sub{margin-top:18px;font-size:clamp(15px,2vw,19px);color:#d9e5f2}
 .hero-actions{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
+
+/* hero slider */
+.hero-slider .hs-track{display:flex;transition:transform .55s ease}
+.hero-slider .hs-slide{flex:0 0 100%;min-width:100%}
+.hs-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);background:rgba(10,26,46,.35);color:#fff;font-size:26px;line-height:1;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;padding:0 0 4px}
+.hs-arrow:hover{border-color:#fff;background:rgba(255,255,255,.12)}
+.hs-prev{left:14px}
+.hs-next{right:14px}
+.hs-dots{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;z-index:2;display:flex;gap:9px}
+.hs-dots button{width:9px;height:9px;border-radius:50%;border:none;padding:0;background:rgba(255,255,255,.35);cursor:pointer;transition:.15s}
+.hs-dots button.on{background:var(--coral);width:24px;border-radius:999px}
+@media(max-width:640px){.hs-arrow{display:none}.hero-slider .hero-inner{padding-bottom:96px}}
 
 /* buttons */
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;font-weight:700;font-size:15px;transition:.15s}
