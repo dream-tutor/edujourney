@@ -1,4 +1,4 @@
-// 에듀저니 칼럼 2차 — 12편 (실무·비교형)
+// 러닝트래블 칼럼 2차 — 12편 (실무·비교형)
 module.exports = [
   {
     slug: "guide-alone-flight",

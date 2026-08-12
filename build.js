@@ -1,5 +1,5 @@
 // ============================================================
-// 에듀저니 해외캠프 사이트 생성기 — 실행: node build.js → docs/
+// 러닝트래블 해외캠프 사이트 생성기 — 실행: node build.js → docs/
 // ============================================================
 const fs = require("fs");
 const path = require("path");
@@ -31,7 +31,7 @@ function page({ file, title, desc, body, hero = "", jsonld = null }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${BASE_URL}/og-image.png?v=2">
+<meta property="og:image" content="${BASE_URL}/og-image.png?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
@@ -45,7 +45,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
 <body>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="index.html"><span class="brand-word">에듀<em>저니</em></span></a>
+    <a class="brand" href="index.html"><span class="brand-word">러닝<em>트래블</em></span></a>
     <nav class="nav">
       <a href="index.html#camps">캠프 안내</a>
       <a href="compare.html">캠프 비교</a>
@@ -108,7 +108,7 @@ function footer() {
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="footer-word">에듀<em>저니</em></div>
+        <div class="footer-word">러닝<em>트래블</em></div>
         <p>캐나다·뉴질랜드·일본·말레이시아·필리핀 해외캠프와<br>중·고등 유학을 안내합니다. 지금까지 16,000명 넘는<br>학생들과 다녀온 경험이 저희의 전부이자 자랑입니다.</p>
         <a class="btn btn-coral footer-cta" href="#consult">상담 신청하기</a>
       </div>
@@ -117,7 +117,7 @@ function footer() {
         <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="study.html">유학·국제학교</a>\n<a href="study-newzealand.html">뉴질랜드 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="stpaul.html">세인트폴 아카데미 대치</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
       </div>
     </div>
-    <p class="footer-fine">에듀저니 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.</p>
+    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.</p>
   </div>
 </footer>`;
 }
@@ -433,11 +433,11 @@ ${consultSection()}`;
 
   return page({
     file: "index.html",
-    title: `에듀저니 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 아카데미 대치`,
+    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 아카데미 대치`,
     desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 대치동 세인트폴 아카데미까지 — 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
     hero,
     body,
-    jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "에듀저니", url: BASE_URL },
+    jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
   });
 }
 
@@ -525,7 +525,7 @@ ${consultSection({ camp: c.slug })}`;
       "@type": "Event",
       name: c.name,
       description: c.tag,
-      organizer: { "@type": "Organization", name: "에듀저니" },
+      organizer: { "@type": "Organization", name: "러닝트래블" },
     },
   });
 }
@@ -566,7 +566,7 @@ ${consultSection()}`;
 
 function buildAbout() {
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
-    <p class="hero-kicker">Why EduJourney</p>
+    <p class="hero-kicker">Why Learning Travel</p>
     <h1>16,000명을 데리고<br>다녀온 팀이 만드는 캠프</h1>
   </div></section>`;
   const body = `
@@ -576,7 +576,7 @@ function buildAbout() {
   저희는 여기에 답할 수 있느냐를 기준으로 프로그램을 짜 왔습니다. 아래가 그 답입니다.</p>
 </div></section>
 <section class="section alt"><div class="wrap">
-  <h2 class="sec-title">에듀저니 캠프의 운영 원칙</h2>
+  <h2 class="sec-title">러닝트래블 캠프의 운영 원칙</h2>
   <div class="fit-grid">
     <div><strong>교육기관과 직접 연결</strong><p>학교·교육청과 직접 연계된 프로그램만 운영합니다. 홈스테이도 교육기관이 검증한 가정만 배정됩니다.</p></div>
     <div><strong>인솔자 + 현지 관리자 이중 체계</strong><p>한국에서 함께 출국한 인솔자와, 현지에 상주하는 관리자가 학교와 홈스테이 양쪽을 살핍니다.</p></div>
@@ -595,7 +595,7 @@ ${safetySection()}
 ${consultSection()}`;
   return page({
     file: "about.html",
-    title: "에듀저니 운영·안전 시스템 | 해외캠프, 무엇이 달라야 하는가",
+    title: "러닝트래블 운영·안전 시스템 | 해외캠프, 무엇이 달라야 하는가",
     desc: "16,000명 이상과 함께해 온 해외캠프 운영 체계 — 교육기관 직접 연계, 인솔자·현지 관리자 이중 체계, 학부모 실시간 공유, 명문화된 환불 규정.",
     hero, body,
   });
@@ -927,14 +927,14 @@ function buildStudyHub() {
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap">
-  <h2 class="sec-title">에듀저니가 안내하는 3가지 길</h2>
+  <h2 class="sec-title">러닝트래블가 안내하는 3가지 길</h2>
   <div class="camp-grid">
     ${Object.values(STUDY).map(studyCard).join("\n")}
     ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 미국 교과 국제학교" })}
   </div>
 </div></section>
 <section class="section alt"><div class="wrap narrow">
-  <h2 class="sec-title">캠프에서 유학으로 — 에듀저니가 권하는 순서</h2>
+  <h2 class="sec-title">캠프에서 유학으로 — 러닝트래블가 권하는 순서</h2>
   <ol class="step-list">
     <li>겨울캠프 3~7주로 현지 학교와 홈스테이 생활을 직접 겪어봅니다</li>
     <li>아이의 적응력·의지를 확인한 뒤 텀(학기) 단위로 짧게 시작합니다</li>
@@ -955,7 +955,7 @@ ${consultSection()}`;
   return page({
     file: "study.html",
     title: "중·고등 유학·국제학교 안내 | 뉴질랜드 유학·캐나다 관리형 유학·세인트폴 아카데미 대치",
-    desc: "캠프에서 유학으로 이어지는 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 대치동 세인트폴 아카데미(미국 교과과정). 에듀저니 상담 안내.",
+    desc: "캠프에서 유학으로 이어지는 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 대치동 세인트폴 아카데미(미국 교과과정). 러닝트래블 상담 안내.",
     hero, body,
   });
 }
@@ -1009,7 +1009,7 @@ ${consultSection({ camp: s.slug })}`;
     title: `${s.name} | ${s.school} — ${s.price} · ${s.target.split("(")[0].trim()}`,
     desc: `${s.tag}. ${s.period}. ${s.price}, ${s.school}. 관리 체계·비용·절차 안내와 상담 신청.`,
     hero, body,
-    jsonld: { "@context": "https://schema.org", "@type": "Service", name: s.name, provider: { "@type": "Organization", name: "에듀저니" } },
+    jsonld: { "@context": "https://schema.org", "@type": "Service", name: s.name, provider: { "@type": "Organization", name: "러닝트래블" } },
   });
 }
 
@@ -1108,14 +1108,14 @@ ${consultSection()}`;
     title: g.metaTitle,
     desc: g.desc,
     hero, body,
-    jsonld: { "@context": "https://schema.org", "@type": "Article", headline: g.title, description: g.desc, datePublished: g.date, author: { "@type": "Organization", name: "에듀저니" } },
+    jsonld: { "@context": "https://schema.org", "@type": "Article", headline: g.title, description: g.desc, datePublished: g.date, author: { "@type": "Organization", name: "러닝트래블" } },
   });
 }
 
 // ------------------------------------------------------------
 // CSS
 // ------------------------------------------------------------
-const CSS = `/* 에듀저니 — 생성 파일 (build.js 재생성) */
+const CSS = `/* 러닝트래블 — 생성 파일 (build.js 재생성) */
 :root{
   --navy:#16324f; --navy-2:#1d4067; --navy-dark:#0e2338;
   --sky:#2f7bd0; --sky-soft:#bcd7f2; --ice:#eef4fb;
@@ -1375,7 +1375,7 @@ const rssItems = [
   { title: `${SEASON_LABEL} 해외캠프 4종 모집 안내 — 캐나다·뉴질랜드·일본`, link: `${BASE_URL}/`, date: "Tue, 21 Jul 2026 09:00:00 +0900", desc: "캐나다 스쿨링 3주·7주, 뉴질랜드 영어캠프, 일본 교토 어학연수 — 선착순 모집." },
   ...GUIDES.map((g) => ({ title: `[캠프 가이드] ${g.title}`, link: `${BASE_URL}/${g.slug}.html`, date: new Date(g.date + "T09:00:00+09:00").toUTCString(), desc: g.desc })),
 ].map((it) => `  <item>\n    <title>${esc(it.title)}</title>\n    <link>${it.link}</link>\n    <guid isPermaLink="false">${it.link}#${esc(it.title)}</guid>\n    <pubDate>${it.date}</pubDate>\n    <description>${esc(it.desc)}</description>\n  </item>`).join("\n");
-fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>에듀저니 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>캐나다·뉴질랜드·일본 해외캠프 모집 소식과 캠프 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
+fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>러닝트래블 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>캐나다·뉴질랜드·일본 해외캠프 모집 소식과 캠프 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
 
 console.log(`생성 완료: ${pages.length}개 페이지 + style.css + sitemap/robots/rss/CNAME → docs/`);
 if (!FORM_ENDPOINT) console.warn("⚠ FORM_ENDPOINT 미설정 — 상담 양식 데모 모드 (gas-form.gs 배포 후 data.js에 입력)");
