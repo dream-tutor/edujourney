@@ -200,7 +200,7 @@ function consultSection(preset = {}) {
     <form class="consult-form" id="consultForm" autocomplete="off">
       <div class="form-row two">
         <label><span class="lab">학생 이름 <b class="req">*</b></span><input type="text" name="이름" required placeholder="이름"></label>
-        <label><span class="lab">연락처 <b class="req">*</b></span><input type="tel" name="연락처" required placeholder="010-0000-0000"></label>
+        <label><span class="lab">연락처 <b class="req">*</b></span><div style="display:flex;gap:6px"><select name="연락처앞" style="flex:0 0 86px"><option value="010" selected>010</option><option value="011">011</option><option value="016">016</option><option value="017">017</option><option value="018">018</option><option value="019">019</option></select><input type="tel" name="연락처" required placeholder="1234-5678" style="flex:1;min-width:0"></div></label>
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
@@ -228,7 +228,7 @@ function consultSection(preset = {}) {
     form.addEventListener('submit', function(ev){
       ev.preventDefault();
       var f = new FormData(form);
-      var name = (f.get('이름')||'').trim(), tel = (function(v){v=String(v||'').replace(/\\D/g,'');return v.length===11?v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7):v.length===10?v.slice(0,3)+'-'+v.slice(3,6)+'-'+v.slice(6):v;})((f.get('연락처')||'').trim());
+      var name = (f.get('이름')||'').trim(), tel = (function(p,v){v=String(v||'').replace(/\\D/g,'');return v.length===11?v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7):v.length===10?v.slice(0,3)+'-'+v.slice(3,6)+'-'+v.slice(6):v.length===8?p+'-'+v.slice(0,4)+'-'+v.slice(4):v.length===7?p+'-'+v.slice(0,3)+'-'+v.slice(3):p+'-'+v;})((f.get('연락처앞')||'010'),(f.get('연락처')||'').trim());
       if(!name || !tel){ alert('성함과 연락처를 입력해 주세요.'); return; }
       var btn = form.querySelector('.form-submit');
       btn.disabled = true; btn.textContent = '접수 중...';
