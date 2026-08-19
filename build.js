@@ -200,7 +200,7 @@ function consultSection(preset = {}) {
     <form class="consult-form" id="consultForm" autocomplete="off">
       <div class="form-row two">
         <label><span class="lab">학생 이름 <b class="req">*</b></span><input type="text" name="이름" required placeholder="이름"></label>
-        <label><span class="lab">연락처 <b class="req">*</b></span><div style="display:flex;gap:6px"><select name="연락처앞" style="flex:0 0 54px;appearance:none;-webkit-appearance:none;text-align:center;text-align-last:center;padding:0"><option value="010" selected>010</option><option value="011">011</option><option value="016">016</option><option value="017">017</option><option value="018">018</option><option value="019">019</option></select><input type="tel" name="연락처" required placeholder="1234-5678" style="flex:1;min-width:0"></div></label>
+        <label><span class="lab">연락처 <b class="req">*</b></span><div style="display:flex;gap:6px"><select name="연락처앞" style="flex:0 0 44px;appearance:none;-webkit-appearance:none;text-align:center;text-align-last:center;padding:0"><option value="010" selected>010</option><option value="011">011</option><option value="016">016</option><option value="017">017</option><option value="018">018</option><option value="019">019</option></select><input type="tel" name="연락처" required placeholder="1234-5678" style="flex:1;min-width:0"></div></label>
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
