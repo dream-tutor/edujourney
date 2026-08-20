@@ -145,6 +145,14 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 @media(max-width:560px){.info-list>div{grid-template-columns:1fr}.info-list dt{padding-bottom:4px}.info-list dd{padding-top:4px}}
 
 /* faq */
+.sch{list-style:none;display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.sch li{display:grid;grid-template-columns:132px 1fr;border-top:1px solid var(--line);align-items:start}
+.sch li:first-child{border-top:none}
+.sch li:nth-child(odd){background:var(--ice)}
+.sch-d{padding:13px 16px;font-weight:800;color:var(--navy);font-size:14px;white-space:nowrap}
+.sch-d i{font-style:normal;font-weight:600;color:var(--sky);margin-left:5px;font-size:13px}
+.sch-t{padding:13px 16px;font-size:14.5px;line-height:1.65}
+@media(max-width:600px){.sch li{grid-template-columns:1fr}.sch-d{padding-bottom:0}.sch-t{padding-top:6px}}
 .faq-list{display:grid;gap:10px;max-width:860px}
 .faq-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 20px}
 .section:not(.alt) .faq-item{background:var(--paper)}

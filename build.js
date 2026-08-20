@@ -3,7 +3,7 @@
 // ============================================================
 const fs = require("fs");
 const path = require("path");
-const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL } = require("./data.js");
+const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
 
@@ -192,7 +192,7 @@ function consultSection(preset = {}) {
       <h2>캠프 상담 신청</h2>
       <p>아이 학년과 궁금한 점을 남겨 주세요.<br>확인 후 맞는 캠프와 일정을 안내해 드립니다.</p>
       <ul class="consult-points">
-        <li>모집은 선착순 — 정원 마감 전 상담을 권합니다</li>
+        <li>모집은 선착순, 정원 마감 전 상담을 권합니다</li>
         <li>영어 실력·성향에 맞는 캠프 추천</li>
         <li>유학 연계, 형제 동반 참가 문의 환영</li>
       </ul>
@@ -263,7 +263,7 @@ function buildIndex() {
       <div class="wrap hero-inner">
         <p class="hero-kicker">${SEASON_LABEL} 해외캠프 모집</p>
         <h1>겨울방학 3주,<br>캐나다 학교에 다녀보면 어떨까요</h1>
-        <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링부터 대학 캠퍼스 영어캠프까지 — 캐나다·뉴질랜드·일본·말레이시아·필리핀 ${CAMP_COUNT}개 과정,<br>신청부터 귀국까지 한국인 인솔자가 붙어 있습니다.</p>
+        <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링부터 대학 캠퍼스 영어캠프까지. 캐나다·뉴질랜드·일본·말레이시아·필리핀 ${CAMP_COUNT}개 과정,<br>신청부터 귀국까지 한국인 인솔자가 붙어 있습니다.</p>
         <div class="hero-actions">
           <a class="btn btn-coral" href="#camps">${SEASON_LABEL} 캠프 보기</a>
           <a class="btn btn-line" href="compare.html">한눈에 비교하기</a>
@@ -274,7 +274,7 @@ function buildIndex() {
       <div class="wrap hero-inner">
         <p class="hero-kicker">중·고등 유학</p>
         <h1>캠프로 확인했다면,<br>유학으로 이어갑니다</h1>
-        <p class="hero-sub">뉴질랜드는 캠프와 같은 학교로, 캐나다는 같은 교육청으로 —<br>10주 한 텀부터 졸업까지, 법적 가디언과 월간 리포트가 붙는 관리형 유학입니다.</p>
+        <p class="hero-sub">뉴질랜드는 캠프와 같은 학교로, 캐나다는 같은 교육청으로 이어집니다.<br>10주 한 텀부터 졸업까지, 법적 가디언과 월간 리포트가 붙는 관리형 유학입니다.</p>
         <div class="hero-actions">
           <a class="btn btn-coral" href="study.html">유학 과정 보기</a>
           <a class="btn btn-line" href="#consult">상담 신청</a>
@@ -285,7 +285,7 @@ function buildIndex() {
       <div class="wrap hero-inner">
         <p class="hero-kicker">세인트폴 아카데미 대치</p>
         <h1>유학 없이 대치동에서<br>미국 교과과정 그대로</h1>
-        <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스 — 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 2월·8월 학기 모집.</p>
+        <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스. 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 2월·8월 학기 모집.</p>
         <div class="hero-actions">
           <a class="btn btn-coral" href="stpaul.html">학교 안내 보기</a>
           <a class="btn btn-line" href="#consult">상담 신청</a>
@@ -342,7 +342,7 @@ function buildIndex() {
 <section class="section" id="camps">
   <div class="wrap">
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
-    <p class="sec-sub">스쿨링·영어캠프·어학연수 — 아이의 나이와 목적에 맞는 캠프를 고르세요. 모두 인솔자 동행, 선착순 마감입니다.</p>
+    <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 모두 인솔자 동행, 선착순 마감입니다.</p>
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
     <p style="margin-top:22px"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
     <a class="btn btn-coral" style="margin-left:8px" href="summer.html">2027 여름캠프 사전 상담 →</a></p>
@@ -359,7 +359,7 @@ ${safetySection()}
       <div><strong>유학을 진지하게 고민 중이라면</strong><p>바로 보내지 마시고 <a href="canada-7week.html">캐나다 7주</a>부터 겪어보게 하세요. 사립학교 수업을 그대로 다녀보고 결정해도 늦지 않습니다.</p></div>
       <div><strong>영어가 아직 자신 없다면</strong><p><a href="newzealand.html">뉴질랜드 캠프</a>가 부담이 덜합니다. 1월엔 캠프생끼리 영어수업으로 몸을 풀고, 2월에 현지 수업에 들어가는 순서라서요.</p></div>
       <div><strong>일본어에 빠진 중고생이라면</strong><p><a href="japan.html">교토 2주</a> 다녀오면 일본어 진로를 계속 갈지 본인 입으로 답이 나옵니다.</p></div>
-      <div><strong>말하기 연습량이 절실하다면</strong><p><a href="philippines.html">필리핀 클락</a>이 답입니다. 매일 1:1 수업만 4시간 — 다른 어느 캠프보다 입을 여는 시간이 깁니다.</p></div>
+      <div><strong>말하기 연습량이 절실하다면</strong><p><a href="philippines.html">필리핀 클락</a>이 답입니다. 매일 1:1 수업만 4시간입니다. 다른 어느 캠프보다 입을 여는 시간이 깁니다.</p></div>
       <div><strong>비용 대비 알찬 첫 캠프를 찾는다면</strong><p><a href="malaysia.html">말레이시아 래플즈 캠프</a>는 항공권 포함 599만원에 싱가포르 투어까지 묶여 있어 부담이 가장 적습니다.</p></div>
     </div>
   </div>
@@ -367,13 +367,13 @@ ${safetySection()}
 
 <section class="section alt" id="study">
   <div class="wrap">
-    <h2 class="sec-title">캠프 다음 단계 — 유학·국제학교</h2>
+    <h2 class="sec-title">캠프 다음 단계, 유학·국제학교</h2>
     <p class="sec-sub">캠프로 가능성을 확인했다면, 그 다음을 준비할 차례입니다. 캠프와 같은 학교·같은 교육청으로 이어지는 유학 과정을 안내합니다.</p>
     <div class="camp-grid">
       <a class="camp-card" href="study-newzealand.html">
         <span class="camp-flag">🇳🇿 뉴질랜드</span>
         <h3>뉴질랜드 중·고등 유학</h3>
-        <p class="camp-tag">겨울캠프의 그 학교, Waiuku College — 10주 한 텀부터 졸업까지</p>
+        <p class="camp-tag">겨울캠프의 그 학교, Waiuku College에서 10주 한 텀부터 졸업까지</p>
         <dl class="camp-meta">
           <div><dt>대상</dt><dd>중1~고2</dd></div>
           <div><dt>기간</dt><dd>텀(10주)~학년 단위</dd></div>
@@ -384,7 +384,7 @@ ${safetySection()}
       <a class="camp-card" href="study-canada.html">
         <span class="camp-flag">🇨🇦 캐나다</span>
         <h3>캐나다 관리형 중·고등 유학</h3>
-        <p class="camp-tag">나이아가라 공립 교육청 8개 고교 — 법적 가디언 + 월간 리포트</p>
+        <p class="camp-tag">나이아가라 공립 교육청 8개 고교, 법적 가디언 + 월간 리포트</p>
         <dl class="camp-meta">
           <div><dt>대상</dt><dd>중1~고2</dd></div>
           <div><dt>기간</dt><dd>학기~학년 단위</dd></div>
@@ -395,7 +395,7 @@ ${safetySection()}
       <a class="camp-card" href="stpaul.html">
         <span class="camp-flag">🏫 서울 대치동</span>
         <h3>세인트폴 아카데미 대치</h3>
-        <p class="camp-tag">유학 없이 대치동에서 미국 교과과정 — SPASS 서울 캠퍼스</p>
+        <p class="camp-tag">유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스</p>
         <dl class="camp-meta">
           <div><dt>대상</dt><dd>중2~고2 편입학</dd></div>
           <div><dt>모집</dt><dd>2월·8월 학기</dd></div>
@@ -423,7 +423,7 @@ ${applySection()}
 <section class="section">
   <div class="wrap">
     <h2 class="sec-title">캠프 가이드</h2>
-    <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지 — 보내기 전에 읽어두면 좋은 글들.</p>
+    <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
     <div class="guide-grid">${GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
     <p style="margin-top:22px"><a class="btn btn-navy" href="guide.html">가이드 전체 보기 →</a></p>
   </div>
@@ -434,7 +434,7 @@ ${consultSection()}`;
   return page({
     file: "index.html",
     title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 아카데미 대치`,
-    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 대치동 세인트폴 아카데미까지 — 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
+    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 대치동 세인트폴 아카데미까지. 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
     hero,
     body,
     jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
@@ -444,6 +444,46 @@ ${consultSection()}`;
 // ------------------------------------------------------------
 // 캠프 상세
 // ------------------------------------------------------------
+
+function scheduleSection(slug) {
+  const rows = SCHEDULES[slug];
+  if (!rows) return "";
+  return `
+<section class="section">
+  <div class="wrap narrow">
+    <h2 class="sec-title">전체 일정</h2>
+    <p class="sec-sub">안내자료에 실린 일정 그대로입니다. 현지 날씨나 학교 사정에 따라 바뀔 수 있습니다.</p>
+    <ol class="sch">${rows.map(([d, w, t]) => `<li><span class="sch-d">${d}${w ? `<i>${w}</i>` : ""}</span><span class="sch-t">${t}</span></li>`).join("")}</ol>
+  </div>
+</section>`;
+}
+
+function campFaqSection(slug) {
+  const own = CAMP_FAQ[slug] || [];
+  const list = own.concat(COMMON.faq.slice(0, 4));
+  return `
+<section class="section alt">
+  <div class="wrap narrow">
+    <h2 class="sec-title">이 캠프에 자주 오는 질문</h2>
+    <div class="faq-list">
+      ${list.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n")}
+    </div>
+    <p class="sec-sub" style="margin-top:14px">더 궁금한 점은 <a href="faq.html">자주 묻는 질문</a>에서 확인하실 수 있습니다.</p>
+  </div>
+</section>`;
+}
+
+function refundSection() {
+  return `
+<section class="section">
+  <div class="wrap narrow">
+    <h2 class="sec-title-sm">환불 규정</h2>
+    <dl class="info-list">${COMMON.refund.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+    <p class="dim" style="margin-top:12px">천재지변, 항공 결항처럼 주최 측이 통제할 수 없는 사유로 진행이 어려운 경우는 별도로 안내드립니다.</p>
+  </div>
+</section>`;
+}
+
 function buildCamp(key) {
   const c = CAMPS[key];
   const hero = `<section class="hero hero-sm">
@@ -498,15 +538,18 @@ function buildCamp(key) {
   </div>
 </section>
 
+${scheduleSection(c.slug)}
 ${safetySection(c.safety)}
 ${applySection(c.applySteps)}
+${refundSection()}
+${campFaqSection(c.slug)}
 
 <section class="section alt">
   <div class="wrap narrow">
     <h2 class="sec-title-sm">캠프가 끝난 뒤에도</h2>
     <p>${c.extend}. 자세한 내용은 상담 시 안내해 드립니다.</p>
-    ${c.country === "canada" ? `<p style="margin-top:10px">유학까지 생각하고 계시다면 — 이 캠프와 같은 교육청에서 진행하는 <a href="study-canada.html"><strong>캐나다 관리형 중·고등 유학</strong></a>을 함께 살펴보세요.</p>` : ""}
-    ${c.country === "newzealand" ? `<p style="margin-top:10px">유학까지 생각하고 계시다면 — 이 캠프와 같은 학교로 이어지는 <a href="study-newzealand.html"><strong>뉴질랜드 중·고등 유학</strong></a>을 함께 살펴보세요.</p>` : ""}
+    ${c.country === "canada" ? `<p style="margin-top:10px">유학까지 생각하고 계시다면, 이 캠프와 같은 교육청에서 진행하는 <a href="study-canada.html"><strong>캐나다 관리형 중·고등 유학</strong></a>을 함께 살펴보세요.</p>` : ""}
+    ${c.country === "newzealand" ? `<p style="margin-top:10px">유학까지 생각하고 계시다면, 이 캠프와 같은 학교로 이어지는 <a href="study-newzealand.html"><strong>뉴질랜드 중·고등 유학</strong></a>을 함께 살펴보세요.</p>` : ""}
     <p class="sec-sub" style="margin-top:16px">다른 캠프와 비교하기: <a href="compare.html">${CAMP_COUNT}개 캠프 비교표</a> ·
       ${Object.values(CAMPS).filter((x) => x.slug !== c.slug).map((x) => `<a href="${x.slug}.html">${x.name}</a>`).join(" · ")}</p>
   </div>
@@ -551,15 +594,15 @@ function buildCompare() {
     <div><strong>유학 보내기 전 점검이라면</strong><p>7주를 권합니다. 한 달을 넘겨야 손님 대접이 끝나고 진짜 생활이 시작되거든요.</p></div>
     <div><strong>영어 기초가 걱정이라면</strong><p>뉴질랜드로 보내세요. 영어수업으로 시작해서 현지 수업으로 넘어가는 순서라 덜 힘들어합니다.</p></div>
     <div><strong>일본어 진로를 알아보는 중이라면</strong><p>교토 2주가 맞습니다. 중2~고2만 받는 소수 정예 과정입니다.</p></div>
-    <div><strong>말하기 연습량이 우선이라면</strong><p>필리핀 클락입니다. 매일 1:1 수업 4시간 — 입을 여는 시간이 압도적으로 깁니다.</p></div>
+    <div><strong>말하기 연습량이 우선이라면</strong><p>필리핀 클락입니다. 매일 1:1 수업 4시간입니다. 입을 여는 시간이 압도적으로 깁니다.</p></div>
     <div><strong>비용 부담을 줄이고 싶다면</strong><p>말레이시아 래플즈 캠프가 항공권 포함 599만원으로 가장 가볍습니다. 싱가포르 투어까지 묶여 있습니다.</p></div>
   </div>
 </div></section>
 ${consultSection()}`;
   return page({
     file: "compare.html",
-    title: `해외 겨울캠프 비교 | 캐나다·뉴질랜드·일본·말레이시아·필리핀 — 기간·비용·대상 총정리`,
-    desc: `${SEASON_LABEL} 해외캠프 ${CAMP_COUNT}종 비교표 — 캐나다 스쿨링 3주(890만원)·7주(1,290만원), 뉴질랜드 3~7주(690만원~), 일본 교토 2주(594만원), 말레이시아·필리핀 4주(각 599만원·항공 포함). 기간·대상·숙소·마감일 한눈에.`,
+    title: `해외 겨울캠프 비교 | 캐나다·뉴질랜드·일본·말레이시아·필리핀 기간·비용·대상 총정리`,
+    desc: `${SEASON_LABEL} 해외캠프 ${CAMP_COUNT}종 비교표. 캐나다 스쿨링 3주(890만원)·7주(1,290만원), 뉴질랜드 3~7주(690만원~), 일본 교토 2주(594만원), 말레이시아·필리핀 4주(각 599만원·항공 포함). 기간·대상·숙소·마감일 한눈에.`,
     hero, body,
   });
 }
@@ -572,7 +615,7 @@ function buildAbout() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <p class="lead">캠프를 고를 때 일정표는 사실 큰 차이가 없습니다. 차이가 나는 건 사고가 났을 때입니다.
-  아이가 한밤중에 아프면 누가 몇 분 안에 오는지, 홈스테이와 갈등이 생기면 누가 중간에서 풀어주는지 —
+  아이가 한밤중에 아프면 누가 몇 분 안에 오는지, 홈스테이와 갈등이 생기면 누가 중간에서 풀어주는지.
   저희는 여기에 답할 수 있느냐를 기준으로 프로그램을 짜 왔습니다. 아래가 그 답입니다.</p>
 </div></section>
 <section class="section alt"><div class="wrap">
@@ -581,7 +624,7 @@ function buildAbout() {
     <div><strong>교육기관과 직접 연결</strong><p>학교·교육청과 직접 연계된 프로그램만 운영합니다. 홈스테이도 교육기관이 검증한 가정만 배정됩니다.</p></div>
     <div><strong>인솔자 + 현지 관리자 이중 체계</strong><p>한국에서 함께 출국한 인솔자와, 현지에 상주하는 관리자가 학교와 홈스테이 양쪽을 살핍니다.</p></div>
     <div><strong>학부모 실시간 공유</strong><p>네이버 밴드에 전체 공지방과 학생별 개인방을 운영합니다. 아이의 하루가 매일 사진과 글로 도착합니다.</p></div>
-    <div><strong>명문화된 원칙</strong><p>규정 위반 3단계 원칙, 단계별 환불 규정 — 모든 원칙이 계약서에 문서로 존재합니다.</p></div>
+    <div><strong>명문화된 원칙</strong><p>규정 위반 3단계 원칙, 단계별 환불 규정까지, 모든 원칙이 계약서에 문서로 존재합니다.</p></div>
   </div>
 </div></section>
 ${safetySection()}
@@ -596,7 +639,7 @@ ${consultSection()}`;
   return page({
     file: "about.html",
     title: "러닝트래블 운영·안전 시스템 | 해외캠프, 무엇이 달라야 하는가",
-    desc: "16,000명 이상과 함께해 온 해외캠프 운영 체계 — 교육기관 직접 연계, 인솔자·현지 관리자 이중 체계, 학부모 실시간 공유, 명문화된 환불 규정.",
+    desc: "16,000명 이상과 함께해 온 해외캠프 운영 체계. 교육기관 직접 연계, 인솔자·현지 관리자 이중 체계, 학부모 실시간 공유, 명문화된 환불 규정.",
     hero, body,
   });
 }
@@ -657,25 +700,25 @@ function buildCountry(ct) {
     <li>미국 동부(뉴욕·보스턴)와 아이비리그 투어를 묶을 수 있는 유일한 지역</li>
     <li>토론토 직항으로 이동 부담이 적음</li>` : ""}
     ${ct.slug === "newzealand" ? `
-    <li>한국의 겨울이 현지의 여름 — 야외활동에 최적의 계절</li>
+    <li>한국의 겨울이 현지의 여름, 야외활동에 최적의 계절</li>
     <li>유학생 비율이 낮은 학교에서 현지 학생들과 깊게 어울리는 환경</li>
     <li>1월 영어캠프 + 2월 정규과정으로 기초부터 실전까지 단계적 구성</li>
     <li>3주·4주·7주 선택 + 주 단위 연장 가능한 유연함</li>` : ""}
     ${ct.slug === "japan" ? `
-    <li>비행 2시간 — 첫 단독 해외 경험의 부담이 가장 적은 나라</li>
+    <li>비행 2시간, 첫 단독 해외 경험의 부담이 가장 적은 나라</li>
     <li>천년 고도 교토에서 어학과 전통문화를 동시에</li>
     <li>일본어 전공·유학 진로를 실제로 확인해 보는 기회</li>
     <li>중2~고2 또래 소수 정예 + 인솔자 전 일정 동행</li>` : ""}
     ${ct.slug === "malaysia" ? `
-    <li>영미권 캠프의 절반 수준 비용으로 캠브리지 커리큘럼 수업 — 항공권까지 포함 599만원</li>
+    <li>영미권 캠프의 절반 수준 비용으로 캠브리지 커리큘럼 수업, 항공권까지 포함 599만원</li>
     <li>말레이시아와 싱가포르, 두 나라를 한 번의 캠프로 경험</li>
-    <li>세계 치안지수 19위(싱가포르 5위) — 경제특구의 안전한 환경</li>
+    <li>세계 치안지수 19위(싱가포르 5위), 경제특구의 안전한 환경</li>
     <li>4성급 호텔 숙소 + 한식 위주 식단으로 첫 장기 캠프의 생활 부담 최소화</li>` : ""}
     ${ct.slug === "philippines" ? `
-    <li>매일 1:1 수업 4시간 — 어느 캠프보다 말하기 연습량이 많은 구성</li>
-    <li>대학 캠퍼스 안 기숙사 상주형 — 이동 최소화로 안전과 몰입을 동시에</li>
-    <li>데일카네기 리더십 아카데미 2일 과정 — 영어에 발표력·자신감까지</li>
-    <li>비행 4시간대, 시차 1시간 — 체력 부담이 적은 첫 캠프</li>` : ""}
+    <li>매일 1:1 수업 4시간, 어느 캠프보다 말하기 연습량이 많은 구성</li>
+    <li>대학 캠퍼스 안 기숙사 상주형, 이동 최소화로 안전과 몰입을 동시에</li>
+    <li>데일카네기 리더십 아카데미 2일 과정, 영어에 발표력·자신감까지</li>
+    <li>비행 4시간대, 시차 1시간, 체력 부담이 적은 첫 캠프</li>` : ""}
   </ul>
   <p class="sec-sub" style="margin-top:16px">다른 나라와 비교하기: <a href="compare.html">전체 캠프 비교표</a></p>
 </div></section>
@@ -934,11 +977,11 @@ function buildStudyHub() {
   </div>
 </div></section>
 <section class="section alt"><div class="wrap narrow">
-  <h2 class="sec-title">캠프에서 유학으로 — 러닝트래블가 권하는 순서</h2>
+  <h2 class="sec-title">캠프에서 유학으로, 러닝트래블가 권하는 순서</h2>
   <ol class="step-list">
     <li>겨울캠프 3~7주로 현지 학교와 홈스테이 생활을 직접 겪어봅니다</li>
     <li>아이의 적응력·의지를 확인한 뒤 텀(학기) 단위로 짧게 시작합니다</li>
-    <li>잘 맞으면 연장 — 뉴질랜드는 NCEA, 캐나다는 온타리오 졸업장까지 이어집니다</li>
+    <li>잘 맞으면 연장, 뉴질랜드는 NCEA, 캐나다는 온타리오 졸업장까지 이어집니다</li>
     <li>해외 출국이 부담스럽다면 대치동에서 미국 교과과정을 밟는 길도 있습니다</li>
   </ol>
   <p class="sec-sub" style="margin-top:16px">뉴질랜드 유학은 <a href="newzealand.html">뉴질랜드 겨울캠프</a>와 같은 학교, 캐나다 관리형은 <a href="canada-3week.html">캐나다 3주 캠프</a>와 같은 교육청에서 진행됩니다.</p>
@@ -1058,7 +1101,7 @@ ${consultSection({ camp: s.slug })}`;
   return page({
     file: "stpaul.html",
     title: `세인트폴 아카데미 대치 | 대치동 미국 교과 국제학교 — 학비·모집·진학 실적`,
-    desc: `유학 없이 대치동에서 미국 교과과정 — SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 상담 신청 안내.`,
+    desc: `유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 상담 신청 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "School", name: s.name, address: { "@type": "PostalAddress", addressLocality: "서울 강남구 대치동" } },
   });
@@ -1262,6 +1305,14 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 @media(max-width:560px){.info-list>div{grid-template-columns:1fr}.info-list dt{padding-bottom:4px}.info-list dd{padding-top:4px}}
 
 /* faq */
+.sch{list-style:none;display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.sch li{display:grid;grid-template-columns:132px 1fr;border-top:1px solid var(--line);align-items:start}
+.sch li:first-child{border-top:none}
+.sch li:nth-child(odd){background:var(--ice)}
+.sch-d{padding:13px 16px;font-weight:800;color:var(--navy);font-size:14px;white-space:nowrap}
+.sch-d i{font-style:normal;font-weight:600;color:var(--sky);margin-left:5px;font-size:13px}
+.sch-t{padding:13px 16px;font-size:14.5px;line-height:1.65}
+@media(max-width:600px){.sch li{grid-template-columns:1fr}.sch-d{padding-bottom:0}.sch-t{padding-top:6px}}
 .faq-list{display:grid;gap:10px;max-width:860px}
 .faq-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 20px}
 .section:not(.alt) .faq-item{background:var(--paper)}
