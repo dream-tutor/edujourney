@@ -207,7 +207,6 @@ function consultSection(preset = {}) {
         <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="유학·국제학교">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
       <div class="form-row two">
-        <label>연락 희망 시간<select name="연락희망시간"><option value="아무 때나">아무 때나</option><option>오전 (9시~12시)</option><option>오후 (12시~18시)</option><option>저녁 (18시 이후)</option></select></label>
       </div>
       <div class="form-row">
         <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이의 영어 수준, 해외 경험 여부, 궁금한 점을 자유롭게 남겨 주세요"></textarea></label>
@@ -235,7 +234,7 @@ function consultSection(preset = {}) {
       var data = {
         '이름': name, '연락처': tel,
         '학년': f.get('학년')||'', '관심캠프': f.get('관심캠프')||'',
-        '연락희망시간': f.get('연락희망시간')||'', '문의내용': f.get('문의내용')||'',
+        '문의내용': f.get('문의내용')||'',
         '신청일': new Date().toLocaleString('ko-KR'),
         '유입페이지': location.href, '유입페이지제목': document.title,
         '유입경로': document.referrer || '직접입력'
