@@ -538,6 +538,7 @@ function buildCamp(key) {
 </section>
 
 ${scheduleSection(c.slug)}
+${SCHEDULES[c.slug] ? `<section class="section alt" style="padding-top:0"><div class="wrap narrow"><p class="sec-sub"><a href="schedule-${c.slug}.html"><strong>${c.name} 일정표만 따로 보기</strong></a></p></div></section>` : ""}
 ${safetySection(c.safety)}
 ${applySection(c.applySteps)}
 ${refundSection()}
@@ -575,6 +576,261 @@ ${consultSection({ camp: c.slug })}`;
 // ------------------------------------------------------------
 // 비교 / 소개 / FAQ
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// 과정 단가표 — 기간·비용 축 페이지의 기준 데이터
+// (뉴질랜드처럼 한 캠프에 기간이 여러 개면 행을 나눠 둡니다)
+// ------------------------------------------------------------
+const PRICE_ROWS = [
+  { camp: "japan",        label: "일본 교토 2주",   won: 594,  weeks: 2 },
+  { camp: "malaysia",     label: "말레이시아 4주",  won: 599,  weeks: 4 },
+  { camp: "philippines",  label: "필리핀 클락 4주", won: 599,  weeks: 4 },
+  { camp: "newzealand",   label: "뉴질랜드 3주",    won: 690,  weeks: 3 },
+  { camp: "newzealand",   label: "뉴질랜드 4주",    won: 810,  weeks: 4 },
+  { camp: "canada-3week", label: "캐나다 3주",      won: 890,  weeks: 3 },
+  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1090, weeks: 7 },
+  { camp: "canada-7week", label: "캐나다 7주",      won: 1290, weeks: 7 },
+];
+const DURATIONS = [
+  { slug: "2week", weeks: 2, label: "2주", note: "학기 중 부담이 가장 적은 기간입니다. 처음 보내는 집에서 많이 고릅니다." },
+  { slug: "3week", weeks: 3, label: "3주", note: "겨울방학 안에 끝나는 가장 무난한 기간입니다. 문의가 제일 많습니다." },
+  { slug: "4week", weeks: 4, label: "4주", note: "적응하고 나서 지내는 시간이 생기는 기간입니다. 영어 사용량이 눈에 띄게 늘어납니다." },
+  { slug: "7week", weeks: 7, label: "7주", note: "한 학기의 일부를 현지에서 보냅니다. 유학을 염두에 둔 집에서 고릅니다." },
+];
+const BUDGETS = [
+  { slug: "under-600", label: "600만원 미만", min: 0,    max: 599,  note: "항공료를 더해도 700만원 안쪽에서 정리되는 편입니다." },
+  { slug: "600-800",   label: "600만~800만원", min: 600, max: 899,  note: "기간과 나라의 균형이 가장 좋은 구간입니다." },
+  { slug: "800-1000",  label: "800만~1,000만원", min: 800, max: 1089, note: "스쿨링과 여행 일정이 함께 붙는 과정이 여기 있습니다." },
+  { slug: "over-1000", label: "1,000만원 이상", min: 1090, max: 99999, note: "학기 단위로 다니는 장기 과정입니다." },
+];
+const DEPARTURES = [
+  { slug: "jan-early", label: "1월 초 출발", match: (c) => /1\.3/.test(c.periodShort), note: "방학이 시작하자마자 출발합니다. 귀국 후 개학까지 시간이 남습니다." },
+  { slug: "jan-mid",   label: "1월 중순 출발", match: (c) => /1\.9/.test(c.periodShort), note: "설 연휴 전에 출발해 방학 대부분을 현지에서 보냅니다." },
+  { slug: "feb",       label: "2월 출발", match: (c) => /^2027\.2/.test(c.periodShort), note: "학년이 바뀌기 직전에 다녀옵니다. 새 학기 준비와 겹치지 않게 일정을 잡습니다." },
+];
+
+function campsByWeeks(w) {
+  const slugs = [...new Set(PRICE_ROWS.filter((r) => r.weeks === w).map((r) => r.camp))];
+  return slugs.map((s) => CAMPS[s]).filter(Boolean);
+}
+function campsByBudget(bd) {
+  const slugs = [...new Set(PRICE_ROWS.filter((r) => r.won >= bd.min && r.won <= bd.max).map((r) => r.camp))];
+  return slugs.map((s) => CAMPS[s]).filter(Boolean);
+}
+function moreLinks(exclude = "") {
+  const d = DURATIONS.filter((x) => x.slug !== exclude).map((x) => `<a href="duration-${x.slug}.html">${x.label} 캠프</a>`).join(" · ");
+  const g = BUDGETS.filter((x) => x.slug !== exclude).map((x) => `<a href="budget-${x.slug}.html">${x.label}</a>`).join(" · ");
+  const s = DEPARTURES.filter((x) => x.slug !== exclude).map((x) => `<a href="depart-${x.slug}.html">${x.label}</a>`).join(" · ");
+  return `
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">조건으로 찾아보기</h2>
+  <p class="sec-sub">기간: ${d}</p>
+  <p class="sec-sub">비용: ${g}</p>
+  <p class="sec-sub">출발 시기: ${s} · <a href="calendar.html">출발·귀국일 한눈에 보기</a></p>
+  <p class="sec-sub">일정표: ${Object.keys(SCHEDULES).map((k) => `<a href="schedule-${k}.html">${CAMPS[k].name} 일정</a>`).join(" · ")}</p>
+</div></section>`;
+}
+
+// ── 1) 캠프별 일정표 페이지 ───────────────────────────────
+function buildSchedulePage(slug) {
+  const c = CAMPS[slug];
+  const rows = SCHEDULES[slug];
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${c.flag} ${c.countryName} · ${c.periodShort}</p>
+    <h1>${c.name} 일정표</h1>
+    <p class="hero-sub">출국일부터 귀국일까지 날짜별로 무엇을 하는지 정리했습니다.</p>
+  </div></section>`;
+  const body = `
+${scheduleSection(slug)}
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">일정을 볼 때 같이 보시면 좋은 것</h2>
+  <ul class="check-list">
+    <li>주중은 학교나 어학원 수업, 주말은 문화·여행 일정으로 나뉩니다.</li>
+    <li>방과 후와 주말 자유시간은 홈스테이 가족과 보냅니다. 일정표에 없는 시간이 실제로는 가장 깁니다.</li>
+    <li>현지 학교의 휴일(PA Day 등)이나 날씨로 순서가 바뀔 수 있어, 확정 일정은 출국 전 오리엔테이션에서 다시 안내드립니다.</li>
+  </ul>
+  <p class="sec-sub" style="margin-top:18px">
+    <a href="${slug}.html"><strong>${c.name} 상세 안내</strong></a> ·
+    <a href="compare.html">${CAMP_COUNT}개 캠프 비교표</a></p>
+</div></section>
+${moreLinks()}
+${consultSection({ camp: slug })}`;
+  return page({
+    file: `schedule-${slug}.html`,
+    title: `${c.name} 일정표 | 날짜별 전체 일정 ${c.periodShort}`,
+    desc: `${c.name} 날짜별 일정. ${c.periodShort}, ${c.target}. 학교 수업과 주말 문화·여행 일정을 출국일부터 귀국일까지 정리했습니다.`,
+    hero, body,
+  });
+}
+
+// ── 2) 기간별 허브 ────────────────────────────────────────
+function buildDuration(d) {
+  const camps = campsByWeeks(d.weeks);
+  const rows = PRICE_ROWS.filter((r) => r.weeks === d.weeks);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">기간으로 고르기</p>
+    <h1>${d.label} 해외캠프</h1>
+    <p class="hero-sub">${d.note}</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">${d.label}짜리 과정 ${rows.length}개</h2>
+  <dl class="info-list" style="max-width:760px;margin:0 auto 26px">
+    ${rows.map((r) => `<div><dt>${r.label}</dt><dd>${r.won.toLocaleString()}만원 <span class="dim">(항공료 별도)</span></dd></div>`).join("")}
+  </dl>
+  <div class="camp-grid">${camps.map(campCard).join("\n")}</div>
+</div></section>
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">${d.label} 과정을 고르실 때</h2>
+  <p class="lead">${d.note} 같은 ${d.label}이라도 현지 학교 수업에 들어가는 스쿨링인지, 어학원 수업 중심인지에 따라 하루가 완전히 다릅니다.
+  아이가 지금 필요한 것이 영어 사용량인지 현지 학교 경험인지부터 정하시면 선택이 빨라집니다.</p>
+  <p class="sec-sub" style="margin-top:16px">학년별로 보기: ${GRADES.map((g) => `<a href="${g.slug}-${d.slug}.html">${g.label}</a>`).join(" · ")}</p>
+</div></section>
+${moreLinks(d.slug)}
+${consultSection({})}`;
+  return page({
+    file: `duration-${d.slug}.html`,
+    title: `${d.label} 해외캠프 | ${SEASON_LABEL} ${d.label} 겨울캠프 비용·일정`,
+    desc: `${d.label} 해외 겨울캠프 ${rows.length}개 (${rows.map((r) => `${r.label} ${r.won.toLocaleString()}만원`).join(", ")}). ${d.note}`,
+    hero, body,
+  });
+}
+
+// ── 3) 학년 × 기간 ────────────────────────────────────────
+function buildGradeDuration(g, d) {
+  const camps = campsByWeeks(d.weeks).filter((c) => c.targetGrades.includes(g.key));
+  const alt = DURATIONS.filter((x) => x.slug !== d.slug)
+    .map((x) => ({ d: x, camps: campsByWeeks(x.weeks).filter((c) => c.targetGrades.includes(g.key)) }))
+    .filter((x) => x.camps.length);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${g.label} · ${d.label}</p>
+    <h1>${g.label} ${d.label} 캠프</h1>
+    <p class="hero-sub">${SEASON_LABEL} 시즌, ${g.label} 학생이 갈 수 있는 ${d.label} 과정입니다.</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap">
+  ${camps.length ? `<h2 class="sec-title">${g.label}이 갈 수 있는 ${d.label} 과정 ${camps.length}개</h2>
+  <div class="camp-grid">${camps.map(campCard).join("\n")}</div>`
+    : `<h2 class="sec-title">${g.label} ${d.label} 과정 안내</h2>
+  <p class="lead" style="max-width:760px">${SEASON_LABEL} 시즌에는 ${g.label}이 참가할 수 있는 ${d.label} 과정이 없습니다.
+  아래 다른 기간의 과정을 보시거나 상담을 남겨 주시면 다음 시즌 개설 소식과 함께 안내해 드립니다.</p>`}
+  ${alt.length ? `<h2 class="sec-title-sm" style="margin-top:34px">${g.label}이 갈 수 있는 다른 기간</h2>
+  <p class="sec-sub">${alt.map((x) => `<a href="${g.slug}-${x.d.slug}.html">${x.d.label} (${x.camps.length}개)</a>`).join(" · ")}</p>` : ""}
+</div></section>
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">더 살펴보기</h2>
+  <p class="sec-sub"><a href="${g.slug}.html">${g.label} 전체 캠프</a> ·
+    <a href="duration-${d.slug}.html">${d.label} 전체 과정</a> ·
+    <a href="compare.html">${CAMP_COUNT}개 캠프 비교표</a></p>
+</div></section>
+${consultSection({ grade: g.key })}`;
+  return page({
+    file: `${g.slug}-${d.slug}.html`,
+    title: `${g.label} ${d.label} 캠프 | ${g.label} ${d.label} 해외 겨울캠프`,
+    desc: `${g.label} 학생의 ${d.label} 해외캠프. ${camps.length ? camps.map((c) => `${c.name}(${c.price})`).join(", ") + " 참가 가능." : "이번 시즌 대상 과정과 대안 기간 안내."}`,
+    hero, body,
+  });
+}
+
+// ── 4) 출발 시기별 ────────────────────────────────────────
+function buildDeparture(dp) {
+  const camps = Object.values(CAMPS).filter(dp.match);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">출발 시기로 고르기</p>
+    <h1>${dp.label} 해외캠프</h1>
+    <p class="hero-sub">${dp.note}</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">${dp.label} 과정 ${camps.length}개</h2>
+  <dl class="info-list" style="max-width:760px;margin:0 auto 26px">
+    ${camps.map((c) => `<div><dt>${c.countryName}</dt><dd>${c.period}<br><span class="dim">${c.target} · ${c.price}</span></dd></div>`).join("")}
+  </dl>
+  <div class="camp-grid">${camps.map(campCard).join("\n")}</div>
+</div></section>
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">출발일을 정할 때 확인할 것</h2>
+  <ul class="check-list">
+    <li>학교 방학식·개학일과 겹치지 않는지 먼저 확인해 주세요. 겹치면 체험학습 처리를 학교와 상의해야 합니다.</li>
+    <li>여권 유효기간이 6개월 이상 남아 있어야 합니다. 만료가 가깝다면 출발 두 달 전에는 갱신을 시작하시는 편이 안전합니다.</li>
+    <li>전자비자는 캠프에서 진행해 드리지만, 여권 사본 제출이 늦으면 일정이 밀립니다.</li>
+    <li>항공권은 단체로 잡습니다. 개별 발권을 원하시면 미리 알려 주세요.</li>
+  </ul>
+</div></section>
+${moreLinks(dp.slug)}
+${consultSection({})}`;
+  return page({
+    file: `depart-${dp.slug}.html`,
+    title: `${dp.label} 해외캠프 | ${SEASON_LABEL} 출발 일정`,
+    desc: `${dp.label} 해외 겨울캠프 ${camps.length}개. ${camps.map((c) => `${c.countryName} ${c.periodShort}`).join(", ")}. ${dp.note}`,
+    hero, body,
+  });
+}
+
+// 출발·귀국일 한눈에 보기
+function buildCalendar() {
+  const rows = Object.values(CAMPS);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${SEASON_LABEL}</p>
+    <h1>캠프 출발·귀국일 한눈에</h1>
+    <p class="hero-sub">방학 일정과 겹쳐 보기 좋게 출국일과 귀국일만 모았습니다.</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">${SEASON_LABEL} 전체 일정</h2>
+  <dl class="info-list">
+    ${rows.map((c) => `<div><dt>${c.flag} ${c.countryName}</dt><dd><strong>${c.period}</strong><br><span class="dim">${c.target} · ${c.price} · 마감 ${c.deadline}</span></dd></div>`).join("")}
+  </dl>
+  <p class="sec-sub" style="margin-top:18px">날짜별 상세 일정은 각 캠프 일정표에서 보실 수 있습니다:
+    ${Object.keys(SCHEDULES).map((k) => `<a href="schedule-${k}.html">${CAMPS[k].name}</a>`).join(" · ")}</p>
+</div></section>
+${moreLinks()}
+${consultSection({})}`;
+  return page({
+    file: "calendar.html",
+    title: `${SEASON_LABEL} 해외캠프 출발·귀국일 정리 | 방학 일정 맞추기`,
+    desc: `${SEASON_LABEL} 해외캠프 ${rows.length}개의 출국일·귀국일·모집 마감일 정리. 학교 방학 일정과 맞춰 보실 수 있습니다.`,
+    hero, body,
+  });
+}
+
+// ── 5) 비용대별 ───────────────────────────────────────────
+function buildBudget(bd) {
+  const rows = PRICE_ROWS.filter((r) => r.won >= bd.min && r.won <= bd.max);
+  const camps = campsByBudget(bd);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">비용으로 고르기</p>
+    <h1>${bd.label} 해외캠프</h1>
+    <p class="hero-sub">${bd.note}</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">${bd.label} 과정 ${rows.length}개</h2>
+  <dl class="info-list" style="max-width:760px;margin:0 auto 26px">
+    ${rows.map((r) => `<div><dt>${r.label}</dt><dd><strong>${r.won.toLocaleString()}만원</strong> <span class="dim">· ${r.weeks}주 · 항공료 별도</span></dd></div>`).join("")}
+  </dl>
+  <div class="camp-grid">${camps.map(campCard).join("\n")}</div>
+</div></section>
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">참가비 외에 더 드는 돈</h2>
+  <ul class="check-list">
+    <li>항공료가 가장 큽니다. 캐나다 토론토 직항 기준 250만~300만원, 일본은 훨씬 낮습니다.</li>
+    <li>여권 발급비와 개인 용돈은 따로입니다. 3주 기준 현지화 300~500달러(일본은 70만~80만원)를 권해 드립니다.</li>
+    <li>개별 출·귀국을 하시면 항공사 UM 서비스 비용이 붙습니다.</li>
+    <li>참가비에는 학비·홈스테이비·현지 관리비·보험료·전자비자 진행비가 들어 있습니다.</li>
+  </ul>
+  <p class="sec-sub" style="margin-top:16px">과정별 포함·불포함 내역은 각 캠프 페이지에 그대로 적어 두었습니다.</p>
+</div></section>
+${moreLinks(bd.slug)}
+${consultSection({})}`;
+  return page({
+    file: `budget-${bd.slug}.html`,
+    title: `${bd.label} 해외캠프 | ${SEASON_LABEL} 겨울캠프 비용 비교`,
+    desc: `참가비 ${bd.label} 해외 겨울캠프 ${rows.length}개 (${rows.map((r) => `${r.label} ${r.won.toLocaleString()}만원`).join(", ")}). 항공료 등 추가 비용까지 함께 안내합니다.`,
+    hero, body,
+  });
+}
+
 function buildCompare() {
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
     <p class="hero-kicker">${SEASON_LABEL} Camp Comparison</p>
@@ -597,6 +853,7 @@ function buildCompare() {
     <div><strong>비용 부담을 줄이고 싶다면</strong><p>말레이시아 래플즈 캠프가 항공권 포함 599만원으로 가장 가볍습니다. 싱가포르 투어까지 묶여 있습니다.</p></div>
   </div>
 </div></section>
+${moreLinks()}
 ${consultSection()}`;
   return page({
     file: "compare.html",
@@ -782,6 +1039,7 @@ function buildGrade(g) {
   <h2 class="sec-title-sm">비슷한 또래 페이지</h2>
   <p class="sec-sub">${GRADES.filter((x) => x.slug !== g.slug).map((x) => `<a href="${x.slug}.html">${x.label}</a>`).join(" · ")}</p>
   <p class="sec-sub">${g.label} 나라별로 보기: ${COUNTRIES.map((ct) => `<a href="${g.slug}-${ct.slug}.html">${g.label} ${ct.name} 캠프</a>`).join(" · ")}</p>
+  <p class="sec-sub">${g.label} 기간별로 보기: ${DURATIONS.map((d) => `<a href="${g.slug}-${d.slug}.html">${g.label} ${d.label}</a>`).join(" · ")}</p>
   <p class="sec-sub">읽어보면 좋은 글: <a href="guide-first-camp-age.html">첫 해외캠프, 몇 살이 적당할까</a> · <a href="guide-duration.html">기간은 어떻게 고를까</a></p>
 </div></section>
 ${consultSection({ grade: g.key })}`;
@@ -1404,6 +1662,12 @@ pages.push(buildStPaul());
 pages.push(buildSummerHub());
 for (const s of SUMMER_COUNTRIES) pages.push(buildSummerCountry(s));
 for (const ic of INFO_COUNTRIES) pages.push(buildInfoCountry(ic));
+for (const k of Object.keys(SCHEDULES)) pages.push(buildSchedulePage(k));
+for (const d of DURATIONS) pages.push(buildDuration(d));
+for (const g of GRADES) for (const d of DURATIONS) pages.push(buildGradeDuration(g, d));
+for (const dp of DEPARTURES) pages.push(buildDeparture(dp));
+pages.push(buildCalendar());
+for (const bd of BUDGETS) pages.push(buildBudget(bd));
 pages.push(buildGuideIndex());
 for (const g of GUIDES) pages.push(buildGuideArticle(g));
 
