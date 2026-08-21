@@ -4,8 +4,11 @@
 const fs = require("fs");
 const path = require("path");
 const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, SCHEDULES, CAMP_FAQ } = require("./data.js");
+const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
+const STUDY_GUIDES = require("./guides-study.js");
+const ALL_GUIDES = [...GUIDES, ...STUDY_GUIDES];
 
 const OUT = path.join(__dirname, "docs");
 fs.mkdirSync(OUT, { recursive: true });
@@ -49,20 +52,23 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
     <nav class="nav">
       <a href="index.html#camps">캠프 안내</a>
       <a href="compare.html">캠프 비교</a>
-      <a href="study.html">유학·국제학교</a>
+      <a href="study.html">유학</a>
+      <a href="stpaul.html">세인트폴 대치</a>
       <a href="about.html">운영·안전</a>
+      <a href="guide.html">가이드</a>
       <a href="faq.html">자주 묻는 질문</a>
-      <a href="guide.html">캠프 가이드</a>
       <a class="nav-cta" href="#consult">상담 신청</a>
       <details class="mnav">
         <summary aria-label="메뉴 열기">☰</summary>
         <div class="mnav-list">
           <a href="index.html#camps">캠프 안내</a>
           <a href="compare.html">캠프 비교</a>
-          <a href="study.html">유학·국제학교</a>
+          <a href="study.html">유학 안내</a>
+          <a href="stpaul.html">세인트폴 대치 아카데미</a>
           <a href="about.html">운영·안전</a>
-          <a href="faq.html">자주 묻는 질문</a>
           <a href="guide.html">캠프 가이드</a>
+          <a href="study-guide.html">유학 가이드</a>
+          <a href="faq.html">자주 묻는 질문</a>
           <a href="#consult">상담 신청</a>
         </div>
       </details>
@@ -114,7 +120,9 @@ function footer() {
       </div>
       <div class="footer-links">
         <h3>캠프 안내</h3>
-        <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="study.html">유학·국제학교</a>\n<a href="study-newzealand.html">뉴질랜드 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="stpaul.html">세인트폴 아카데미 대치</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
+        <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="compare.html">캠프 비교</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
+        <h3 style="margin-top:26px">유학 · 세인트폴 대치 아카데미</h3>
+        <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a></div>
       </div>
     </div>
     <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.</p>
@@ -189,12 +197,10 @@ function consultSection(preset = {}) {
   return `<section class="consult" id="consult">
   <div class="wrap consult-grid">
     <div class="consult-copy">
-      <h2>캠프 상담 신청</h2>
-      <p>아이 학년과 궁금한 점을 남겨 주세요.<br>확인 후 맞는 캠프와 일정을 안내해 드립니다.</p>
+      <h2>${preset.title || "캠프 상담 신청"}</h2>
+      <p>${preset.copy || "아이 학년과 궁금한 점을 남겨 주세요.<br>확인 후 맞는 캠프와 일정을 안내해 드립니다."}</p>
       <ul class="consult-points">
-        <li>모집은 선착순, 정원 마감 전 상담을 권합니다</li>
-        <li>영어 실력·성향에 맞는 캠프 추천</li>
-        <li>유학 연계, 형제 동반 참가 문의 환영</li>
+        ${(preset.points || ["모집은 선착순, 정원 마감 전 상담을 권합니다", "영어 실력·성향에 맞는 캠프 추천", "유학 연계, 형제 동반 참가 문의 환영"]).map((p) => `<li>${p}</li>`).join("\n        ")}
       </ul>
     </div>
     <form class="consult-form" id="consultForm" autocomplete="off">
@@ -204,7 +210,7 @@ function consultSection(preset = {}) {
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
-        <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="유학·국제학교">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
+        <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="유학·세인트폴">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
       <div class="form-row two">
       </div>
@@ -282,7 +288,7 @@ function buildIndex() {
     </div>
     <div class="hs-slide">
       <div class="wrap hero-inner">
-        <p class="hero-kicker">세인트폴 아카데미 대치</p>
+        <p class="hero-kicker">세인트폴 대치 아카데미</p>
         <h1>유학 없이 대치동에서<br>미국 교과과정 그대로</h1>
         <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스. 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 2월·8월 학기 모집.</p>
         <div class="hero-actions">
@@ -366,8 +372,8 @@ ${safetySection()}
 
 <section class="section alt" id="study">
   <div class="wrap">
-    <h2 class="sec-title">캠프 다음 단계, 유학·국제학교</h2>
-    <p class="sec-sub">캠프로 가능성을 확인했다면, 그 다음을 준비할 차례입니다. 캠프와 같은 학교·같은 교육청으로 이어지는 유학 과정을 안내합니다.</p>
+    <h2 class="sec-title">캠프만 하는 곳이 아닙니다 — 중·고등 유학</h2>
+    <p class="sec-sub">캠프로 가능성을 확인했다면 그 다음을 준비할 차례입니다. 캠프와 같은 학교·같은 교육청으로 이어지는 정규 유학 과정을 직접 진행합니다. 캠프를 다녀오지 않은 학생도 상담받으실 수 있습니다.</p>
     <div class="camp-grid">
       <a class="camp-card" href="study-newzealand.html">
         <span class="camp-flag">🇳🇿 뉴질랜드</span>
@@ -391,25 +397,60 @@ ${safetySection()}
         </dl>
         <span class="camp-more">자세히 보기 →</span>
       </a>
-      <a class="camp-card" href="stpaul.html">
-        <span class="camp-flag">🏫 서울 대치동</span>
-        <h3>세인트폴 아카데미 대치</h3>
-        <p class="camp-tag">유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스</p>
+      <a class="camp-card" href="study-compare.html">
+        <span class="camp-flag">📋 어디로 보낼까</span>
+        <h3>두 나라 비교하기</h3>
+        <p class="camp-tag">학제·시작 단위·졸업장·비용·환경을 표 하나로 놓고 봅니다</p>
         <dl class="camp-meta">
-          <div><dt>대상</dt><dd>중2~고2 편입학</dd></div>
-          <div><dt>모집</dt><dd>2월·8월 학기</dd></div>
-          <div><dt>학비</dt><dd>연 2,540만원</dd></div>
+          <div><dt>시작 단위</dt><dd>텀 vs 학기</dd></div>
+          <div><dt>졸업장</dt><dd>NCEA vs OSSD</dd></div>
+          <div><dt>비용차</dt><dd>연 1,050만원</dd></div>
         </dl>
-        <span class="camp-more">자세히 보기 →</span>
+        <span class="camp-more">비교표 보기 →</span>
       </a>
     </div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="study.html">유학·국제학교 전체 안내 →</a></p>
+    <div class="fit-grid" style="margin-top:26px">
+      <div><strong>얼마나 드나요</strong><p>참가비에 포함된 것과 따로 나가는 것(항공·용돈·비자)을 <a href="study-cost.html">비용 페이지</a>에 항목별로 펼쳐 두었습니다.</p></div>
+      <div><strong>언제부터 준비하나요</strong><p>출국 6~8개월 전부터의 <a href="study-process.html">준비 타임라인</a>과 <a href="study-visa.html">비자·서류</a> 안내를 보세요.</p></div>
+      <div><strong>현지에서 누가 봐 주나요</strong><p>법적 가디언·홈스테이 관리·월간 리포트까지, <a href="study-guardian.html">관리 체계</a>를 정리했습니다.</p></div>
+      <div><strong>우리 아이 학년이면</strong><p>${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.key}</a>`).join(" · ")} — 학년별로 시작 시점의 의미가 다릅니다.</p></div>
+    </div>
+    <p style="margin-top:22px"><a class="btn btn-navy" href="study.html">유학 전체 안내 →</a>
+    <a class="btn btn-line" style="margin-left:8px" href="study-faq.html">유학 자주 묻는 질문 →</a></p>
   </div>
 </section>
 
-${applySection()}
+<section class="section" id="stpaul">
+  <div class="wrap">
+    <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
+    <p class="sec-sub">집에서 통학하면서 미국 교과과정 8~12학년을 그대로 밟는 길입니다. 전 과목 영어 수업, AP 15과목 이상, 졸업 시 미국 고교 졸업장. 서울 대치동에 있습니다.</p>
+    <div class="two-col">
+      <div>
+        <dl class="info-list">
+          <div><dt>대상</dt><dd>중2~고2 편입학 (고3은 상담 후 결정)</dd></div>
+          <div><dt>모집</dt><dd>매년 2월·8월 학기 · 학년당 12~22명</dd></div>
+          <div><dt>규모</dt><dd>전교 95명 소수정예 · 전 과목 영어 수업</dd></div>
+          <div><dt>학비</dt><dd>연 2,540만원 (등록비·교재비 별도)</dd></div>
+        </dl>
+      </div>
+      <div>
+        <ul class="check-list">
+          <li>미국 3대 학력인증(AI · NCPSA · MSA-CESS) 취득 학교</li>
+          <li>존스홉킨스·UC버클리·UCLA·NYU 등 미국 명문대 진학 실적</li>
+          <li>UCLA 출신 전담 College Counselor 진학 상담 주 3회</li>
+          <li>국내 학력이 인정되지 않는 미인가 과정이라는 점은 미리 확인하셔야 합니다</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:22px"><a class="btn btn-navy" href="stpaul.html">세인트폴 대치 아카데미 안내 →</a>
+    <a class="btn btn-line" style="margin-left:8px" href="stpaul-admission.html">입학 절차 보기 →</a>
+    <a class="btn btn-line" style="margin-left:8px" href="stpaul-vs-abroad.html">해외 유학과 비교 →</a></p>
+  </div>
+</section>
 
-<section class="section alt">
+${applySection().replace(`class="section"`, `class="section alt"`)}
+
+<section class="section">
   <div class="wrap">
     <h2 class="sec-title">학부모님들이 가장 많이 묻는 질문</h2>
     <div class="faq-list">
@@ -419,7 +460,7 @@ ${applySection()}
   </div>
 </section>
 
-<section class="section">
+<section class="section alt">
   <div class="wrap">
     <h2 class="sec-title">캠프 가이드</h2>
     <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
@@ -428,12 +469,21 @@ ${applySection()}
   </div>
 </section>
 
+<section class="section">
+  <div class="wrap">
+    <h2 class="sec-title">유학 가이드</h2>
+    <p class="sec-sub">조기유학 시기, 1년 실제 비용, 관리형의 의미, 귀국 시 학적까지 — 보내기 전에 정리해 두면 좋은 것들.</p>
+    <div class="guide-grid">${STUDY_GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
+    <p style="margin-top:22px"><a class="btn btn-navy" href="study-guide.html">유학 가이드 전체 보기 →</a></p>
+  </div>
+</section>
+
 ${consultSection()}`;
 
   return page({
     file: "index.html",
-    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 아카데미 대치`,
-    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 대치동 세인트폴 아카데미까지. 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
+    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 대치 아카데미`,
+    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미까지. 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
     hero,
     body,
     jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
@@ -1204,8 +1254,52 @@ ${consultSection()}`;
 // 가이드(칼럼)
 // ------------------------------------------------------------
 // ------------------------------------------------------------
-// 유학 · 국제학교
+// 유학 · 세인트폴 대치 아카데미
 // ------------------------------------------------------------
+function studyConsult(slug, preset = {}) {
+  return consultSection({
+    camp: slug,
+    title: preset.title || "유학 상담 신청",
+    copy: preset.copy || "아이 학년과 지금 상황을 남겨 주세요.<br>과정·시기·비용을 함께 정리해 안내해 드립니다.",
+    points: preset.points || [
+      "학년·영어 수준에 맞는 과정과 시작 시점 안내",
+      "1년 총비용 견적 (항공·용돈·비자 포함 기준)",
+      "캠프 먼저 다녀오는 순서도 함께 상담해 드립니다",
+    ],
+  });
+}
+
+function studyNav(current = "") {
+  const items = [
+    ["study.html", "유학 전체"],
+    ["study-newzealand.html", "뉴질랜드 유학"],
+    ["study-canada.html", "캐나다 관리형"],
+    ["study-compare.html", "두 나라 비교"],
+    ["study-cost.html", "비용"],
+    ["study-process.html", "준비 절차"],
+    ["study-visa.html", "비자·서류"],
+    ["study-guardian.html", "현지 관리"],
+    ["study-after.html", "졸업 후 진로"],
+    ["study-faq.html", "자주 묻는 질문"],
+    ["study-guide.html", "유학 가이드"],
+  ].filter(([href]) => href !== current);
+  return `<p class="sec-sub" style="margin-top:18px">유학 안내 더 보기: ${items.map(([h, t]) => `<a href="${h}">${t}</a>`).join(" · ")}</p>`;
+}
+
+function stpaulNav(current = "") {
+  const items = [
+    ["stpaul.html", "세인트폴 대치 아카데미"],
+    ["stpaul-admission.html", "입학 안내"],
+    ["stpaul-curriculum.html", "수업·커리큘럼"],
+    ["stpaul-tuition.html", "학비"],
+    ["stpaul-college.html", "진학 실적"],
+    ["stpaul-life.html", "학교생활"],
+    ["stpaul-vs-abroad.html", "해외 유학과 비교"],
+    ["stpaul-faq.html", "자주 묻는 질문"],
+  ].filter(([href]) => href !== current);
+  return `<p class="sec-sub" style="margin-top:18px">세인트폴 안내 더 보기: ${items.map(([h, t]) => `<a href="${h}">${t}</a>`).join(" · ")}</p>`;
+}
+
 function studyCard(s) {
   return `<a class="camp-card" href="${s.slug}.html">
     <span class="camp-flag">${s.flag || "🏫"} ${s.type}</span>
@@ -1222,40 +1316,66 @@ function studyCard(s) {
 function buildStudyHub() {
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
     <p class="hero-kicker">Study Abroad</p>
-    <h1>캠프 다음 단계,<br>유학·국제학교</h1>
-    <p class="hero-sub">캠프로 아이의 가능성을 확인했다면, 그 다음을 준비할 차례입니다.<br>캠프와 같은 학교·같은 교육청으로 이어지는 과정이라 적응 부담이 적습니다.</p>
+    <h1>중·고등 유학,<br>세 가지 길이 있습니다</h1>
+    <p class="hero-sub">뉴질랜드로, 캐나다로, 또는 나가지 않고 대치동에서.<br>같은 목표를 두고도 아이 성향과 남은 기간에 따라 답이 달라집니다.</p>
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap">
-  <h2 class="sec-title">러닝트래블가 안내하는 3가지 길</h2>
+  <h2 class="sec-title">러닝트래블이 안내하는 3가지 길</h2>
+  <p class="sec-sub">두 곳은 저희 겨울캠프가 진행되는 바로 그 학교·교육청이고, 한 곳은 서울 대치동에 있습니다. 캠프를 다녀오지 않은 학생도 상담받으실 수 있습니다.</p>
   <div class="camp-grid">
     ${Object.values(STUDY).map(studyCard).join("\n")}
-    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 미국 교과 국제학교" })}
+    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 미국 교과과정" })}
   </div>
 </div></section>
+
 <section class="section alt"><div class="wrap narrow">
-  <h2 class="sec-title">캠프에서 유학으로, 러닝트래블가 권하는 순서</h2>
+  <h2 class="sec-title">먼저 정해야 할 세 가지</h2>
+  <div class="fit-grid">
+    <div><strong>기간 — 한 텀인가, 졸업까지인가</strong><p>뉴질랜드는 10주 한 텀부터, 캐나다는 학기 단위로 시작합니다. 처음부터 졸업을 목표로 잡을 필요는 없습니다. <a href="study-compare.html">두 나라 비교</a></p></div>
+    <div><strong>예산 — 1년치가 아니라 총액으로</strong><p>참가비 외에 항공·용돈·비자가 붙습니다. 2년 또는 졸업까지의 총액을 계산해 보고 결정하세요. <a href="study-cost.html">비용 항목별 정리</a></p></div>
+    <div><strong>귀국 가능성 — 열어 둘 것인가</strong><p>돌아올 수 있다고 보시면 학년 단위로 끊는 편이 깔끔합니다. <a href="study-after.html">졸업 후 진로와 귀국</a></p></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">캠프에서 유학으로, 저희가 권하는 순서</h2>
   <ol class="step-list">
     <li>겨울캠프 3~7주로 현지 학교와 홈스테이 생활을 직접 겪어봅니다</li>
     <li>아이의 적응력·의지를 확인한 뒤 텀(학기) 단위로 짧게 시작합니다</li>
     <li>잘 맞으면 연장, 뉴질랜드는 NCEA, 캐나다는 온타리오 졸업장까지 이어집니다</li>
     <li>해외 출국이 부담스럽다면 대치동에서 미국 교과과정을 밟는 길도 있습니다</li>
   </ol>
-  <p class="sec-sub" style="margin-top:16px">뉴질랜드 유학은 <a href="newzealand.html">뉴질랜드 겨울캠프</a>와 같은 학교, 캐나다 관리형은 <a href="canada-3week.html">캐나다 3주 캠프</a>와 같은 교육청에서 진행됩니다.</p>
+  <p class="sec-sub" style="margin-top:16px">뉴질랜드 유학은 <a href="newzealand.html">뉴질랜드 겨울캠프</a>와 같은 학교, 캐나다 관리형은 <a href="canada-3week.html">캐나다 3주 캠프</a>와 같은 교육청에서 진행됩니다. 준비 일정은 <a href="study-process.html">유학 준비 절차</a>에 월 단위로 정리해 두었습니다.</p>
 </div></section>
-<section class="section"><div class="wrap narrow">
-  <h2 class="sec-title-sm">이런 질문을 많이 받습니다</h2>
-  <div class="faq-list">
-    <details class="faq-item"><summary>캠프를 안 다녀왔어도 유학 상담이 되나요?</summary><p>됩니다. 다만 유학 결정 전에 캠프로 한 번 겪어보는 것을 권합니다. 같은 학교·교육청이라 캠프 경험이 곧 유학 사전답사가 됩니다.</p></details>
-    <details class="faq-item"><summary>유학 중 아이 관리는 누가 하나요?</summary><p>뉴질랜드는 학교 국제학생 담당 교사와 홈스테이 관리자가, 캐나다는 법적 가디언 역할의 현지 관리 선생님이 학업·생활을 관리하고 학부모께 정기 리포트를 전달합니다.</p></details>
-    <details class="faq-item"><summary>비용은 언제 기준으로 확정되나요?</summary><p>등록 시점의 환율·현지 사정에 따라 달라질 수 있어, 상담 후 견적서로 확정 안내해 드립니다.</p></details>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">학년별로 시작 시점의 의미가 다릅니다</h2>
+  <div class="fit-grid">
+    ${STUDY_GRADES.map((g) => `<div><strong><a href="${g.slug}.html">${g.label} 유학</a></strong><p>${g.lead}</p></div>`).join("\n    ")}
   </div>
 </div></section>
-${consultSection()}`;
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">보내기 전에 점검할 것들</h2>
+  <ul class="check-list">${STUDY_INFO.checklist.map((c) => `<li>${c}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:16px">현지에서 누가 어떻게 관리하는지는 <a href="study-guardian.html">관리 체계 안내</a>에, 비자와 서류는 <a href="study-visa.html">비자·서류 안내</a>에 정리해 두었습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">이런 질문을 많이 받습니다</h2>
+  <div class="faq-list">
+    ${STUDY_INFO.faq.slice(0, 4).map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
+  </div>
+  <p style="margin-top:20px"><a class="btn btn-navy" href="study-faq.html">유학 질문 전체 보기 →</a>
+  <a class="btn btn-line" style="margin-left:8px" href="study-guide.html">유학 가이드 읽기 →</a></p>
+  ${studyNav("study.html")}
+</div></section>
+${studyConsult("")}`;
   return page({
     file: "study.html",
-    title: "중·고등 유학·국제학교 안내 | 뉴질랜드 유학·캐나다 관리형 유학·세인트폴 아카데미 대치",
-    desc: "캠프에서 유학으로 이어지는 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 대치동 세인트폴 아카데미(미국 교과과정). 러닝트래블 상담 안내.",
+    title: "중·고등 유학 안내 | 뉴질랜드 유학·캐나다 관리형 유학·세인트폴 대치 아카데미",
+    desc: "중·고등 조기유학 세 가지 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 세인트폴 대치 아카데미(미국 교과과정). 비용·절차·비자·관리 체계와 학년별 안내.",
     hero, body,
   });
 }
@@ -1295,15 +1415,25 @@ function buildStudy(key) {
   <h2 class="sec-title">진행 절차</h2>
   <ol class="step-list">${s.procedure.map((p) => `<li>${p}</li>`).join("")}</ol>
   <p class="sec-sub" style="margin-top:14px">${s.faqNote}</p>
+  <p class="sec-sub" style="margin-top:10px">월 단위 준비 일정은 <a href="study-process.html">유학 준비 절차</a>에, ${key === "study-newzealand" ? "뉴질랜드 학생비자" : "캐나다 학습허가"} 요건은 <a href="study-visa.html">비자·서류 안내</a>에 정리해 두었습니다.</p>
 </div></section>
 <section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">참가비 외에 따로 드는 비용</h2>
+  <div class="table-wrap"><table class="cmp"><tbody>
+    ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
+  </tbody></table></div>
+  <p class="sec-sub" style="margin-top:14px">1년 총액 계산은 <a href="study-cost.html">유학 비용 정리</a>에서 보실 수 있습니다. 확정 견적은 상담 후 등록 시점 환율로 다시 잡아 드립니다.</p>
+</div></section>
+<section class="section"><div class="wrap narrow">
   <h2 class="sec-title-sm">유학이 아직 망설여진다면</h2>
   <p>${key === "study-newzealand"
     ? `같은 학교에서 진행하는 <a href="newzealand.html"><strong>뉴질랜드 겨울캠프</strong></a>(3~7주)로 먼저 겪어보세요. 캠프 후 현지에서 바로 텀 단위 연장도 가능합니다.`
     : `같은 교육청에서 진행하는 <a href="canada-3week.html"><strong>캐나다 3주 겨울캠프</strong></a>로 먼저 겪어보세요. 캠프는 유학 결정 전 아이의 적응력을 확인하는 가장 안전한 방법입니다.`}</p>
-  <p class="sec-sub" style="margin-top:16px">다른 과정: ${Object.values(STUDY).filter((x) => x.slug !== s.slug).map((x) => `<a href="${x.slug}.html">${x.name}</a>`).join(" · ")} · <a href="stpaul.html">${STPAUL.name}</a> · <a href="study.html">유학·국제학교 전체</a></p>
+  <p style="margin-top:14px">해외로 나가는 것 자체가 부담이라면 <a href="stpaul.html">세인트폴 대치 아카데미</a>처럼 국내에서 미국 교과과정을 밟는 길도 있습니다. <a href="stpaul-vs-abroad.html">항목별 비교</a></p>
+  <p class="sec-sub" style="margin-top:16px">학년별 안내: ${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.key}</a>`).join(" · ")}</p>
+  <p class="sec-sub" style="margin-top:10px">다른 과정: ${Object.values(STUDY).filter((x) => x.slug !== s.slug).map((x) => `<a href="${x.slug}.html">${x.name}</a>`).join(" · ")} · <a href="study-compare.html">두 나라 비교표</a> · <a href="study.html">유학 전체 안내</a></p>
 </div></section>
-${consultSection({ camp: s.slug })}`;
+${studyConsult(s.slug, { title: `${s.name} 상담 신청` })}`;
   return page({
     file: `${s.slug}.html`,
     title: `${s.name} | ${s.school} — ${s.price} · ${s.target.split("(")[0].trim()}`,
@@ -1315,8 +1445,9 @@ ${consultSection({ camp: s.slug })}`;
 
 function buildStPaul() {
   const s = STPAUL;
+  const d = STPAUL_DETAIL;
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
-    <p class="hero-kicker">🏫 서울 대치동 · 미국 교과 국제학교</p>
+    <p class="hero-kicker">🏫 서울 대치동 · 미국 교과과정</p>
     <h1>${s.name}</h1>
     <p class="hero-sub">${s.tag}</p>
   </div></section>`;
@@ -1326,43 +1457,830 @@ function buildStPaul() {
   <dl class="info-list">
     ${s.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
     <div><dt>모집</dt><dd>${s.target}</dd></div>
+    <div><dt>학비</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
     <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
+
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">어떤 학교인가요</h2>
-  <p class="lead">세인트폴 아카데미 대치는 미국 Saint Paul American School System(SPASS)이 운영하는 서울 캠퍼스입니다.
-  미네소타 본교를 비롯해 베이징·파리·도쿄 등 8개 캠퍼스가 같은 학사 기준으로 운영되고, 서울에서도 미국 커리큘럼
+  <p class="lead">${s.name}는 미국 Saint Paul American School System(SPASS)이 운영하는 서울 캠퍼스입니다.
+  미네소타 본교를 비롯해 베이징·파리 등 8개 캠퍼스가 같은 학사 기준으로 운영되고, 서울에서도 미국 커리큘럼
   그대로 전 과목을 영어로 수업합니다. Common Core(영어·수학)·NGSS(과학) 표준을 따르며, 졸업하면 미국 고교 졸업장이 수여됩니다.</p>
-  <p style="margin-top:14px">하루 일과: ${s.daily}</p>
-  <p style="margin-top:8px">클럽 활동: ${s.clubs}</p>
-  <p style="margin-top:8px">진학 지원: ${s.counseling}</p>
+  <p style="margin-top:14px">해외로 나가지 않고 미국 교과과정을 밟는다는 점이 핵심입니다. 아이는 집에서 통학하고, 부모는 매일 얼굴을 보면서
+  진로만 미국 쪽으로 돌리는 구조입니다. 대신 <strong>국내 학력이 인정되지 않는 미인가 과정</strong>이라는 점은 입학 전에 반드시 짚고 가야 합니다.</p>
+  <div class="two-col" style="margin-top:24px">
+    <div>
+      <h3 class="sec-title-sm">이런 학생에게 맞습니다</h3>
+      <ul class="check-list">
+        <li>해외 대학 진학을 목표로 두고 있는 학생</li>
+        <li>유학은 아직 이르지만 미국 과정을 밟고 싶은 학생</li>
+        <li>질문과 토론이 많은, 한국 교실이 답답한 학생</li>
+        <li>부모가 곁에서 사춘기를 지켜보고 싶은 가정</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sec-title-sm">이런 경우는 다시 생각해 보세요</h3>
+      <ul class="check-list">
+        <li>국내 대학 진학이 1순위인 경우 (검정고시 경로를 거쳐야 합니다)</li>
+        <li>영어로 수업을 따라갈 준비가 아직 안 된 경우</li>
+        <li>영어를 생활 언어로 만드는 것이 목표인 경우 — 그건 <a href="study.html">해외 유학</a> 쪽입니다</li>
+      </ul>
+    </div>
+  </div>
 </div></section>
+
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">자세히 보기</h2>
+  <div class="camp-grid">
+    <a class="camp-card" href="stpaul-admission.html"><span class="camp-flag">📝 입학</span><h3>입학 안내</h3><p class="camp-tag">모집 일정, 입학 테스트, 제출 서류, 학년 배정까지</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-curriculum.html"><span class="camp-flag">📚 수업</span><h3>커리큘럼 · AP</h3><p class="camp-tag">8~12학년 과목 구성, AP, 제2외국어, MAP 진단</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-tuition.html"><span class="camp-flag">💳 비용</span><h3>학비 안내</h3><p class="camp-tag">등록비·학비·교재비와 첫 해 실제 총액</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-college.html"><span class="camp-flag">🎓 진학</span><h3>진학 실적 · 상담</h3><p class="camp-tag">합격 실적과 College Counselor 상담 체계</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-life.html"><span class="camp-flag">🏫 생활</span><h3>학교생활</h3><p class="camp-tag">하루 일과, 클럽, 통학과 학사, 학교 분위기</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-vs-abroad.html"><span class="camp-flag">⚖️ 비교</span><h3>해외 유학과 비교</h3><p class="camp-tag">비용·생활·졸업장·되돌릴 여지를 표로</p><span class="camp-more">자세히 보기 →</span></a>
+  </div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">하루는 이렇게 흘러갑니다</h2>
+  <p>${s.daily}</p>
+  <p style="margin-top:10px"><strong>클럽 활동</strong> · ${s.clubs}</p>
+  <p style="margin-top:8px"><strong>진학 지원</strong> · ${s.counseling}</p>
+  <p style="margin-top:8px"><strong>학습 진단</strong> · ${d.curriculum.map}</p>
+</div></section>
+
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">진학 실적</h2>
   <ul class="check-list">${s.results.map((r) => `<li>${r}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:14px">학교 발표 기준이며 연도별로 달라집니다. 최근 실적은 <a href="stpaul-college.html">진학 안내</a>에서 함께 보실 수 있습니다.</p>
 </div></section>
+
 <section class="section alt"><div class="wrap narrow">
-  <h2 class="sec-title">학비 안내</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
-    ${s.tuition.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
-  </tbody></table></div>
-  <p class="sec-sub" style="margin-top:14px">${s.priceNote}</p>
-</div></section>
-<section class="section"><div class="wrap narrow">
   <h2 class="sec-title-sm">입학 전 꼭 확인하세요</h2>
   <p>${s.notice}</p>
-  <p class="sec-sub" style="margin-top:16px">해외 유학과 비교해 보기: <a href="study-canada.html">캐나다 관리형 유학</a> · <a href="study-newzealand.html">뉴질랜드 중·고등 유학</a> · <a href="study.html">유학·국제학교 전체</a></p>
+  ${stpaulNav("stpaul.html")}
+  <p class="sec-sub" style="margin-top:10px">해외 유학과 비교해 보기: <a href="study-canada.html">캐나다 관리형 유학</a> · <a href="study-newzealand.html">뉴질랜드 중·고등 유학</a> · <a href="study.html">유학 전체 안내</a></p>
 </div></section>
-${consultSection({ camp: s.slug })}`;
+${studyConsult(s.slug, { title: "세인트폴 대치 아카데미 상담", copy: "학년과 현재 영어 수준, 희망 진학 방향을 남겨 주세요.<br>입학 시기와 준비할 것을 정리해 안내해 드립니다.", points: ["학년 배정과 입학 테스트 안내", "학비 외 실제로 드는 비용 정리", "해외 유학과 비교해 함께 상담 가능"] })}`;
   return page({
     file: "stpaul.html",
-    title: `세인트폴 아카데미 대치 | 대치동 미국 교과 국제학교 — 학비·모집·진학 실적`,
-    desc: `유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 상담 신청 안내.`,
+    title: `세인트폴 대치 아카데미 | 대치동 미국 교과과정 — 학비·모집·진학 실적`,
+    desc: `유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 입학 절차와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "School", name: s.name, address: { "@type": "PostalAddress", addressLocality: "서울 강남구 대치동" } },
   });
 }
+
+// ------------------------------------------------------------
+// 세인트폴 상세 페이지
+// ------------------------------------------------------------
+function stpaulPage({ file, kicker, h1, sub, body, title, desc, jsonld = null }) {
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${kicker}</p>
+    <h1>${h1}</h1>
+    <p class="hero-sub">${sub}</p>
+  </div></section>`;
+  return page({
+    file, title, desc, hero, jsonld,
+    body: `${body}
+<section class="${altAfter(body)}"><div class="wrap narrow">
+  ${stpaulNav(file)}
+  <p class="sec-sub" style="margin-top:10px">해외 유학도 함께 보고 계시다면: <a href="study.html">유학 전체 안내</a> · <a href="study-compare.html">뉴질랜드·캐나다 비교</a> · <a href="stpaul-vs-abroad.html">세인트폴과 유학 비교</a></p>
+</div></section>
+${studyConsult(STPAUL.slug, { title: "세인트폴 대치 아카데미 상담", copy: "학년과 현재 영어 수준, 희망 진학 방향을 남겨 주세요.<br>입학 시기와 준비할 것을 정리해 안내해 드립니다.", points: ["학년 배정과 입학 테스트 안내", "학비 외 실제로 드는 비용 정리", "해외 유학과 비교해 함께 상담 가능"] })}`,
+  });
+}
+
+function buildStPaulAdmission() {
+  const a = STPAUL_DETAIL.admission;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">모집 일정</h2>
+  <p class="lead">${a.schedule}</p>
+  <dl class="info-list" style="margin-top:20px">
+    <div><dt>대상</dt><dd>${STPAUL.target}</dd></div>
+    <div><dt>정원</dt><dd>전교 95명 · 학년당 12~22명</dd></div>
+    <div><dt>테스트비</dt><dd>25만원 (지원 시 1회)</dd></div>
+    <div><dt>등록비</dt><dd>450만원 (신입생 1회)</dd></div>
+  </dl>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">입학까지의 순서</h2>
+  <ol class="step-list">${a.steps.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">상담부터 입학까지 보통 1~2개월이 걸립니다. 학년별 자리가 남아 있는지에 따라 달라지니, 희망 학기 3~4개월 전에는 문의해 주세요.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">입학 테스트</h2>
+  <p class="lead">${a.testNote}</p>
+  <h3 class="sec-title-sm" style="margin-top:26px">준비 서류</h3>
+  <ul class="check-list">${a.docs.map((x) => `<li>${x}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:14px">서류 양식과 제출 방법은 상담 후 안내해 드립니다. 학교 방문 참관을 함께 잡아 드릴 수 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">학년 배정은 어떻게 되나요</h2>
+  <p>한국 학년이 그대로 옮겨지지 않습니다. 미국 학제는 9~12학년이 고등학교이고, 테스트 결과와 이수 이력을 함께 보고 배정합니다.
+  한 학년 아래로 배정되는 경우도 있는데, 이건 실력이 부족해서라기보다 <strong>졸업 요건을 여유 있게 채우기 위한 판단</strong>인 경우가 많습니다.</p>
+  <p style="margin-top:14px">고2에 편입학하면 남은 기간이 짧아 학점·시험·원서 일정이 한꺼번에 몰립니다. 고3은 상담 후 결정하는데,
+  12학년만 다니고 졸업하는 형태는 대학 지원 일정과 겹쳐 권해 드리지 않는 경우가 많습니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title-sm">입학 전 반드시 확인할 것</h2>
+  <p>${STPAUL.notice}</p>
+  <p style="margin-top:14px">다니던 학교의 학적 처리(자퇴 또는 유예)를 어떻게 할지가 실제로는 가장 큰 결정입니다.
+  담임 선생님과 먼저 이야기해 보시고, 국내 대학 가능성을 열어 두실 거라면 <a href="stpaul-faq.html">검정고시 경로</a>도 함께 확인하세요.</p>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-admission.html",
+    kicker: "📝 입학 안내",
+    h1: "세인트폴 대치 아카데미<br>입학 안내",
+    sub: "2월·8월 학기 모집 · 중2~고2 편입학 · 입학 테스트와 학년 배정까지",
+    body,
+    title: "세인트폴 대치 아카데미 입학 안내 | 모집 일정·입학 테스트·제출 서류",
+    desc: "세인트폴 대치 아카데미 입학 절차 — 2월·8월 학기 모집, 중2~고2 편입학, 입학 테스트(25만원)와 학년 배정 기준, 제출 서류, 등록비 450만원. 상담부터 입학까지 순서를 정리했습니다.",
+  });
+}
+
+function buildStPaulCurriculum() {
+  const c = STPAUL_DETAIL.curriculum;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">수업은 이렇게 구성됩니다</h2>
+  <p class="lead">${c.intro}</p>
+  <div class="table-wrap" style="margin-top:22px"><table class="cmp"><tbody>
+    ${c.subjects.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
+  </tbody></table></div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">AP를 어떻게 활용하나요</h2>
+  <p>AP는 고등학교에서 듣는 대학 수준 과목입니다. 점수가 좋으면 대학 학점으로 인정되기도 하지만, 실제로 더 큰 역할은
+  지원서에서 <strong>"어려운 과목을 골라 들었다"는 신호</strong>가 된다는 점입니다. 15과목 이상 개설되어 있어도 다 들을 필요는 없습니다.
+  진학하려는 전공 방향에 맞춰 3~5과목을 제대로 하는 편이 낫고, 그 선택을 진학 상담에서 함께 잡아 줍니다.</p>
+  <p style="margin-top:14px">개설 과목은 학기와 수요에 따라 달라집니다. 관심 있는 과목이 있으시면 상담 때 개설 여부를 확인해 드립니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">지금 어디쯤 있는지 확인하는 방법</h2>
+  <p class="lead">${c.map}</p>
+  <p style="margin-top:14px">한국 학교의 중간·기말 등수와 달리, MAP은 미국 전역 학생과의 상대 위치를 보여줍니다.
+  성적표 한 장으로 "우리 아이가 미국 대학에 지원할 만한 위치인가"를 학기 중에 가늠할 수 있다는 점이 실질적인 차이입니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">한국 학교와 무엇이 다른가</h2>
+  <div class="fit-grid">
+    <div><strong>평가 방식</strong><p>시험 한 번이 아니라 과제·발표·에세이·참여도가 학기 내내 누적됩니다. 벼락치기가 통하지 않는 구조입니다.</p></div>
+    <div><strong>수업 형태</strong><p>50분 6교시, 교사가 설명하고 학생이 받아 적는 방식보다 질문과 토론의 비중이 큽니다.</p></div>
+    <div><strong>과목 선택</strong><p>학년이 올라가면 계열과 AP를 스스로 고릅니다. 선택이 곧 진학 전략이라 상담이 함께 갑니다.</p></div>
+    <div><strong>영어 부담</strong><p>ESL 완충 수업이 따로 없습니다. 그래서 입학 테스트에서 수업을 따라갈 수준인지 먼저 확인합니다.</p></div>
+  </div>
+  <p class="sec-sub" style="margin-top:18px">입학 테스트와 학년 배정 기준은 <a href="stpaul-admission.html">입학 안내</a>에서 보실 수 있습니다.</p>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-curriculum.html",
+    kicker: "📚 커리큘럼",
+    h1: "미국 교과과정 8~12학년,<br>과목은 이렇게 짜입니다",
+    sub: "Common Core·NGSS 기준 · AP 15과목 이상 · 제2외국어 · 연 3회 MAP 진단",
+    body,
+    title: "세인트폴 대치 아카데미 커리큘럼 | 미국 교과과정·AP·MAP 진단",
+    desc: "세인트폴 대치 아카데미 수업 구성 — Common Core·NGSS 기준의 영어·수학·과학·사회, 중국어·스페인어 제2외국어, AP 15과목 이상, TOEFL·SAT 방과후, 연 3회 MAP 진단까지 정리했습니다.",
+  });
+}
+
+function buildStPaulTuition() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">학비 안내</h2>
+  <div class="table-wrap"><table class="cmp"><tbody>
+    ${STPAUL.tuition.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
+  </tbody></table></div>
+  <p class="sec-sub" style="margin-top:14px">${STPAUL.priceNote}</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">첫 해에 실제로 드는 돈</h2>
+  <p class="lead">등록비는 신입생이 한 번만 냅니다. 그래서 1학년차와 2학년차의 금액이 다릅니다.</p>
+  <div class="table-wrap" style="margin-top:20px"><table class="cmp">
+    <thead><tr><th>구분</th><th>첫 해</th><th>다음 해부터</th></tr></thead>
+    <tbody>
+      <tr><th>등록비</th><td>450만원</td><td>없음</td></tr>
+      <tr><th>연간 학비</th><td>2,540만원</td><td>2,540만원</td></tr>
+      <tr><th>교재비</th><td>54만 6천원</td><td>54만 6천원</td></tr>
+      <tr><th>테스트비</th><td>25만원</td><td>없음</td></tr>
+      <tr><th>급식·현장학습</th><td>실비</td><td>실비</td></tr>
+      <tr><th>TOEFL·SAT 방과후 (선택)</th><td>과목당 월 50만원</td><td>과목당 월 50만원</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-sub" style="margin-top:14px">학비는 학교 정책에 따라 변경될 수 있습니다. 납부 방법과 분납 가능 여부는 상담 시 확인해 드립니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">해외 유학과 비교하면</h2>
+  <p>같은 1년을 두고 보면 <a href="study-newzealand.html">뉴질랜드 유학</a>은 연 3,200만원, <a href="study-canada.html">캐나다 관리형</a>은 연 4,250만원입니다.
+  여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 학비는 낮지만 집에서 통학하니 숙식비가 들지 않는다는 점이 가장 큰 차이입니다.</p>
+  <p style="margin-top:14px">대신 대치동까지의 통학이나, 지방에서 오는 경우 학교 근처 학사 비용을 따로 보셔야 합니다.
+  항목별 비교는 <a href="stpaul-vs-abroad.html">세인트폴과 해외 유학 비교</a>, 유학 쪽 비용은 <a href="study-cost.html">유학 비용 정리</a>에 있습니다.</p>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-tuition.html",
+    kicker: "💳 학비",
+    h1: "세인트폴 대치 아카데미<br>학비 안내",
+    sub: "연간 학비 2,540만원 · 등록비 450만원 · 첫 해와 다음 해의 차이까지",
+    body,
+    title: "세인트폴 대치 아카데미 학비 | 등록비·연간 학비·첫 해 총액 정리",
+    desc: "세인트폴 대치 아카데미 학비 — 연간 2,540만원, 신입생 등록비 450만원, 교재비 54만 6천원, 테스트비 25만원, 급식·현장학습 실비. 첫 해와 다음 해 금액 차이, 해외 유학과의 비용 비교까지.",
+  });
+}
+
+function buildStPaulCollege() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">진학 실적</h2>
+  <ul class="check-list">${STPAUL.results.map((r) => `<li>${r}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:14px">학교 발표 기준이며 연도에 따라 달라집니다. 최신 합격자 명단은 상담 때 확인해 드립니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">진학 상담은 이렇게 이뤄집니다</h2>
+  <p class="lead">${STPAUL.counseling}</p>
+  <p style="margin-top:14px">한국 고등학교의 진학 상담과 다른 점은 <strong>학년마다 할 일이 정해져 있다</strong>는 것입니다.
+  9학년부터 내신과 활동을 쌓고, 11학년에 시험과 과목 선택을 정리하고, 12학년에 원서를 씁니다.
+  전담 카운슬러가 이 일정을 개별로 관리하기 때문에 마지막 1년에 몰아서 준비하는 상황이 잘 생기지 않습니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">학년별로 무엇을 하나</h2>
+  <ul class="check-list">
+    <li><strong>9~10학년</strong> — 내신(GPA) 관리와 영어 실력 끌어올리기, 클럽·봉사 활동 시작</li>
+    <li><strong>11학년</strong> — SAT·ACT 준비, AP 과목 선택, 관심 전공 좁히기, 진학 상담 본격화</li>
+    <li><strong>12학년 상반기</strong> — 원서·에세이·추천서, 얼리 지원 여부 결정</li>
+    <li><strong>12학년 하반기</strong> — 합격 결과 정리, 장학금 협의, 비자·출국 준비</li>
+  </ul>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">국내 대학으로 방향을 돌린다면</h2>
+  <p>국내 학력이 인정되지 않으므로 검정고시로 고졸 학력을 취득해 일반 전형에 지원하거나,
+  대학별 재외국민·외국인 특별전형 요건을 확인해 지원하게 됩니다. 특별전형은 대학마다 요건이 달라
+  <strong>목표 대학의 모집요강을 직접 확인</strong>하셔야 합니다.</p>
+  <p style="margin-top:14px">국내 진학을 진지하게 놓고 계신다면 11학년이 되기 전에 이 갈래를 정하시는 편이 좋습니다.
+  더 자세한 내용은 <a href="guide-stpaul-college-path.html">미인가 과정에서 대학까지, 실제 경로</a>에 정리해 두었습니다.</p>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-college.html",
+    kicker: "🎓 진학",
+    h1: "졸업 후 어디로 가나",
+    sub: "미국 명문대 진학 실적과 전담 College Counselor의 학년별 상담 체계",
+    body,
+    title: "세인트폴 대치 아카데미 진학 실적 | 미국 대학 합격·College Counseling",
+    desc: "세인트폴 대치 아카데미 진학 — 존스홉킨스·UC버클리·UCLA·NYU 등 합격 실적, UCLA 출신 전담 College Counselor 주 3회 상담, 학년별 준비 일정, 국내 대학으로 방향을 돌릴 때의 경로까지.",
+  });
+}
+
+function buildStPaulLife() {
+  const l = STPAUL_DETAIL.life;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">하루 일과</h2>
+  <p class="lead">${STPAUL.daily}</p>
+  <p style="margin-top:14px">50분 수업 6교시가 끝나면 방과후 시간입니다. Study Hall에서 과제를 정리하는 학생도 있고,
+  클럽 활동이나 TOEFL·SAT 반으로 이어지는 학생도 있습니다. 방과후는 선택이라 아이의 일정에 맞춰 조정할 수 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">클럽과 활동</h2>
+  <p class="lead">${STPAUL.clubs}</p>
+  <p style="margin-top:14px">미국 대학 지원에서 활동 기록은 성적만큼 봅니다. 다만 개수를 늘리는 것보다
+  <strong>한두 개를 3~4년 끌고 가면서 역할이 커지는 쪽</strong>이 훨씬 좋게 읽힙니다. 클럽 선택도 진학 상담에서 함께 이야기합니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">통학과 생활</h2>
+  <dl class="info-list">
+    <div><dt>통학</dt><dd>${l.commute}</dd></div>
+    <div><dt>급식·현장학습</dt><dd>${l.meal}</dd></div>
+    <div><dt>학교 분위기</dt><dd>${l.culture}</dd></div>
+  </dl>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">첫 학기에 흔히 겪는 일</h2>
+  <ul class="check-list">
+    <li>수업은 알아듣는데 발표에서 막힙니다. 대부분 한 학기면 풀립니다</li>
+    <li>과제가 매주 나옵니다. 몰아서 하는 습관이 있으면 첫 성적표에서 드러납니다</li>
+    <li>영어로 농담을 못 알아들어 서운해합니다. 이게 지나가면 학교가 편해집니다</li>
+    <li>한국 친구들과 멀어질까 걱정합니다. 통학제라 주말 관계는 유지되는 편입니다</li>
+  </ul>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-life.html",
+    kicker: "🏫 학교생활",
+    h1: "학교에서 하루를<br>어떻게 보내나",
+    sub: "6교시 수업과 방과후, 20개 이상 클럽, 통학과 학사, 그리고 첫 학기의 현실",
+    body,
+    title: "세인트폴 대치 아카데미 학교생활 | 하루 일과·클럽·통학 안내",
+    desc: "세인트폴 대치 아카데미 학교생활 — 8:45 조회부터 6교시 수업, 방과후 Study Hall과 클럽 20개 이상, 통학제 학교의 등하교와 학사 이용, 급식·현장학습 실비, 첫 학기 적응까지.",
+  });
+}
+
+function buildStPaulVsAbroad() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">한 표로 보기</h2>
+  <p class="sec-sub">왼쪽은 국내에서 미국 교과과정을 밟는 길, 오른쪽은 해외로 나가는 길입니다.</p>
+  <div class="table-wrap" style="margin-top:18px"><table class="cmp">
+    <thead><tr><th>비교 항목</th><th>세인트폴 대치 아카데미</th><th>뉴질랜드·캐나다 유학</th></tr></thead>
+    <tbody>${STPAUL_DETAIL.vsAbroad.map(([k, a, b]) => `<tr><th>${k}</th><td>${a}</td><td>${b}</td></tr>`).join("")}</tbody>
+  </table></div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">같은 점부터 짚고 갑니다</h2>
+  <p class="lead">두 경로 모두 <strong>국내 학력이 그대로 이어지지 않습니다.</strong></p>
+  <p style="margin-top:14px">세인트폴은 미인가 과정이라 검정고시가 필요하고, 해외 유학은 귀국 시 편입학 학력 심의를 거칩니다.
+  "안 되면 한국 학교로 돌아가면 되지"라는 계획은 생각만큼 매끄럽지 않습니다. 두 길 모두 <strong>돌아올 경로를 알고 나가는 것</strong>이 먼저입니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">이렇게 갈리는 편입니다</h2>
+  <div class="fit-grid">
+    <div><strong>독립심이 있고 새 환경을 즐기는 아이</strong><p>해외 유학 쪽이 얻는 게 많습니다. 영어보다 생활력이 먼저 늘어서 옵니다.</p></div>
+    <div><strong>학업 의지는 있는데 혼자 살기는 이른 아이</strong><p>세인트폴처럼 집에서 다니는 미국 과정이 안전합니다.</p></div>
+    <div><strong>사춘기를 곁에서 보고 싶은 가정</strong><p>통학제의 장점이 큽니다. 매일 얼굴을 보면서 진로만 바꾸는 구조입니다.</p></div>
+    <div><strong>영어를 생활 언어로 만들고 싶다면</strong><p>해외 유학입니다. 국내 과정은 학교 밖이 한국어 환경이라 한계가 있습니다.</p></div>
+  </div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">결정 전에 해볼 만한 것</h2>
+  <p>겨울캠프 3주를 다녀오면 아이가 해외 생활을 감당할 수 있는 성향인지 대체로 드러납니다.
+  캠프 후에도 "더 있고 싶다"고 하면 유학, "집이 낫다"고 하면 국내 과정 — 이렇게 정한 가정이 실제로 많습니다.
+  <a href="compare.html">캠프 비교하기</a></p>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-vs-abroad.html",
+    kicker: "⚖️ 비교",
+    h1: "국내 미국 과정 vs 해외 유학",
+    sub: "비용·생활·졸업장·되돌릴 여지까지, 두 길을 같은 기준으로 놓고 봅니다",
+    body,
+    title: "세인트폴 대치 아카데미 vs 조기유학 | 비용·생활·졸업장 비교",
+    desc: "국내 미국 교과과정과 해외 조기유학을 같은 기준으로 비교 — 보호자, 연간 비용, 졸업장, 국내 학력 인정, 영어 환경, 되돌릴 여지. 아이 성향별로 어느 쪽이 맞는지 정리했습니다.",
+  });
+}
+
+function buildStPaulFaq() {
+  const faq = STPAUL_DETAIL.faq;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <div class="faq-list">
+    ${faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
+  </div>
+  <p class="sec-sub" style="margin-top:20px">여기 없는 질문은 상담 양식에 남겨 주시면 확인 후 답변드립니다.
+  입학 절차는 <a href="stpaul-admission.html">입학 안내</a>, 비용은 <a href="stpaul-tuition.html">학비 안내</a>를 함께 보세요.</p>
+</div></section>`;
+  return stpaulPage({
+    file: "stpaul-faq.html",
+    kicker: "❓ 자주 묻는 질문",
+    h1: "세인트폴 대치 아카데미<br>자주 묻는 질문",
+    sub: "학적 처리, 국내 대학, 영어 수준, 학비까지 — 상담에서 가장 많이 받는 질문들",
+    body,
+    title: "세인트폴 대치 아카데미 FAQ | 학적·검정고시·영어 수준·학비 질문",
+    desc: "세인트폴 대치 아카데미에 대해 가장 많이 받는 질문 — 한국 학교 학적 처리, 국내 대학 진학과 검정고시, 영어 수준, 해외 유학으로 전환, 실제 총비용, 고3 편입학 가능 여부까지.",
+    jsonld: {
+      "@context": "https://schema.org", "@type": "FAQPage",
+      mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+    },
+  });
+}
+
+// ------------------------------------------------------------
+// 유학 상세 페이지
+// ------------------------------------------------------------
+function altAfter(body){
+  const m=String(body).match(/<section class="section( alt)?"/g)||[];
+  const last=m[m.length-1]||"";
+  return last.includes("alt") ? "section" : "section alt";
+}
+
+function studyPage({ file, kicker, h1, sub, body, title, desc, jsonld = null }) {
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${kicker}</p>
+    <h1>${h1}</h1>
+    <p class="hero-sub">${sub}</p>
+  </div></section>`;
+  return page({
+    file, title, desc, hero, jsonld,
+    body: `${body}
+<section class="${altAfter(body)}"><div class="wrap narrow">
+  ${studyNav(file)}
+  <p class="sec-sub" style="margin-top:10px">해외로 나가기가 부담스럽다면: <a href="stpaul.html">세인트폴 대치 아카데미</a> · <a href="stpaul-vs-abroad.html">유학과 비교해 보기</a></p>
+</div></section>
+${studyConsult("")}`,
+  });
+}
+
+function buildStudyCompare() {
+  const nz = STUDY["study-newzealand"], ca = STUDY["study-canada"];
+  const rows = [
+    ["대상", nz.target.split("(")[0].trim(), ca.target.split("(")[0].trim()],
+    ["학교", "Waiuku College (Year 9~13 남녀공학)", "나이아가라 가톨릭 교육청 소속 고교 8곳 중 배정"],
+    ["시작 단위", "10주 한 텀부터 (연 4텀)", "학기 단위 (9월·2월 시작)"],
+    ["연간 비용", nz.price, ca.price],
+    ["포함 항목", nz.includes, ca.includes],
+    ["졸업 자격", "NCEA Level 1~3", "온타리오 고교 졸업장(OSSD)"],
+    ["영어 지원", "ESOL 수업", "ESL 무료 제공"],
+    ["현지 관리", "학교 국제학생 담당 교사 + 홈스테이 관리자", "법적 가디언 역할의 현지 관리 선생님 + 월 1회 리포트"],
+    ["환경", "오클랜드에서 차로 1시간, 유학생 비율 5% 미만 소도시", "나이아가라 지역, 학교 8곳이라 배정 폭이 넓음"],
+    ["학사 일정", "1월 말 새 학년 시작 (남반구)", "9월 새 학년 시작 (북반구)"],
+    ["연계 캠프", "뉴질랜드 겨울캠프와 같은 학교", "캐나다 3주 겨울캠프와 같은 교육청"],
+  ];
+  const body = `
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">뉴질랜드 · 캐나다 한눈에 비교</h2>
+  <p class="table-hint">표를 옆으로 밀어서 보실 수 있습니다.</p>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>비교 항목</th><th>뉴질랜드 중·고등 유학</th><th>캐나다 관리형 유학</th></tr></thead>
+    <tbody>${rows.map(([k, a, b]) => `<tr><th>${k}</th><td>${a}</td><td>${b}</td></tr>`).join("")}</tbody>
+  </table></div>
+  <p style="margin-top:22px"><a class="btn btn-navy" href="study-newzealand.html">뉴질랜드 유학 자세히 →</a>
+  <a class="btn btn-navy" style="margin-left:8px" href="study-canada.html">캐나다 관리형 자세히 →</a></p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">실제로는 여기서 갈립니다</h2>
+  <div class="fit-grid">
+    <div><strong>아직 반신반의한다면</strong><p>뉴질랜드입니다. 10주 한 텀만 다녀보고 결정할 수 있어 진입 문턱이 낮습니다.</p></div>
+    <div><strong>졸업까지 갈 생각이라면</strong><p>캐나다 쪽 계산이 깔끔합니다. 필수 19학점·봉사 40시간·문해력 시험으로 요건이 명확합니다.</p></div>
+    <div><strong>한국말 쓸 일을 줄이고 싶다면</strong><p>와이우쿠는 유학생 비율을 5% 미만으로 유지합니다. 소도시라 자극은 적지만 영어 환경은 확실합니다.</p></div>
+    <div><strong>학업 심화 과목이 필요하다면</strong><p>나이아가라 교육청은 AP·SHSM 프로그램을 갖춘 고교가 있어 선택지가 넓습니다.</p></div>
+    <div><strong>1월 출국을 원한다면</strong><p>남반구인 뉴질랜드는 1월 말이 새 학년 시작이라 일정이 맞아떨어집니다.</p></div>
+    <div><strong>예산 차이</strong><p>연 1,050만원 차이입니다. 다만 항공료는 캐나다가 더 들 수 있어 총액으로 보셔야 합니다.</p></div>
+  </div>
+  <p class="sec-sub" style="margin-top:18px">항목별 총비용은 <a href="study-cost.html">유학 비용 정리</a>에서 확인하세요.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title-sm">고르기 어렵다면</h2>
+  <p>두 나라 모두 저희 겨울캠프가 같은 학교·같은 교육청에서 진행됩니다.
+  <a href="newzealand.html">뉴질랜드 캠프</a>나 <a href="canada-3week.html">캐나다 3주 캠프</a>를 다녀오면 아이 입에서 답이 나옵니다.
+  캠프를 유학 사전답사로 쓰시는 가정이 많은 이유입니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-compare.html",
+    kicker: "📋 비교",
+    h1: "뉴질랜드와 캐나다,<br>어디로 보낼까",
+    sub: "학제·시작 단위·졸업장·비용·환경을 같은 기준으로 놓고 비교합니다",
+    body,
+    title: "뉴질랜드 유학 vs 캐나다 유학 비교 | 비용·학제·졸업장 한눈에",
+    desc: "중·고등 조기유학 두 나라 비교 — 뉴질랜드 Waiuku College(연 3,200만원·10주 텀 시작·NCEA)와 캐나다 나이아가라 관리형(연 4,250만원·학기 시작·온타리오 졸업장)의 차이를 표로 정리했습니다.",
+  });
+}
+
+function buildStudyCost() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">참가비에 들어 있는 것</h2>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>구분</th><th>뉴질랜드 유학</th><th>캐나다 관리형</th></tr></thead>
+    <tbody>
+      <tr><th>연간 참가비</th><td><strong>${STUDY["study-newzealand"].price}</strong></td><td><strong>${STUDY["study-canada"].price}</strong></td></tr>
+      <tr><th>포함 항목</th><td>${STUDY["study-newzealand"].includes}</td><td>${STUDY["study-canada"].includes}</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-sub" style="margin-top:14px">즉 학교와 숙식은 해결된 금액입니다. 여기에 따로 나가는 돈이 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">따로 나가는 비용</h2>
+  <div class="table-wrap"><table class="cmp"><tbody>
+    ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
+  </tbody></table></div>
+  <p class="sec-sub" style="margin-top:14px">다 더하면 뉴질랜드는 3,800만원 안팎, 캐나다는 4,700만원 안팎이 1년 현실적인 총액입니다. 환율이 움직이면 여기서 또 달라집니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">국내 미국 과정과 비교하면</h2>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
+    <tbody>
+      <tr><th>연간 학비·참가비</th><td>2,540만원 (등록비 450만원 첫 해 1회)</td><td>3,200만~4,250만원</td></tr>
+      <tr><th>숙식</th><td>집에서 통학 (숙식비 없음)</td><td>홈스테이비가 참가비에 포함</td></tr>
+      <tr><th>항공·비자</th><td>없음</td><td>왕복 항공 + 비자 진행비</td></tr>
+      <tr><th>그 외</th><td>교재비·테스트비, 급식·현장학습 실비</td><td>용돈, UM 서비스, 방학 귀국 항공</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-sub" style="margin-top:14px">자세한 학비는 <a href="stpaul-tuition.html">세인트폴 학비 안내</a>에 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">비용을 계산할 때 놓치기 쉬운 것</h2>
+  <ul class="check-list">
+    <li><strong>2년차·3년차를 함께 계산하세요.</strong> 1년치를 겨우 맞춰 시작하면 대부분 2년차에 무리가 옵니다</li>
+    <li><strong>환율.</strong> 등록 시점 환율로 견적이 확정됩니다. 몇 달 사이에 수백만원이 움직이기도 합니다</li>
+    <li><strong>방학 귀국.</strong> 뉴질랜드는 12~1월, 캐나다는 여름 약 2개월이 방학입니다. 귀국하면 항공이 한 번 더 붙습니다</li>
+    <li><strong>중간에 부모가 방문하는 비용.</strong> 첫 해에 한 번은 다녀오시는 가정이 많습니다</li>
+    <li><strong>현지 활동비.</strong> 교내 활동은 포함이지만, 친구들과의 개인 활동은 용돈에서 나갑니다</li>
+  </ul>
+  <p class="sec-sub" style="margin-top:16px">확정 견적은 상담 후 등록 시점 기준으로 다시 잡아 드립니다. 지금 예산 안에서 가능한 선택지를 함께 정리해 드릴 수 있습니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-cost.html",
+    kicker: "💰 비용",
+    h1: "유학 1년,<br>실제로 드는 돈",
+    sub: "참가비에 포함된 것과 따로 나가는 것 — 항공·용돈·비자까지 펼쳐서 봅니다",
+    body,
+    title: "조기유학 비용 | 뉴질랜드·캐나다 1년 총비용과 별도 항목 정리",
+    desc: "중·고등 조기유학 비용 정리 — 뉴질랜드 연 3,200만원, 캐나다 연 4,250만원에 포함된 항목과 항공료·수속비·비자·용돈 등 별도 비용, 1년 현실 총액, 국내 미국 교과과정과의 비교까지.",
+  });
+}
+
+function buildStudyProcess() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">준비 타임라인</h2>
+  <p class="sec-sub">출국까지 보통 6~8개월을 봅니다. 학교 자리와 비자 심사 때문에 앞당기기 어려운 구간이 있습니다.</p>
+  <div class="table-wrap" style="margin-top:18px"><table class="cmp">
+    <thead><tr><th>시점</th><th>할 일</th><th>내용</th></tr></thead>
+    <tbody>${STUDY_INFO.timeline.map(([t, w, d]) => `<tr><th>${t}</th><td><strong>${w}</strong></td><td>${d}</td></tr>`).join("")}</tbody>
+  </table></div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">진행 절차</h2>
+  <ol class="step-list">${STUDY["study-newzealand"].procedure.map((p) => `<li>${p}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">두 나라 모두 큰 흐름은 같습니다. 다만 뉴질랜드는 텀 시작일, 캐나다는 학기 시작일에 맞춰 역산하기 때문에
+  출발 시점에 따라 준비를 시작해야 하는 달이 달라집니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">출국 전 학교 정리</h2>
+  <p class="lead">재학 중인 학교와 상의해 유학 처리를 해두셔야 합니다.</p>
+  <p style="margin-top:14px">학교와 교육청에 따라 절차가 조금씩 달라서, 담임 선생님과 먼저 이야기해 보시는 것이 순서입니다.
+  여기서 어떻게 정리했느냐가 나중에 귀국해 복귀할 때 그대로 영향을 줍니다.
+  귀국 시 절차는 <a href="study-after.html">졸업 후 진로와 귀국</a>에 정리해 두었습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">출국 전 체크리스트</h2>
+  <ul class="check-list">
+    <li>여권 유효기간 (체류 기간 + 6개월 이상 남아 있는지)</li>
+    <li>비자 승인 서류와 입학허가서 사본 (원본은 기내 수하물로)</li>
+    <li>영문 예방접종 기록과 복용 중인 약, 알레르기 정보</li>
+    <li>현지 계좌 또는 해외 사용 가능한 체크카드</li>
+    <li>홈스테이 주소·연락처, 현지 관리 담당자 연락처</li>
+    <li>한국 휴대폰 정지·유심 처리와 연락 수단 (가족 대화방 준비)</li>
+    <li>학교 제출용 여권 사진과 서류 사본 일체</li>
+  </ul>
+  <p class="sec-sub" style="margin-top:16px">비자와 서류는 <a href="study-visa.html">비자·서류 안내</a>에서 국가별로 정리해 두었습니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-process.html",
+    kicker: "🗓 준비 절차",
+    h1: "언제부터<br>무엇을 준비하나",
+    sub: "출국 6~8개월 전부터의 준비 일정과 출국 전 체크리스트",
+    body,
+    title: "조기유학 준비 절차 | 출국까지 6~8개월 타임라인과 체크리스트",
+    desc: "중·고등 유학 준비 일정 — 출국 6~8개월 전 방향 정하기부터 학교 선정, 지원서·성적표, 입학허가, 비자 신청, 항공·보험, 출국 오리엔테이션까지 월 단위로 정리했습니다.",
+  });
+}
+
+function buildStudyVisa() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">국가별 비자</h2>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>국가</th><th>비자 종류</th><th>기본 요건</th></tr></thead>
+    <tbody>${STUDY_INFO.visa.map(([c, v, r]) => `<tr><th>${c}</th><td>${v}</td><td>${r}</td></tr>`).join("")}</tbody>
+  </table></div>
+  <p class="sec-sub" style="margin-top:14px">${STUDY_INFO.visaNote}</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">공통으로 필요한 서류</h2>
+  <ul class="check-list">
+    <li>여권 (체류 예정 기간 + 여유를 두고 유효기간 확인)</li>
+    <li>학교 입학허가서 — 이게 나와야 비자 진행이 시작됩니다</li>
+    <li>최근 2년 성적표·재학증명서 (영문 발급, 2~3주 소요되기도 합니다)</li>
+    <li>재정 능력 증명 (잔고증명·재직증명 등, 국가별 기준 상이)</li>
+    <li>숙소 확정 서류 (홈스테이 배정 확인서)</li>
+    <li>미성년자 후견인·보호자 관련 서류</li>
+    <li>건강검진 결과 (요구되는 경우)</li>
+  </ul>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">진행할 때 자주 막히는 지점</h2>
+  <div class="fit-grid">
+    <div><strong>영문 서류 발급 기간</strong><p>학교 성적표 영문본은 바로 나오지 않는 경우가 많습니다. 미리 신청해 두세요.</p></div>
+    <div><strong>입학허가 지연</strong><p>학교 자리가 확정돼야 허가서가 나옵니다. 인기 학년은 대기가 생기기도 합니다.</p></div>
+    <div><strong>심사 기간</strong><p>시기에 따라 달라집니다. 출국일을 빠듯하게 잡으면 항공권을 다시 끊는 일이 생깁니다.</p></div>
+    <div><strong>미성년자 후견인 서류</strong><p>캐나다는 공증이 필요한 서류가 있습니다. 절차를 미리 확인해야 일정이 밀리지 않습니다.</p></div>
+  </div>
+  <p class="sec-sub" style="margin-top:18px">비자 진행은 저희가 서류 준비부터 함께 챙깁니다. 다만 승인 여부는 각국 이민당국이 결정합니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-visa.html",
+    kicker: "🛂 비자·서류",
+    h1: "비자와 서류,<br>무엇을 준비하나",
+    sub: "뉴질랜드 학생비자 · 캐나다 학습허가의 요건과 공통 준비 서류",
+    body,
+    title: "유학 비자·서류 안내 | 뉴질랜드 학생비자·캐나다 학습허가 준비",
+    desc: "중·고등 유학 비자 안내 — 뉴질랜드 학생비자와 캐나다 학습허가(Study Permit)의 기본 요건, 입학허가서·재정 증명·숙소 확정·미성년자 후견인 서류 등 공통 준비물과 자주 막히는 지점.",
+  });
+}
+
+function buildStudyGuardian() {
+  const nz = STUDY["study-newzealand"], ca = STUDY["study-canada"];
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">현지에서 누가 아이를 봅니까</h2>
+  <p class="lead">부모가 옆에 없는 1년 동안 이 자리가 비어 있으면, 아이는 모든 걸 혼자 감당해야 합니다.
+  '관리형'이라는 말이 실제로 무엇을 하는지 나라별로 정리했습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">🇳🇿 뉴질랜드 — 학교 중심 이중 관리</h2>
+  <ul class="safe-list">${nz.manage.map((m) => `<li>${m}</li>`).join("")}</ul>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">🇨🇦 캐나다 — 법적 가디언 + 월간 리포트</h2>
+  <ul class="safe-list">${ca.manage.map((m) => `<li>${m}</li>`).join("")}</ul>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">홈스테이는 배정보다 사후 관리</h2>
+  <p>처음 배정보다 그다음이 중요합니다. 캐나다는 18세 이상 가족 전원 경찰 신원조회, 가정방문 실사, 성향 맞춤 매칭의
+  3중 검증을 거치고, 그래도 맞지 않으면 가정을 바꾸고 이사까지 지원합니다. 뉴질랜드는 학교 국제학생 담당 교사와
+  홈스테이 관리자가 이중으로 봅니다.</p>
+  <p style="margin-top:14px">어느 유학원을 알아보시든 <strong>"안 맞으면 바꿔 줄 수 있느냐"</strong>를 꼭 물어보세요. 대답이 흐릿하면 그 부분이 약한 곳입니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">부모가 확인할 네 가지</h2>
+  <ul class="check-list">
+    <li>현지에 상주하는 한국인 담당자가 있는가, 몇 명이 몇 명을 보는가</li>
+    <li>긴급 상황 연락 순서가 정해져 있는가 (호스트 → 현지 담당 → 한국)</li>
+    <li>성적·출석이 정기적으로 오는가, 요청해야 오는가</li>
+    <li>홈스테이 변경이 실제로 가능한가, 비용은 누가 부담하는가</li>
+  </ul>
+  <p class="sec-sub" style="margin-top:16px">캐나다 관리형은 네이버 밴드로 시간표와 활동 사진을 실시간 공유합니다.
+  캠프에서 쓰던 방식 그대로라, 캠프를 다녀오신 학부모님들은 익숙하실 겁니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-guardian.html",
+    kicker: "🤝 현지 관리",
+    h1: "현지에서<br>누가 아이를 봅니까",
+    sub: "법적 가디언, 홈스테이 검증과 변경, 월간 리포트 — 관리형이 실제로 하는 일",
+    body,
+    title: "관리형 유학 관리 체계 | 법적 가디언·홈스테이 관리·월간 리포트",
+    desc: "조기유학 현지 관리 체계 — 캐나다 법적 가디언과 월 1회 정기 리포트, 뉴질랜드 학교 국제학생 담당 교사와 홈스테이 관리자의 이중 관리, 홈스테이 3중 검증과 변경 절차까지 정리했습니다.",
+  });
+}
+
+function buildStudyAfter() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">졸업하면 어디로 가나</h2>
+  <div class="table-wrap"><table class="cmp"><tbody>
+    ${STUDY_INFO.paths.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
+  </tbody></table></div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">1년 뒤에 정하게 되는 것</h2>
+  <p class="lead">대부분의 가정이 첫 1년을 마치고 세 갈래 중 하나를 고릅니다.</p>
+  <ol class="step-list" style="margin-top:16px">
+    <li><strong>연장해서 졸업까지</strong> — 아이가 자리를 잡았고 진학 목표가 해외로 굳어진 경우</li>
+    <li><strong>다른 나라·과정으로 이동</strong> — 예를 들어 캐나다에서 미국 고교로 옮기는 경로</li>
+    <li><strong>한국 복귀</strong> — 국내 입시로 방향을 돌리거나, 경험만 얻고 돌아오는 경우</li>
+  </ol>
+  <p class="sec-sub" style="margin-top:16px">어느 쪽이든 <strong>학년 단위로 끊는 편</strong>이 깔끔합니다. 학기 중간 귀국은 양쪽 모두 애매해집니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">한국으로 돌아올 때</h2>
+  <p>해외에서 이수한 과정을 국내 학년으로 환산하는 편입학 학력 심의를 거칩니다.
+  성적표·재학증명서·출입국 기록 같은 서류를 미리 갖춰 두셔야 하고, 현지 학교에서 발급받아야 하는 것들이 있어
+  <strong>귀국을 결정하면 현지에서부터 챙기기 시작</strong>해야 합니다.</p>
+  <p style="margin-top:14px">출국 전 학적 처리를 어떻게 해두었는지가 여기서 그대로 영향을 줍니다.
+  준비 단계는 <a href="study-process.html">유학 준비 절차</a>를 참고하세요.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">진학 준비는 11학년부터</h2>
+  <p>어느 경로든 SAT·에세이·활동 기록은 따로 준비해야 합니다. 마지막 1년에 몰아서 되는 일이 아니라,
+  11학년이 되면 목표 대학군을 정하고 역산해 준비하시길 권합니다.
+  국내에서 미국 과정을 밟는 경우의 진학 경로는 <a href="stpaul-college.html">세인트폴 진학 안내</a>에 정리해 두었습니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-after.html",
+    kicker: "🎓 졸업 후",
+    h1: "유학 다음은<br>어떻게 되나",
+    sub: "NCEA·온타리오 졸업장으로 갈 수 있는 길, 그리고 한국으로 돌아올 때의 절차",
+    body,
+    title: "유학 후 진로 | NCEA·온타리오 졸업장 대학 진학과 귀국 절차",
+    desc: "조기유학 이후 경로 — 뉴질랜드 NCEA와 캐나다 온타리오 졸업장(OSSD)으로 지원 가능한 대학, 미국 대학 준비, 1년 뒤 연장·이동·귀국의 세 갈래, 한국 복귀 시 편입학 학력 심의까지.",
+  });
+}
+
+function buildStudyFaq() {
+  const faq = STUDY_INFO.faq;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <div class="faq-list">
+    ${faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
+  </div>
+  <p class="sec-sub" style="margin-top:20px">세인트폴 대치 아카데미 관련 질문은 <a href="stpaul-faq.html">세인트폴 자주 묻는 질문</a>에,
+  캠프 관련 질문은 <a href="faq.html">캠프 FAQ</a>에 따로 정리해 두었습니다.</p>
+</div></section>`;
+  return studyPage({
+    file: "study-faq.html",
+    kicker: "❓ 자주 묻는 질문",
+    h1: "유학, 이런 질문을<br>많이 받습니다",
+    sub: "시작 단위, 관리, 비용, 적응 문제까지 — 상담에서 실제로 나오는 질문들",
+    body,
+    title: "조기유학 자주 묻는 질문 | 기간·비용·관리·적응 문제",
+    desc: "중·고등 유학 FAQ — 캠프 없이 상담 가능한지, 현지 관리는 누가 하는지, 한 텀만 다녀와도 되는지, 영어가 부족해도 되는지, 적응하지 못하면 어떻게 되는지, 학비 납부 방식까지 답변했습니다.",
+    jsonld: {
+      "@context": "https://schema.org", "@type": "FAQPage",
+      mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+    },
+  });
+}
+
+function buildStudyGrade(g) {
+  const picks = g.picks.map((k) => STUDY[k]);
+  const others = STUDY_GRADES.filter((x) => x.slug !== g.slug);
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <p class="lead">${g.lead}</p>
+  <h2 class="sec-title-sm" style="margin-top:26px">이 학년이라면 이렇게 시작합니다</h2>
+  <p>${g.fit}</p>
+  <h2 class="sec-title-sm" style="margin-top:26px">놓치기 쉬운 부분</h2>
+  <p>${g.caution}</p>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">${g.label}에게 권하는 과정</h2>
+  <div class="camp-grid">
+    ${picks.map(studyCard).join("\n")}
+    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 미국 교과과정" })}
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">먼저 캠프로 확인해 보는 방법</h2>
+  <p>${g.key} 학생이 참가할 수 있는 겨울캠프가 있습니다. 3~7주 동안 현지 학교와 홈스테이를 겪어보면
+  유학을 감당할 수 있는 성향인지 대체로 드러납니다. 캠프와 같은 학교·교육청으로 이어지기 때문에
+  사전답사 성격이 강합니다.</p>
+  <p style="margin-top:14px"><a class="btn btn-navy" href="grade-${g.slug.replace("study-grade-", "")}.html">${g.label} 캠프 보기 →</a>
+  <a class="btn btn-line" style="margin-left:8px" href="study-compare.html">두 나라 비교 →</a></p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">준비 순서와 비용</h2>
+  <p>출국까지 6~8개월을 봅니다. 월 단위 일정은 <a href="study-process.html">준비 절차</a>에,
+  1년 총비용은 <a href="study-cost.html">비용 정리</a>에 있습니다. 현지 관리 체계가 궁금하시면
+  <a href="study-guardian.html">관리 체계 안내</a>를 보세요.</p>
+  <p class="sec-sub" style="margin-top:16px">다른 학년: ${others.map((x) => `<a href="${x.slug}.html">${x.label}</a>`).join(" · ")}</p>
+</div></section>`;
+  return studyPage({
+    file: `${g.slug}.html`,
+    kicker: `${g.key} 유학`,
+    h1: `${g.label},<br>지금 유학을 시작한다면`,
+    sub: g.lead,
+    body,
+    title: `${g.label} 유학 | ${g.key} 조기유학 시작 시점과 과정 선택`,
+    desc: `${g.label} 조기유학 안내 — ${g.lead} ${g.fit}`,
+  });
+}
+
+function buildStudyGuideIndex() {
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">Study Guide</p>
+    <h1>유학 가이드</h1>
+    <p class="hero-sub">조기유학 시기, 1년 실제 비용, 관리형의 의미, 귀국 시 학적까지.<br>결정하기 전에 정리해 두면 좋은 글들입니다.</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap">
+  <div class="guide-grid">${STUDY_GUIDES.map(guideCard).join("\n")}</div>
+  <p class="sec-sub" style="margin-top:24px">캠프 쪽 글은 <a href="guide.html">캠프 가이드</a>에 따로 모아 두었습니다.</p>
+</div></section>
+${studyConsult("")}`;
+  return page({
+    file: "study-guide.html",
+    title: "유학 가이드 | 조기유학 시기·비용·관리형·귀국 학적 정리",
+    desc: "중·고등 조기유학을 준비하는 학부모를 위한 글 모음 — 유학 적기, 1년 실제 총비용, 관리형 유학의 의미, 뉴질랜드와 캐나다 비교, 출국 전 영어 준비, 귀국 시 학적 처리, 국내 미국 과정과의 비교까지.",
+    hero, body,
+  });
+}
+
 
 function guideCard(g) {
   return `<a class="guide-card" href="${g.slug}.html"><h3>${g.title}</h3><p>${g.desc}</p><span class="guide-more">읽어보기 →</span></a>`;
@@ -1377,6 +2295,7 @@ function buildGuideIndex() {
   const body = `
 <section class="section"><div class="wrap">
   <div class="guide-grid">${GUIDES.map(guideCard).join("\n")}</div>
+  <p class="sec-sub" style="margin-top:24px">유학을 고민 중이시라면 <a href="study-guide.html">유학 가이드</a>에 조기유학 시기·비용·관리 체계에 관한 글을 따로 모아 두었습니다.</p>
 </div></section>
 ${consultSection()}`;
   return page({
@@ -1388,21 +2307,23 @@ ${consultSection()}`;
 }
 
 function buildGuideArticle(g) {
-  const others = GUIDES.filter((x) => x.slug !== g.slug).slice(0, 3);
+  const isStudy = g.cat === "study";
+  const pool = isStudy ? STUDY_GUIDES : GUIDES;
+  const others = pool.filter((x) => x.slug !== g.slug).slice(0, 3);
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
-    <p class="hero-kicker">캠프 가이드</p>
+    <p class="hero-kicker">${isStudy ? "유학 가이드" : "캠프 가이드"}</p>
     <h1>${g.title}</h1>
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap narrow guide-body">
   ${g.body}
   <div class="guide-cta">
-    <span>우리 아이에게 맞는 캠프가 궁금하다면</span>
-    <a class="btn btn-navy" href="compare.html">캠프 비교해 보기 →</a>
+    <span>${isStudy ? "우리 아이에게 맞는 유학 과정이 궁금하다면" : "우리 아이에게 맞는 캠프가 궁금하다면"}</span>
+    <a class="btn btn-navy" href="${isStudy ? "study-compare.html" : "compare.html"}">${isStudy ? "유학 과정 비교해 보기 →" : "캠프 비교해 보기 →"}</a>
   </div>
-  <p class="sec-sub" style="margin-top:26px">함께 읽으면 좋은 글: ${others.map((o) => `<a href="${o.slug}.html">${o.title}</a>`).join(" · ")} · <a href="guide.html">전체 보기</a></p>
+  <p class="sec-sub" style="margin-top:26px">함께 읽으면 좋은 글: ${others.map((o) => `<a href="${o.slug}.html">${o.title}</a>`).join(" · ")} · <a href="${isStudy ? "study-guide.html" : "guide.html"}">전체 보기</a></p>
 </div></section>
-${consultSection()}`;
+${isStudy ? studyConsult("") : consultSection()}`;
   return page({
     file: `${g.slug}.html`,
     title: g.metaTitle,
@@ -1437,6 +2358,7 @@ a{color:inherit;text-decoration:none}
 .brand-word{font-size:21px;font-weight:900;letter-spacing:-.02em;color:var(--navy)}
 .brand-word em{font-style:normal;color:var(--coral)}
 .nav{display:flex;align-items:center;gap:20px;font-size:15px;font-weight:600}
+@media(max-width:1080px){.nav{gap:13px;font-size:14px}}
 .nav a:hover{color:var(--sky)}
 .nav-cta{background:var(--navy);color:#fff!important;padding:9px 16px;border-radius:999px;font-size:14px}
 .nav-cta:hover{background:var(--navy-2)}
@@ -1658,7 +2580,23 @@ for (const g of GRADES) pages.push(buildGrade(g));
 for (const g of GRADES) for (const ct of COUNTRIES) pages.push(buildGradeCountry(g, ct));
 pages.push(buildStudyHub());
 for (const k of Object.keys(STUDY)) pages.push(buildStudy(k));
+pages.push(buildStudyCompare());
+pages.push(buildStudyCost());
+pages.push(buildStudyProcess());
+pages.push(buildStudyVisa());
+pages.push(buildStudyGuardian());
+pages.push(buildStudyAfter());
+pages.push(buildStudyFaq());
+for (const g of STUDY_GRADES) pages.push(buildStudyGrade(g));
+pages.push(buildStudyGuideIndex());
 pages.push(buildStPaul());
+pages.push(buildStPaulAdmission());
+pages.push(buildStPaulCurriculum());
+pages.push(buildStPaulTuition());
+pages.push(buildStPaulCollege());
+pages.push(buildStPaulLife());
+pages.push(buildStPaulVsAbroad());
+pages.push(buildStPaulFaq());
 pages.push(buildSummerHub());
 for (const s of SUMMER_COUNTRIES) pages.push(buildSummerCountry(s));
 for (const ic of INFO_COUNTRIES) pages.push(buildInfoCountry(ic));
@@ -1669,7 +2607,7 @@ for (const dp of DEPARTURES) pages.push(buildDeparture(dp));
 pages.push(buildCalendar());
 for (const bd of BUDGETS) pages.push(buildBudget(bd));
 pages.push(buildGuideIndex());
-for (const g of GUIDES) pages.push(buildGuideArticle(g));
+for (const g of ALL_GUIDES) pages.push(buildGuideArticle(g));
 
 for (const p of pages) fs.writeFileSync(path.join(OUT, p.file), p.html);
 fs.writeFileSync(path.join(OUT, "style.css"), CSS);
@@ -1687,7 +2625,7 @@ fs.writeFileSync(path.join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nSitemap
 
 const rssItems = [
   { title: `${SEASON_LABEL} 해외캠프 4종 모집 안내 — 캐나다·뉴질랜드·일본`, link: `${BASE_URL}/`, date: "Tue, 21 Jul 2026 09:00:00 +0900", desc: "캐나다 스쿨링 3주·7주, 뉴질랜드 영어캠프, 일본 교토 어학연수 — 선착순 모집." },
-  ...GUIDES.map((g) => ({ title: `[캠프 가이드] ${g.title}`, link: `${BASE_URL}/${g.slug}.html`, date: new Date(g.date + "T09:00:00+09:00").toUTCString(), desc: g.desc })),
+  ...ALL_GUIDES.map((g) => ({ title: `[${g.cat === "study" ? "유학 가이드" : "캠프 가이드"}] ${g.title}`, link: `${BASE_URL}/${g.slug}.html`, date: new Date(g.date + "T09:00:00+09:00").toUTCString(), desc: g.desc })),
 ].map((it) => `  <item>\n    <title>${esc(it.title)}</title>\n    <link>${it.link}</link>\n    <guid isPermaLink="false">${it.link}#${esc(it.title)}</guid>\n    <pubDate>${it.date}</pubDate>\n    <description>${esc(it.desc)}</description>\n  </item>`).join("\n");
 fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>러닝트래블 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>캐나다·뉴질랜드·일본 해외캠프 모집 소식과 캠프 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
 
