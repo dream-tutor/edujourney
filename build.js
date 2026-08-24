@@ -215,7 +215,7 @@ function consultSection(preset = {}) {
       <div class="form-row two">
       </div>
       <div class="form-row">
-        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이의 영어 수준, 해외 경험 여부, 궁금한 점을 자유롭게 남겨 주세요"></textarea></label>
+        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이의 영어 수준, 해외 경험 여부, 현재 복용하는 약, 알레르기 여부(음식·동물), 궁금한 점을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <button type="submit" class="btn btn-coral form-submit">상담 신청하기</button>
       <p class="form-fine">남겨주신 정보는 상담 목적으로만 사용됩니다.</p>
