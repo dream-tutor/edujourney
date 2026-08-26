@@ -514,13 +514,8 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`)}
 
 <script>
 (function(){
-  var f = document.querySelectorAll('.sec-fold');
-  if (!f.length) return;
-  /* 데스크톱은 전부 펼친 상태로 — 접기는 모바일에서 페이지 길이를 줄이기 위한 것 */
-  if (window.matchMedia('(min-width:821px)').matches) {
-    for (var i = 0; i < f.length; i++) f[i].setAttribute('open', '');
-  }
-  /* #study, #stpaul 앵커로 들어오면 해당 섹션은 펼쳐서 보여준다 */
+  /* 데스크톱·모바일 모두 접힌 채 시작 (2026-08-26 사용자 지정 — 데스크톱도 길다고 접기 요청)
+     #study, #stpaul 앵커로 들어오면 해당 섹션만 펼쳐서 보여준다 */
   function openTarget(){
     var h = location.hash && location.hash.slice(1);
     if (!h) return;
@@ -2478,7 +2473,7 @@ a{color:inherit;text-decoration:none}
 .sec-title{font-size:clamp(23px,3.4vw,32px);font-weight:800;letter-spacing:-.01em;margin-bottom:14px}
 .sec-title-sm{font-size:20px;font-weight:800;margin-bottom:16px}
 .sec-sub{color:var(--muted);margin-bottom:28px;max-width:760px}
-/* 접이식 섹션 (홈): 기본 접힘, 데스크톱은 스크립트가 펼침 */
+/* 접이식 섹션 (홈): 데스크톱·모바일 모두 기본 접힘, 앵커 진입 시에만 스크립트가 펼침 */
 .sec-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .sec-fold>summary::-webkit-details-marker{display:none}
 .sec-fold>summary .sec-title{margin-bottom:0}
@@ -2486,7 +2481,7 @@ a{color:inherit;text-decoration:none}
 .sec-fold[open]>summary::after{content:"–"}
 .sec-fold[open]>summary{margin-bottom:14px}
 .sec-fold>summary:hover::after{border-color:var(--coral);color:var(--coral)}
-@media(max-width:820px){.section:has(.sec-fold:not([open])){padding:22px 0}}
+.section:has(.sec-fold:not([open])){padding:24px 0}
 .sec-sub a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .lead{font-size:17px;color:#33404d;margin-bottom:24px}
 .lead a,.fit-grid a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}

@@ -18,7 +18,7 @@
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=mt9i3ra6">
+<link rel="stylesheet" href="style.css?v=mt9im0x8">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"러닝트래블","url":"https://edujourney.co.kr"}</script>
 </head>
 <body>
@@ -372,13 +372,8 @@
 
 <script>
 (function(){
-  var f = document.querySelectorAll('.sec-fold');
-  if (!f.length) return;
-  /* 데스크톱은 전부 펼친 상태로 — 접기는 모바일에서 페이지 길이를 줄이기 위한 것 */
-  if (window.matchMedia('(min-width:821px)').matches) {
-    for (var i = 0; i < f.length; i++) f[i].setAttribute('open', '');
-  }
-  /* #study, #stpaul 앵커로 들어오면 해당 섹션은 펼쳐서 보여준다 */
+  /* 데스크톱·모바일 모두 접힌 채 시작 (2026-08-26 사용자 지정 — 데스크톱도 길다고 접기 요청)
+     #study, #stpaul 앵커로 들어오면 해당 섹션만 펼쳐서 보여준다 */
   function openTarget(){
     var h = location.hash && location.hash.slice(1);
     if (!h) return;
