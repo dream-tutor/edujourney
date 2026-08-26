@@ -150,14 +150,16 @@ function campCard(c) {
 function compareTable() {
   const cs = Object.values(CAMPS);
   const row = (label, fn) => `<tr><th>${label}</th>${cs.map((c) => `<td>${fn(c)}</td>`).join("")}</tr>`;
+  // 뉴질랜드처럼 " · "로 이어진 값(3주·4주·7주)은 표에서 줄바꿈으로 표시 (2026-08-26 사용자 요청)
+  const br = (s) => String(s).replace(/ · /g, "<br>");
   return `<div class="table-wrap"><table class="cmp">
     <thead><tr><th></th>${cs.map((c) => `<th><a href="${c.slug}.html">${c.flag}<br>${c.name}</a></th>`).join("")}</tr></thead>
     <tbody>
       ${row("형태", (c) => c.type)}
       ${row("기간", (c) => c.periodShort)}
-      ${row("대상", (c) => c.target)}
+      ${row("대상", (c) => br(c.target))}
       ${row("정원", (c) => c.capacity)}
-      ${row("참가비", (c) => `<strong>${c.price}</strong>`)}
+      ${row("참가비", (c) => `<strong>${br(c.price)}</strong>`)}
       ${row("숙소", (c) => c.stay)}
       ${row("모집 마감", (c) => c.deadline)}
     </tbody>
