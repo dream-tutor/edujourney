@@ -400,9 +400,32 @@ ${foldSection(safetySection())}
   </div>
 </section>
 
-<section class="section alt" id="study">
+${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).replace(`class="wrap narrow"`, `class="wrap"`)}
+
+<section class="section">
   <div class="wrap">
-    <details class="sec-fold"><summary><h2 class="sec-title">캠프만 하는 곳이 아닙니다 — 중·고등 유학</h2></summary>
+    <details class="sec-fold"><summary><h2 class="sec-title">학부모님들이 가장 많이 묻는 질문</h2></summary>
+    <div class="faq-list">
+      ${COMMON.faq.slice(0, 4).map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n")}
+    </div>
+    <div class="btn-row"><a class="btn btn-navy" href="faq.html">전체 질문·환불 규정 보기 →</a></div>
+    </details>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="wrap">
+    <details class="sec-fold"><summary><h2 class="sec-title">캠프 가이드</h2></summary>
+    <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
+    <div class="guide-grid">${GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
+    <div class="btn-row"><a class="btn btn-navy" href="guide.html">가이드 전체 보기 →</a></div>
+    </details>
+  </div>
+</section>
+
+<section class="section" id="study">
+  <div class="wrap">
+    <h2 class="sec-title">캠프만 하는 곳이 아닙니다 — 중·고등 유학</h2>
     <p class="sec-sub">캠프로 가능성을 확인했다면 그 다음을 준비할 차례입니다. 캠프와 같은 학교·같은 교육청으로 이어지는 정규 유학 과정을 직접 진행합니다. 캠프를 다녀오지 않은 학생도 상담받으실 수 있습니다.</p>
     <div class="camp-grid">
       <a class="camp-card" href="study-newzealand.html">
@@ -447,13 +470,12 @@ ${foldSection(safetySection())}
     </div>
     <div class="btn-row"><a class="btn btn-navy" href="study.html">유학 전체 안내 →</a>
     <a class="btn btn-line" href="study-faq.html">유학 자주 묻는 질문 →</a></div>
-    </details>
   </div>
 </section>
 
-<section class="section" id="stpaul">
+<section class="section alt" id="stpaul">
   <div class="wrap">
-    <details class="sec-fold"><summary><h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2></summary>
+    <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
     <p class="sec-sub">집에서 통학하면서 미국 교과과정 8~12학년을 그대로 밟는 길입니다. 전 과목 영어 수업, AP 15과목 이상, 졸업 시 미국 고교 졸업장. 서울 대치동에 있습니다.</p>
     <div class="two-col">
       <div>
@@ -476,59 +498,18 @@ ${foldSection(safetySection())}
     <div class="btn-row"><a class="btn btn-navy" href="stpaul.html">세인트폴 대치 아카데미 안내 →</a>
     <a class="btn btn-line" href="stpaul-admission.html">입학 절차 보기 →</a>
     <a class="btn btn-line" href="stpaul-vs-abroad.html">해외 유학과 비교 →</a></div>
-    </details>
-  </div>
-</section>
-
-${foldSection(applySection()).replace(`class="section"`, `class="section alt"`)}
-
-<section class="section">
-  <div class="wrap">
-    <details class="sec-fold"><summary><h2 class="sec-title">학부모님들이 가장 많이 묻는 질문</h2></summary>
-    <div class="faq-list">
-      ${COMMON.faq.slice(0, 4).map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n")}
-    </div>
-    <div class="btn-row"><a class="btn btn-navy" href="faq.html">전체 질문·환불 규정 보기 →</a></div>
-    </details>
-  </div>
-</section>
-
-<section class="section alt">
-  <div class="wrap">
-    <details class="sec-fold"><summary><h2 class="sec-title">캠프 가이드</h2></summary>
-    <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
-    <div class="guide-grid">${GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
-    <div class="btn-row"><a class="btn btn-navy" href="guide.html">가이드 전체 보기 →</a></div>
-    </details>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">유학 가이드</h2></summary>
-    <p class="sec-sub">조기유학 시기, 1년 실제 비용, 관리형의 의미, 귀국 시 학적까지 — 보내기 전에 정리해 두면 좋은 것들.</p>
+    <p class="sec-sub">조기유학은 언제가 적기인지, 1년에 실제로 얼마가 드는지, 귀국하면 학적은 어떻게 되는지 — 자주 받는 질문부터 하나씩 짚었습니다.</p>
     <div class="guide-grid">${STUDY_GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
     <div class="btn-row"><a class="btn btn-navy" href="study-guide.html">유학 가이드 전체 보기 →</a></div>
     </details>
   </div>
 </section>
-
-<script>
-(function(){
-  /* 데스크톱·모바일 모두 접힌 채 시작 (2026-08-26 사용자 지정 — 데스크톱도 길다고 접기 요청)
-     #study, #stpaul 앵커로 들어오면 해당 섹션만 펼쳐서 보여준다 */
-  function openTarget(){
-    var h = location.hash && location.hash.slice(1);
-    if (!h) return;
-    var el = document.getElementById(h);
-    if (!el || !el.querySelector) return;
-    var d = el.querySelector('.sec-fold');
-    if (d) d.setAttribute('open', '');
-  }
-  window.addEventListener('hashchange', openTarget);
-  openTarget();
-})();
-</script>
 
 ${consultSection()}`;
 
@@ -2490,11 +2471,11 @@ a{color:inherit;text-decoration:none}
 /* 접이식 섹션 (홈): 데스크톱·모바일 모두 기본 접힘, 앵커 진입 시에만 스크립트가 펼침 */
 .sec-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .sec-fold>summary::-webkit-details-marker{display:none}
-.sec-fold>summary .sec-title{margin-bottom:0;font-size:clamp(17px,2.4vw,21px)}
-.sec-fold>summary::after{content:"+";flex:0 0 auto;width:32px;height:32px;border:1px solid #d5dbe2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;color:#6b7d8f;transition:.15s}
-.sec-fold[open]>summary::after{content:"–"}
+.sec-fold>summary .sec-title{margin-bottom:0;font-size:clamp(15px,1.8vw,17px);font-weight:700}
+.sec-fold>summary::after{content:"";flex:0 0 auto;width:9px;height:9px;margin-right:4px;border-right:2px solid #8a97a5;border-bottom:2px solid #8a97a5;transform:rotate(45deg) translate(-2px,-2px);transition:transform .15s}
+.sec-fold[open]>summary::after{transform:rotate(225deg) translate(-2px,-2px)}
 .sec-fold[open]>summary{margin-bottom:14px}
-.sec-fold>summary:hover::after{border-color:var(--coral);color:var(--coral)}
+.sec-fold>summary:hover::after{border-color:var(--coral)}
 .section:has(.sec-fold:not([open])){padding:24px 0}
 /* 버튼 행: 모바일에선 전체 폭으로 정렬 (margin-left 들여쓰기 어긋남 방지) */
 .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
