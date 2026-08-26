@@ -186,6 +186,15 @@ function applySection(steps = null) {
 </section>`;
 }
 
+// 홈 전용: 섹션을 제목 바만 남기고 접는다 (모바일 페이지 길이 줄이기).
+// 기본은 접힌 상태 — 홈 하단 스크립트가 데스크톱(≥821px)에서 전부 펼치고, #study 같은 앵커 진입 시 해당 섹션을 펼친다.
+function foldSection(html) {
+  return html.replace(
+    /(<div class="wrap[^"]*">\s*)<h2 class="sec-title">([\s\S]*?)<\/h2>([\s\S]*?)(<\/div>\s*<\/section>)$/,
+    (m, pre, t, rest, post) => `${pre}<details class="sec-fold"><summary><h2 class="sec-title">${t}</h2></summary>${rest}</details>${post}`
+  );
+}
+
 function consultSection(preset = {}) {
   const campOpts = Object.values(CAMPS)
     .map((c) => `<option value="${c.name}"${preset.camp === c.slug ? " selected" : ""}>${c.name}</option>`)
@@ -373,11 +382,11 @@ function buildIndex() {
   </div>
 </section>
 
-${safetySection()}
+${foldSection(safetySection())}
 
 <section class="section">
   <div class="wrap">
-    <h2 class="sec-title">어떤 캠프를 골라야 할지 모르겠다면</h2>
+    <details class="sec-fold"><summary><h2 class="sec-title">어떤 캠프를 골라야 할지 모르겠다면</h2></summary>
     <div class="fit-grid">
       <div><strong>처음 나가는 초등학생이라면</strong><p>3주짜리가 무난합니다. 학교에서 버디 친구를 붙여주는 <a href="canada-3week.html">캐나다 3주</a>나, 1월이 여름이라 지내기 좋은 <a href="newzealand.html">뉴질랜드</a>로 시작하는 집이 많습니다.</p></div>
       <div><strong>유학을 진지하게 고민 중이라면</strong><p>바로 보내지 마시고 <a href="canada-7week.html">캐나다 7주</a>부터 겪어보게 하세요. 사립학교 수업을 그대로 다녀보고 결정해도 늦지 않습니다.</p></div>
@@ -386,12 +395,13 @@ ${safetySection()}
       <div><strong>말하기 연습량이 절실하다면</strong><p><a href="philippines.html">필리핀 클락</a>이 답입니다. 매일 1:1 수업만 4시간입니다. 다른 어느 캠프보다 입을 여는 시간이 깁니다.</p></div>
       <div><strong>비용 대비 알찬 첫 캠프를 찾는다면</strong><p><a href="malaysia.html">말레이시아 래플즈 캠프</a>는 항공권 포함 599만원에 싱가포르 투어까지 묶여 있어 부담이 가장 적습니다.</p></div>
     </div>
+    </details>
   </div>
 </section>
 
 <section class="section alt" id="study">
   <div class="wrap">
-    <h2 class="sec-title">캠프만 하는 곳이 아닙니다 — 중·고등 유학</h2>
+    <details class="sec-fold"><summary><h2 class="sec-title">캠프만 하는 곳이 아닙니다 — 중·고등 유학</h2></summary>
     <p class="sec-sub">캠프로 가능성을 확인했다면 그 다음을 준비할 차례입니다. 캠프와 같은 학교·같은 교육청으로 이어지는 정규 유학 과정을 직접 진행합니다. 캠프를 다녀오지 않은 학생도 상담받으실 수 있습니다.</p>
     <div class="camp-grid">
       <a class="camp-card" href="study-newzealand.html">
@@ -436,12 +446,13 @@ ${safetySection()}
     </div>
     <p style="margin-top:22px"><a class="btn btn-navy" href="study.html">유학 전체 안내 →</a>
     <a class="btn btn-line" style="margin-left:8px" href="study-faq.html">유학 자주 묻는 질문 →</a></p>
+    </details>
   </div>
 </section>
 
 <section class="section" id="stpaul">
   <div class="wrap">
-    <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
+    <details class="sec-fold"><summary><h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2></summary>
     <p class="sec-sub">집에서 통학하면서 미국 교과과정 8~12학년을 그대로 밟는 길입니다. 전 과목 영어 수업, AP 15과목 이상, 졸업 시 미국 고교 졸업장. 서울 대치동에 있습니다.</p>
     <div class="two-col">
       <div>
@@ -464,38 +475,64 @@ ${safetySection()}
     <p style="margin-top:22px"><a class="btn btn-navy" href="stpaul.html">세인트폴 대치 아카데미 안내 →</a>
     <a class="btn btn-line" style="margin-left:8px" href="stpaul-admission.html">입학 절차 보기 →</a>
     <a class="btn btn-line" style="margin-left:8px" href="stpaul-vs-abroad.html">해외 유학과 비교 →</a></p>
+    </details>
   </div>
 </section>
 
-${applySection().replace(`class="section"`, `class="section alt"`)}
+${foldSection(applySection()).replace(`class="section"`, `class="section alt"`)}
 
 <section class="section">
   <div class="wrap">
-    <h2 class="sec-title">학부모님들이 가장 많이 묻는 질문</h2>
+    <details class="sec-fold"><summary><h2 class="sec-title">학부모님들이 가장 많이 묻는 질문</h2></summary>
     <div class="faq-list">
       ${COMMON.faq.slice(0, 4).map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n")}
     </div>
     <p style="margin-top:20px"><a class="btn btn-navy" href="faq.html">전체 질문·환불 규정 보기 →</a></p>
+    </details>
   </div>
 </section>
 
 <section class="section alt">
   <div class="wrap">
-    <h2 class="sec-title">캠프 가이드</h2>
+    <details class="sec-fold"><summary><h2 class="sec-title">캠프 가이드</h2></summary>
     <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
     <div class="guide-grid">${GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
     <p style="margin-top:22px"><a class="btn btn-navy" href="guide.html">가이드 전체 보기 →</a></p>
+    </details>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
-    <h2 class="sec-title">유학 가이드</h2>
+    <details class="sec-fold"><summary><h2 class="sec-title">유학 가이드</h2></summary>
     <p class="sec-sub">조기유학 시기, 1년 실제 비용, 관리형의 의미, 귀국 시 학적까지 — 보내기 전에 정리해 두면 좋은 것들.</p>
     <div class="guide-grid">${STUDY_GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
     <p style="margin-top:22px"><a class="btn btn-navy" href="study-guide.html">유학 가이드 전체 보기 →</a></p>
+    </details>
   </div>
 </section>
+
+<script>
+(function(){
+  var f = document.querySelectorAll('.sec-fold');
+  if (!f.length) return;
+  /* 데스크톱은 전부 펼친 상태로 — 접기는 모바일에서 페이지 길이를 줄이기 위한 것 */
+  if (window.matchMedia('(min-width:821px)').matches) {
+    for (var i = 0; i < f.length; i++) f[i].setAttribute('open', '');
+  }
+  /* #study, #stpaul 앵커로 들어오면 해당 섹션은 펼쳐서 보여준다 */
+  function openTarget(){
+    var h = location.hash && location.hash.slice(1);
+    if (!h) return;
+    var el = document.getElementById(h);
+    if (!el || !el.querySelector) return;
+    var d = el.querySelector('.sec-fold');
+    if (d) d.setAttribute('open', '');
+  }
+  window.addEventListener('hashchange', openTarget);
+  openTarget();
+})();
+</script>
 
 ${consultSection()}`;
 
@@ -2441,6 +2478,15 @@ a{color:inherit;text-decoration:none}
 .sec-title{font-size:clamp(23px,3.4vw,32px);font-weight:800;letter-spacing:-.01em;margin-bottom:14px}
 .sec-title-sm{font-size:20px;font-weight:800;margin-bottom:16px}
 .sec-sub{color:var(--muted);margin-bottom:28px;max-width:760px}
+/* 접이식 섹션 (홈): 기본 접힘, 데스크톱은 스크립트가 펼침 */
+.sec-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.sec-fold>summary::-webkit-details-marker{display:none}
+.sec-fold>summary .sec-title{margin-bottom:0}
+.sec-fold>summary::after{content:"+";flex:0 0 auto;width:32px;height:32px;border:1px solid #d5dbe2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;color:#6b7d8f;transition:.15s}
+.sec-fold[open]>summary::after{content:"–"}
+.sec-fold[open]>summary{margin-bottom:14px}
+.sec-fold>summary:hover::after{border-color:var(--coral);color:var(--coral)}
+@media(max-width:820px){.section:has(.sec-fold:not([open])){padding:22px 0}}
 .sec-sub a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .lead{font-size:17px;color:#33404d;margin-bottom:24px}
 .lead a,.fit-grid a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
