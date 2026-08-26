@@ -203,6 +203,7 @@ function consultSection(preset = {}) {
     .map((s) => `<option value="${s.name}"${preset.camp === s.slug ? " selected" : ""}>${s.name}</option>`)
     .join("");
   const gradeOpts = GRADES.map((g) => `<option value="${g.label}"${preset.grade === g.key ? " selected" : ""}>${g.label}</option>`).join("");
+  const summerOpt = `<option value="2027 여름캠프 사전 상담"${preset.camp === "summer" ? " selected" : ""}>2027 여름캠프 사전 상담</option>`;
   // 상담 폼은 페이지 하단 고정 섹션이 아니라 팝업(모달)로 뜬다 — 상담 CTA(a[href$="#consult"]) 클릭 시 열림 (2026-08-24)
   return `<div class="consult-ov" id="consultOv" hidden>
   <div class="consult-box">
@@ -223,7 +224,7 @@ function consultSection(preset = {}) {
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
-        <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="유학·세인트폴">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
+        <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="여름캠프">${summerOpt}</optgroup><optgroup label="유학·세인트폴">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
       <div class="form-row two">
       </div>
@@ -377,8 +378,8 @@ function buildIndex() {
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
     <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 모두 인솔자 동행, 선착순 마감입니다.</p>
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
-    <a class="btn btn-coral" style="margin-left:8px" href="summer.html">2027 여름캠프 사전 상담 →</a></p>
+    <div class="btn-row"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
+    <a class="btn btn-coral" href="summer.html">2027 여름캠프 사전 상담 →</a></div>
   </div>
 </section>
 
@@ -444,8 +445,8 @@ ${foldSection(safetySection())}
       <div><strong>현지에서 누가 봐 주나요</strong><p>법적 가디언·홈스테이 관리·월간 리포트까지, <a href="study-guardian.html">관리 체계</a>를 정리했습니다.</p></div>
       <div><strong>우리 아이 학년이면</strong><p>${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.key}</a>`).join(" · ")} — 학년별로 시작 시점의 의미가 다릅니다.</p></div>
     </div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="study.html">유학 전체 안내 →</a>
-    <a class="btn btn-line" style="margin-left:8px" href="study-faq.html">유학 자주 묻는 질문 →</a></p>
+    <div class="btn-row"><a class="btn btn-navy" href="study.html">유학 전체 안내 →</a>
+    <a class="btn btn-line" href="study-faq.html">유학 자주 묻는 질문 →</a></div>
     </details>
   </div>
 </section>
@@ -472,9 +473,9 @@ ${foldSection(safetySection())}
         </ul>
       </div>
     </div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="stpaul.html">세인트폴 대치 아카데미 안내 →</a>
-    <a class="btn btn-line" style="margin-left:8px" href="stpaul-admission.html">입학 절차 보기 →</a>
-    <a class="btn btn-line" style="margin-left:8px" href="stpaul-vs-abroad.html">해외 유학과 비교 →</a></p>
+    <div class="btn-row"><a class="btn btn-navy" href="stpaul.html">세인트폴 대치 아카데미 안내 →</a>
+    <a class="btn btn-line" href="stpaul-admission.html">입학 절차 보기 →</a>
+    <a class="btn btn-line" href="stpaul-vs-abroad.html">해외 유학과 비교 →</a></div>
     </details>
   </div>
 </section>
@@ -487,7 +488,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`)}
     <div class="faq-list">
       ${COMMON.faq.slice(0, 4).map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n")}
     </div>
-    <p style="margin-top:20px"><a class="btn btn-navy" href="faq.html">전체 질문·환불 규정 보기 →</a></p>
+    <div class="btn-row"><a class="btn btn-navy" href="faq.html">전체 질문·환불 규정 보기 →</a></div>
     </details>
   </div>
 </section>
@@ -497,7 +498,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`)}
     <details class="sec-fold"><summary><h2 class="sec-title">캠프 가이드</h2></summary>
     <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
     <div class="guide-grid">${GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="guide.html">가이드 전체 보기 →</a></p>
+    <div class="btn-row"><a class="btn btn-navy" href="guide.html">가이드 전체 보기 →</a></div>
     </details>
   </div>
 </section>
@@ -507,7 +508,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`)}
     <details class="sec-fold"><summary><h2 class="sec-title">유학 가이드</h2></summary>
     <p class="sec-sub">조기유학 시기, 1년 실제 비용, 관리형의 의미, 귀국 시 학적까지 — 보내기 전에 정리해 두면 좋은 것들.</p>
     <div class="guide-grid">${STUDY_GUIDES.slice(0, 6).map(guideCard).join("\n")}</div>
-    <p style="margin-top:22px"><a class="btn btn-navy" href="study-guide.html">유학 가이드 전체 보기 →</a></p>
+    <div class="btn-row"><a class="btn btn-navy" href="study-guide.html">유학 가이드 전체 보기 →</a></div>
     </details>
   </div>
 </section>
@@ -1196,6 +1197,19 @@ ${consultSection({ grade: g.key, camp: camps.length ? camps[0].slug : undefined 
 // ------------------------------------------------------------
 // 여름캠프 페이지 (2027 여름 사전 상담)
 // ------------------------------------------------------------
+function summerConsult() {
+  return consultSection({
+    camp: "summer",
+    title: "여름캠프 사전 상담",
+    copy: "아이 학년과 희망 국가를 남겨 주세요.<br>일정·비용이 확정되는 대로 가장 먼저 안내드립니다.",
+    points: [
+      "모집 시작 전 우선 안내 — 여름 시즌은 자리가 빨리 찹니다",
+      "학년·영어 수준에 맞는 국가와 기간 추천",
+      "겨울캠프와 여름캠프 중 어느 시즌이 맞는지도 함께 상담",
+    ],
+  });
+}
+
 const SUMMER_COUNTRIES = [
   { slug: "canada", name: "캐나다", note: "여름의 캐나다는 날씨가 가장 좋은 계절입니다. 스쿨링은 현지 방학과 겹쳐 서머스쿨·액티비티 중심 프로그램으로 구성됩니다." },
   { slug: "newzealand", name: "뉴질랜드", note: "우리 여름은 뉴질랜드의 겨울 학기 중이라, 현지 학교 정규수업 참여(스쿨링)에 가장 좋은 시즌입니다." },
@@ -1224,7 +1238,7 @@ function buildSummerHub() {
     <li>겨울캠프와 여름캠프 중 어느 시즌이 맞는지도 함께 판단해 드립니다</li>
   </ul>
 </div></section>
-${consultSection()}`;
+${summerConsult()}`;
   return page({
     file: "summer.html",
     title: "여름 해외캠프 2027 | 초등·중등 여름방학 어학연수 사전 상담",
@@ -1249,7 +1263,7 @@ function buildSummerCountry(s) {
   <div class="camp-grid">${winterCamps.map(campCard).join("\n")}</div>` : ""}
   <p class="sec-sub" style="margin-top:20px">다른 나라 여름캠프: ${SUMMER_COUNTRIES.filter((x) => x.slug !== s.slug).map((x) => `<a href="summer-${x.slug}.html">${x.name}</a>`).join(" · ")} · <a href="summer.html">여름캠프 전체 안내</a></p>
 </div></section>
-${consultSection()}`;
+${summerConsult()}`;
   return page({
     file: `summer-${s.slug}.html`,
     title: `${s.name} 여름캠프 2027 | 여름방학 ${s.name} 어학연수·스쿨링 사전 상담`,
@@ -2476,12 +2490,15 @@ a{color:inherit;text-decoration:none}
 /* 접이식 섹션 (홈): 데스크톱·모바일 모두 기본 접힘, 앵커 진입 시에만 스크립트가 펼침 */
 .sec-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .sec-fold>summary::-webkit-details-marker{display:none}
-.sec-fold>summary .sec-title{margin-bottom:0}
+.sec-fold>summary .sec-title{margin-bottom:0;font-size:clamp(17px,2.4vw,21px)}
 .sec-fold>summary::after{content:"+";flex:0 0 auto;width:32px;height:32px;border:1px solid #d5dbe2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;color:#6b7d8f;transition:.15s}
 .sec-fold[open]>summary::after{content:"–"}
 .sec-fold[open]>summary{margin-bottom:14px}
 .sec-fold>summary:hover::after{border-color:var(--coral);color:var(--coral)}
 .section:has(.sec-fold:not([open])){padding:24px 0}
+/* 버튼 행: 모바일에선 전체 폭으로 정렬 (margin-left 들여쓰기 어긋남 방지) */
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+@media(max-width:560px){.btn-row .btn{flex:1 1 100%;text-align:center}}
 .sec-sub a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .lead{font-size:17px;color:#33404d;margin-bottom:24px}
 .lead a,.fit-grid a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
