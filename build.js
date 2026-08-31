@@ -1629,7 +1629,7 @@ ${studyConsult(s.slug, { title: "세인트폴 대치 아카데미 상담", copy:
 function buildElc() {
   const s = ELC;
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
-    <p class="hero-kicker">🎓 국내 6개월 → 미국·캐나다 대학</p>
+    <p class="hero-kicker">🎓 국내 6개월 과정 · 미국·캐나다 대학 진학</p>
     <h1>${s.name}</h1>
     <p class="hero-sub">${s.tag}</p>
   </div></section>`;
@@ -1649,8 +1649,8 @@ function buildElc() {
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">어떤 과정인가요</h2>
   <p class="lead">${s.intro}</p>
-  <p style="margin-top:14px">핵심은 순서를 바꾸는 것입니다. 영어 점수를 만들어 유학을 떠나는 대신, <strong>한국에서 먼저 6개월간 대학 수업을 감당할 영어를 만들고</strong>
-  미국 대학이 학점으로 인정하는 국내대학 교양과목까지 이수한 뒤 출국합니다. 그래서 TOEFL·SAT·내신 없이 지원이 가능하고, 현지에서 어학연수로 보내는 기간과 비용이 줄어듭니다.</p>
+  <p style="margin-top:14px">보통은 TOEFL 점수부터 만들고 유학을 떠나는데, 이 과정은 순서가 반대입니다. <strong>한국에서 6개월 동안 대학 수업을 따라갈 영어를 먼저 만들고</strong>,
+  미국 대학이 학점으로 인정하는 국내대학 교양과목까지 채운 뒤에 나갑니다. 시험 점수 없이 지원이 되는 이유가 여기에 있고, 현지에서 어학연수로 쓰는 시간과 돈도 그만큼 줄어듭니다.</p>
   <ul class="check-list" style="margin-top:20px">${s.points.map((p) => `<li>${p}</li>`).join("")}</ul>
 </div></section>
 
@@ -1719,7 +1719,7 @@ function buildElc() {
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title-sm">신청 전 확인하세요</h2>
   <p>${s.notice}</p>
-  <p class="sec-sub" style="margin-top:16px">중·고등학생이라면 시기가 다릅니다: <a href="study.html">중·고등 유학 안내</a> · <a href="stpaul.html">세인트폴 대치 아카데미</a> — 고교 단계에서 미리 준비하는 길을 보세요.</p>
+  <p class="sec-sub" style="margin-top:16px">아직 중·고등학생이라면 이 과정보다 앞 단계가 맞습니다. <a href="study.html">중·고등 유학 안내</a>와 <a href="stpaul.html">세인트폴 대치 아카데미</a>를 먼저 보세요.</p>
 </div></section>
 ${studyConsult(s.slug, {
     title: "미국·캐나다 대학 토플면제교육원 상담",
