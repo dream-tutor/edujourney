@@ -1641,6 +1641,7 @@ function buildElc() {
     <div><dt>과정</dt><dd>국내 6개월 공인 ESL + 국내대학 교양과목 이수 → 미국·캐나다 파트너 대학 진학</dd></div>
     <div><dt>지원 자격</dt><dd>${s.target}</dd></div>
     <div><dt>모집</dt><dd>2027학년도 신·편입생 수시모집(겨울학기) · 45명 선착순</dd></div>
+    <div><dt>위치</dt><dd>${s.location}</dd></div>
     <div><dt>비용</dt><dd>${s.price} · 대학별 연간 유학 비용은 아래 표 참고</dd></div>
     <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
@@ -1659,6 +1660,12 @@ function buildElc() {
   <dl class="info-list">
     ${s.schedule.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
   </dl>
+  <h3 class="sec-title-sm" style="margin-top:28px">전형은 연 4회 있습니다</h3>
+  <p class="sec-sub">겨울학기를 놓쳐도 3월·7월·9월에 다시 시작할 수 있습니다. 어느 전형이든 6개월 과정 후 바로 다음 학기에 출발합니다.</p>
+  <div class="table-wrap"><table class="cmp" style="min-width:560px">
+    <thead><tr><th>전형</th><th>입학식·개강</th><th>수강 기간</th><th>미국·캐나다 출발</th></tr></thead>
+    <tbody>${s.intakes.map((r) => `<tr><th>${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</tbody>
+  </table></div>
   <h3 class="sec-title-sm" style="margin-top:28px">지원 서류</h3>
   <ul class="check-list">${s.applyDocs.map((d) => `<li>${d}</li>`).join("")}</ul>
 </div></section>
@@ -1673,6 +1680,7 @@ function buildElc() {
   <h2 class="sec-title">6개월 교육과정</h2>
   <dl class="info-list">
     <div><dt>하루 일과</dt><dd>${s.curriculum.daily}</dd></div>
+    <div><dt>수업 구조</dt><dd>${s.curriculum.structure}</dd></div>
     <div><dt>반 편성</dt><dd>${s.curriculum.levels}</dd></div>
     <div><dt>TOEFL 면제 요건</dt><dd>${s.curriculum.waiver}</dd></div>
     <div><dt>교양 이수 요건</dt><dd>${s.curriculum.gpa}</dd></div>
@@ -1700,6 +1708,13 @@ function buildElc() {
 </div></section>
 
 <section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">현지 도착 첫날부터 정착까지</h2>
+  <p class="lead">${s.settlement.intro}</p>
+  <ol class="step-list" style="margin-top:18px">${s.settlement.steps.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:16px">${s.settlement.result}</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
   <h2 class="sec-title">${s.warmup.title}</h2>
   <dl class="info-list">
     <div><dt>기간</dt><dd>${s.warmup.period}</dd></div>
@@ -1709,14 +1724,14 @@ function buildElc() {
   <p class="sec-sub" style="margin-top:14px">일찍 합격해 두면 정식 개강 전 토요일 과정으로 영어 워밍업과 교양학점 선이수를 시작할 수 있습니다.</p>
 </div></section>
 
-<section class="section"><div class="wrap narrow">
+<section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title-sm">자주 묻는 질문</h2>
   <div class="faq-list">
     ${s.faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
   </div>
 </div></section>
 
-<section class="section alt"><div class="wrap narrow">
+<section class="section"><div class="wrap narrow">
   <h2 class="sec-title-sm">신청 전 확인하세요</h2>
   <p>${s.notice}</p>
   <p class="sec-sub" style="margin-top:16px">아직 중·고등학생이라면 이 과정보다 앞 단계가 맞습니다. <a href="study.html">중·고등 유학 안내</a>와 <a href="stpaul.html">세인트폴 대치 아카데미</a>를 먼저 보세요.</p>
