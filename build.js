@@ -3,7 +3,7 @@
 // ============================================================
 const fs = require("fs");
 const path = require("path");
-const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, SCHEDULES, CAMP_FAQ } = require("./data.js");
+const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
@@ -54,6 +54,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
       <a href="compare.html">캠프 비교</a>
       <a href="study.html">유학</a>
       <a href="stpaul.html">세인트폴 대치</a>
+      <a href="elc.html">대학 토플면제</a>
       <a href="about.html">운영·안전</a>
       <a href="guide.html">가이드</a>
       <a href="faq.html">자주 묻는 질문</a>
@@ -65,6 +66,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
           <a href="compare.html">캠프 비교</a>
           <a href="study.html">유학 안내</a>
           <a href="stpaul.html">세인트폴 대치 아카데미</a>
+          <a href="elc.html">미국·캐나다 대학 토플면제교육원</a>
           <a href="about.html">운영·안전</a>
           <a href="guide.html">캠프 가이드</a>
           <a href="study-guide.html">유학 가이드</a>
@@ -122,7 +124,7 @@ function footer() {
         <h3>캠프 안내</h3>
         <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="compare.html">캠프 비교</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
         <h3 style="margin-top:26px">유학 · 세인트폴 대치 아카데미</h3>
-        <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a></div>
+        <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a>\n<a href="elc.html">미국·캐나다 대학 토플면제교육원</a></div>
       </div>
     </div>
     <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료 출처: 쏠루트 유학</p>
@@ -201,7 +203,7 @@ function consultSection(preset = {}) {
   const campOpts = Object.values(CAMPS)
     .map((c) => `<option value="${c.name}"${preset.camp === c.slug ? " selected" : ""}>${c.name}</option>`)
     .join("");
-  const studyOpts = [...Object.values(STUDY), STPAUL]
+  const studyOpts = [...Object.values(STUDY), STPAUL, ELC]
     .map((s) => `<option value="${s.name}"${preset.camp === s.slug ? " selected" : ""}>${s.name}</option>`)
     .join("");
   const gradeOpts = GRADES.map((g) => `<option value="${g.label}"${preset.grade === g.key ? " selected" : ""}>${g.label}</option>`).join("");
@@ -226,7 +228,7 @@ function consultSection(preset = {}) {
       </div>
       <div class="form-row two">
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
-        <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="여름캠프">${summerOpt}</optgroup><optgroup label="유학·세인트폴">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
+        <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="여름캠프">${summerOpt}</optgroup><optgroup label="유학·진학 과정">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
       <div class="form-row two">
       </div>
@@ -328,6 +330,17 @@ function buildIndex() {
         </div>
       </div>
     </div>
+    <div class="hs-slide">
+      <div class="wrap hero-inner">
+        <p class="hero-kicker">미국·캐나다 대학 토플면제교육원</p>
+        <h1>TOEFL·SAT·내신 없이,<br>미국·캐나다 대학으로</h1>
+        <p class="hero-sub">국내 6개월 공인 ESL 과정을 마치면 텍사스주립대·뉴욕주립대·UC 편입 명문 컬리지까지.<br>고3 졸업생·재수생·검정고시생 대상, 2027 겨울학기 45명 선착순 모집.</p>
+        <div class="hero-actions">
+          <a class="btn btn-coral" href="elc.html">과정 안내 보기</a>
+          <a class="btn btn-line" href="#consult">상담 신청</a>
+        </div>
+      </div>
+    </div>
   </div>
   <button class="hs-arrow hs-prev" type="button" aria-label="이전 화면">‹</button>
   <button class="hs-arrow hs-next" type="button" aria-label="다음 화면">›</button>
@@ -335,6 +348,7 @@ function buildIndex() {
     <button type="button" class="on" aria-label="1번 화면"></button>
     <button type="button" aria-label="2번 화면"></button>
     <button type="button" aria-label="3번 화면"></button>
+    <button type="button" aria-label="4번 화면"></button>
   </div>
   <script>
   (function(){
@@ -503,7 +517,34 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="elc">
+  <div class="wrap">
+    <h2 class="sec-title">고3·재수생이라면 — 미국·캐나다 대학 토플면제교육원</h2>
+    <p class="sec-sub">수능 대신 미국·캐나다 대학으로 방향을 정한 학생을 위한 과정입니다. 국내에서 6개월 공인 ESL 과정과 대학 교양학점을 채우면 TOEFL·SAT·내신 없이 파트너 대학으로 진학합니다. 2011년부터 1,000명 넘게 이 길로 갔습니다.</p>
+    <div class="two-col">
+      <div>
+        <dl class="info-list">
+          <div><dt>대상</dt><dd>고3 졸업(예정)생 · 재수생 · 검정고시생 · 대학생</dd></div>
+          <div><dt>모집</dt><dd>2027 겨울학기 45명 · 선착순 마감</dd></div>
+          <div><dt>과정</dt><dd>2027년 1월 개강 · 6개월 후 8월 출국</dd></div>
+          <div><dt>진학처</dt><dd>텍사스·뉴욕·캘리포니아 주립대, UC 편입 컬리지, 캐나다 세네카 등 20개교</dd></div>
+        </dl>
+      </div>
+      <div>
+        <ul class="check-list">
+          <li>No TOEFL · No SAT · No 내신 — 자체 전형(서류+영어테스트·면접)으로 선발</li>
+          <li>산타모니카·디앤자 컬리지 경유 UCLA·UC버클리 편입 트랙 운영</li>
+          <li>편입장학금 수혜 시 In-State 학비 적용, 연 $13,000~20,000 절감 가능</li>
+          <li>대학 지원·수속 대행부터 공항 픽업·기숙사 등 현지 정착까지 지원</li>
+        </ul>
+      </div>
+    </div>
+    <div class="btn-row"><a class="btn btn-navy" href="elc.html">토플면제교육원 안내 →</a>
+    <a class="btn btn-line" href="#consult">상담 신청 →</a></div>
+  </div>
+</section>
+
+<section class="section alt">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">유학 가이드</h2></summary>
     <p class="sec-sub">조기유학은 언제가 적기인지, 1년에 실제로 얼마가 드는지, 귀국하면 학적은 어떻게 되는지 — 자주 받는 질문부터 하나씩 짚었습니다.</p>
@@ -517,8 +558,8 @@ ${consultSection()}`;
 
   return page({
     file: "index.html",
-    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 세인트폴 대치 아카데미`,
-    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미까지. 캠프 체험에서 유학 결정까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
+    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 미국·캐나다 대학 토플면제`,
+    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원까지. 캠프 체험에서 유학·대학 진학까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
     hero,
     body,
     jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
@@ -1330,6 +1371,7 @@ function studyNav(current = "") {
     ["study-after.html", "졸업 후 진로"],
     ["study-faq.html", "자주 묻는 질문"],
     ["study-guide.html", "유학 가이드"],
+    ["elc.html", "대학 토플면제"],
   ].filter(([href]) => href !== current);
   return `<p class="sec-sub" style="margin-top:18px">유학 안내 더 보기: ${items.map(([h, t]) => `<a href="${h}">${t}</a>`).join(" · ")}</p>`;
 }
@@ -1395,6 +1437,7 @@ function buildStudyHub() {
     <li>해외 출국이 부담스럽다면 대치동에서 미국 교과과정을 밟는 길도 있습니다</li>
   </ol>
   <p class="sec-sub" style="margin-top:16px">뉴질랜드 유학은 <a href="newzealand.html">뉴질랜드 겨울캠프</a>와 같은 학교, 캐나다 관리형은 <a href="canada-3week.html">캐나다 3주 캠프</a>와 같은 교육청에서 진행됩니다. 준비 일정은 <a href="study-process.html">유학 준비 절차</a>에 월 단위로 정리해 두었습니다.</p>
+  <p class="sec-sub" style="margin-top:10px">고3 졸업(예정)생·재수생이라면 중·고등 유학 대신 <a href="elc.html">미국·캐나다 대학 토플면제교육원</a> — 국내 6개월 과정으로 TOEFL 없이 대학에 진학하는 길을 보세요.</p>
 </div></section>
 
 <section class="section alt"><div class="wrap">
@@ -1577,6 +1620,118 @@ ${studyConsult(s.slug, { title: "세인트폴 대치 아카데미 상담", copy:
     desc: `유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 입학 절차와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "School", name: s.name, address: { "@type": "PostalAddress", addressLocality: "서울 강남구 대치동" } },
+  });
+}
+
+// ------------------------------------------------------------
+// 미국·캐나다 대학 토플면제교육원 (ELC)
+// ------------------------------------------------------------
+function buildElc() {
+  const s = ELC;
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">🎓 국내 6개월 → 미국·캐나다 대학</p>
+    <h1>${s.name}</h1>
+    <p class="hero-sub">${s.tag}</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">한눈에 보기</h2>
+  <dl class="info-list">
+    <div><dt>기관</dt><dd>${s.engName} — 2011년 서울 설립 공인 ESL 교육기관</dd></div>
+    <div><dt>과정</dt><dd>국내 6개월 공인 ESL + 국내대학 교양과목 이수 → 미국·캐나다 파트너 대학 진학</dd></div>
+    <div><dt>지원 자격</dt><dd>${s.target}</dd></div>
+    <div><dt>모집</dt><dd>2027학년도 신·편입생 수시모집(겨울학기) · 45명 선착순</dd></div>
+    <div><dt>비용</dt><dd>${s.price} · 대학별 연간 유학 비용은 아래 표 참고</dd></div>
+    <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
+  </dl>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">어떤 과정인가요</h2>
+  <p class="lead">${s.intro}</p>
+  <p style="margin-top:14px">핵심은 순서를 바꾸는 것입니다. 영어 점수를 만들어 유학을 떠나는 대신, <strong>한국에서 먼저 6개월간 대학 수업을 감당할 영어를 만들고</strong>
+  미국 대학이 학점으로 인정하는 국내대학 교양과목까지 이수한 뒤 출국합니다. 그래서 TOEFL·SAT·내신 없이 지원이 가능하고, 현지에서 어학연수로 보내는 기간과 비용이 줄어듭니다.</p>
+  <ul class="check-list" style="margin-top:20px">${s.points.map((p) => `<li>${p}</li>`).join("")}</ul>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">2027 겨울학기 모집 개요</h2>
+  <dl class="info-list">
+    ${s.schedule.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
+  </dl>
+  <h3 class="sec-title-sm" style="margin-top:28px">지원 서류</h3>
+  <ul class="check-list">${s.applyDocs.map((d) => `<li>${d}</li>`).join("")}</ul>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">입학 전형은 이렇게 진행됩니다</h2>
+  <ol class="step-list">${s.admission.map((a) => `<li>${a}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">공인 영어 성적이 없어도 지원할 수 있습니다. 심층면접은 원어민 면접관과 한국 교수님이 함께 진행하며, 한국어로 면접을 볼 수 있습니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">6개월 교육과정</h2>
+  <dl class="info-list">
+    <div><dt>하루 일과</dt><dd>${s.curriculum.daily}</dd></div>
+    <div><dt>반 편성</dt><dd>${s.curriculum.levels}</dd></div>
+    <div><dt>TOEFL 면제 요건</dt><dd>${s.curriculum.waiver}</dd></div>
+    <div><dt>교양 이수 요건</dt><dd>${s.curriculum.gpa}</dd></div>
+  </dl>
+  <p class="sec-sub" style="margin-top:14px">TESOL 석사 등 원어민 교수진이 듣기·말하기(L/S)와 읽기·쓰기(R/W)를 나눠 맡아, 미국 대학 부설 어학원과 같은 방식으로 수업합니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">진학 로드맵 — 세 가지 트랙</h2>
+  <p class="sec-sub">6개월 과정을 마친 뒤 학생의 성적·전공·예산에 따라 트랙을 정합니다.</p>
+  <div class="fit-grid">
+    ${s.tracks.map(([k, v]) => `<div><strong>${k}</strong><p>${v}</p></div>`).join("\n    ")}
+  </div>
+  <p class="sec-sub" style="margin-top:16px">${s.clep}</p>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">대학별 입학 요건 · 연간 예상 유학 비용</h2>
+  <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>대학명</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
+    <tbody>${s.universities.map((u) => `<tr><th>${u[0]}</th>${u.slice(1).map((c, i) => `<td>${i === 5 ? `<strong>${c}</strong>` : c}</td>`).join("")}</tr>`).join("\n    ")}</tbody>
+  </table></div>
+  <ul class="check-list" style="margin-top:20px">${s.universityNotes.map((n) => `<li>${n}</li>`).join("")}</ul>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">${s.warmup.title}</h2>
+  <dl class="info-list">
+    <div><dt>기간</dt><dd>${s.warmup.period}</dd></div>
+    <div><dt>대상</dt><dd>${s.warmup.target}</dd></div>
+  </dl>
+  <ul class="check-list" style="margin-top:18px">${s.warmup.points.map((p) => `<li>${p}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:14px">일찍 합격해 두면 정식 개강 전 토요일 과정으로 영어 워밍업과 교양학점 선이수를 시작할 수 있습니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title-sm">자주 묻는 질문</h2>
+  <div class="faq-list">
+    ${s.faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
+  </div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">신청 전 확인하세요</h2>
+  <p>${s.notice}</p>
+  <p class="sec-sub" style="margin-top:16px">중·고등학생이라면 시기가 다릅니다: <a href="study.html">중·고등 유학 안내</a> · <a href="stpaul.html">세인트폴 대치 아카데미</a> — 고교 단계에서 미리 준비하는 길을 보세요.</p>
+</div></section>
+${studyConsult(s.slug, {
+    title: "미국·캐나다 대학 토플면제교육원 상담",
+    copy: "학생의 현재 상황(졸업 연도·검정고시·대학 재학 여부)과 희망 전공을 남겨 주세요.<br>지원 자격과 전형 일정, 비용을 정리해 안내해 드립니다.",
+    points: ["모집 45명 선착순 — 마감 전 상담을 권합니다", "영어 성적이 없어도 지원 가능 여부 확인", "대학별 비용·장학금 절감 방법까지 함께 안내"],
+  })}`;
+  return page({
+    file: "elc.html",
+    title: `미국·캐나다 대학 토플면제교육원 | TOEFL·SAT·내신 없이 미국 대학 진학 — 2027 겨울학기 모집`,
+    desc: `국내 6개월 공인 ESL 과정으로 TOEFL·SAT·내신 없이 미국·캐나다 대학 진학. 텍사스·뉴욕·캘리포니아 주립대, UCLA·UC버클리 편입 트랙, 캐나다 세네카까지 20개 대학. 고3 졸업생·재수생·검정고시생 대상, 2027년 1월 개강 45명 선착순.`,
+    hero, body,
+    jsonld: { "@context": "https://schema.org", "@type": "Service", name: s.name, provider: { "@type": "Organization", name: "러닝트래블" } },
   });
 }
 
@@ -2664,6 +2819,7 @@ pages.push(buildStPaulCollege());
 pages.push(buildStPaulLife());
 pages.push(buildStPaulVsAbroad());
 pages.push(buildStPaulFaq());
+pages.push(buildElc());
 pages.push(buildSummerHub());
 for (const s of SUMMER_COUNTRIES) pages.push(buildSummerCountry(s));
 for (const ic of INFO_COUNTRIES) pages.push(buildInfoCountry(ic));
