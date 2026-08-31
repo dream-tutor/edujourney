@@ -3,7 +3,7 @@
 // ============================================================
 const fs = require("fs");
 const path = require("path");
-const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, SCHEDULES, CAMP_FAQ } = require("./data.js");
+const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
@@ -124,7 +124,9 @@ function footer() {
         <h3>캠프 안내</h3>
         <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="compare.html">캠프 비교</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
         <h3 style="margin-top:26px">유학 · 세인트폴 대치 아카데미</h3>
-        <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a>\n<a href="elc.html">미국·캐나다 대학 토플면제교육원</a></div>
+        <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a></div>
+        <h3 style="margin-top:26px">미국·캐나다 대학 토플면제</h3>
+        <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
       </div>
     </div>
     <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료 출처: 쏠루트 유학</p>
@@ -1697,24 +1699,33 @@ function buildElc() {
   <p class="sec-sub" style="margin-top:16px">${s.clep}</p>
 </div></section>
 
-<section class="section"><div class="wrap">
+<section class="section" id="univs"><div class="wrap">
   <h2 class="sec-title">대학별 입학 요건 · 연간 예상 유학 비용</h2>
+  <p class="sec-sub">대학명을 누르면 학교별 안내 페이지로 이동합니다.</p>
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
   <div class="table-wrap"><table class="cmp">
     <thead><tr><th>대학명</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
-    <tbody>${s.universities.map((u) => `<tr><th>${u[0]}</th>${u.slice(1).map((c, i) => `<td>${i === 5 ? `<strong>${c}</strong>` : c}</td>`).join("")}</tr>`).join("\n    ")}</tbody>
+    <tbody>${s.universities.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
   <ul class="check-list" style="margin-top:20px">${s.universityNotes.map((n) => `<li>${n}</li>`).join("")}</ul>
 </div></section>
 
-<section class="section alt"><div class="wrap narrow">
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">내 상황에서 보면 어떤 과정인가요</h2>
+  <p class="sec-sub">같은 과정이라도 지금 어디에 서 있느냐에 따라 따져볼 것이 다릅니다. 상황별로 나눠 정리했습니다.</p>
+  <div class="camp-grid">
+    ${ELC_AUDIENCES.map((a) => `<a class="camp-card" href="${a.slug}.html"><span class="camp-flag">🎓 ${a.label}</span><h3>${a.kicker}</h3><p class="camp-tag">${a.tag}</p><span class="camp-more">자세히 보기 →</span></a>`).join("\n    ")}
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
   <h2 class="sec-title">현지 도착 첫날부터 정착까지</h2>
   <p class="lead">${s.settlement.intro}</p>
   <ol class="step-list" style="margin-top:18px">${s.settlement.steps.map((x) => `<li>${x}</li>`).join("")}</ol>
   <p class="sec-sub" style="margin-top:16px">${s.settlement.result}</p>
 </div></section>
 
-<section class="section"><div class="wrap narrow">
+<section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">${s.warmup.title}</h2>
   <dl class="info-list">
     <div><dt>기간</dt><dd>${s.warmup.period}</dd></div>
@@ -1724,17 +1735,18 @@ function buildElc() {
   <p class="sec-sub" style="margin-top:14px">일찍 합격해 두면 정식 개강 전 토요일 과정으로 영어 워밍업과 교양학점 선이수를 시작할 수 있습니다.</p>
 </div></section>
 
-<section class="section alt"><div class="wrap narrow">
+<section class="section"><div class="wrap narrow">
   <h2 class="sec-title-sm">자주 묻는 질문</h2>
   <div class="faq-list">
     ${s.faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
   </div>
 </div></section>
 
-<section class="section"><div class="wrap narrow">
+<section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title-sm">신청 전 확인하세요</h2>
   <p>${s.notice}</p>
-  <p class="sec-sub" style="margin-top:16px">아직 중·고등학생이라면 이 과정보다 앞 단계가 맞습니다. <a href="study.html">중·고등 유학 안내</a>와 <a href="stpaul.html">세인트폴 대치 아카데미</a>를 먼저 보세요.</p>
+  ${elcNav("elc.html")}
+  <p class="sec-sub" style="margin-top:10px">아직 중·고등학생이라면 이 과정보다 앞 단계가 맞습니다. <a href="study.html">중·고등 유학 안내</a>와 <a href="stpaul.html">세인트폴 대치 아카데미</a>를 먼저 보세요.</p>
 </div></section>
 ${studyConsult(s.slug, {
     title: "미국·캐나다 대학 토플면제교육원 상담",
@@ -1747,6 +1759,133 @@ ${studyConsult(s.slug, {
     desc: `국내 6개월 공인 ESL 과정으로 TOEFL·SAT·내신 없이 미국·캐나다 대학 진학. 텍사스·뉴욕·캘리포니아 주립대, UCLA·UC버클리 편입 트랙, 캐나다 세네카까지 20개 대학. 고3 졸업생·재수생·검정고시생 대상, 2027년 1월 개강 45명 선착순.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "Service", name: s.name, provider: { "@type": "Organization", name: "러닝트래블" } },
+  });
+}
+
+// ------------------------------------------------------------
+// 토플면제교육원 — 대학별·대상별 페이지
+// ------------------------------------------------------------
+function elcNav(current = "") {
+  const items = [
+    ["elc.html", "과정 전체 안내"],
+    ...ELC_AUDIENCES.map((a) => [`${a.slug}.html`, `${a.label} 안내`]),
+    ["elc.html#univs", "대학 20곳 비교표"],
+  ].filter(([href]) => href !== current);
+  return `<p class="sec-sub" style="margin-top:18px">토플면제교육원 더 보기: ${items.map(([h, t]) => `<a href="${h}">${t}</a>`).join(" · ")}</p>`;
+}
+
+function elcConsult(preset = {}) {
+  return studyConsult("elc", {
+    title: preset.title || "미국·캐나다 대학 토플면제교육원 상담",
+    copy: preset.copy || "학생의 현재 상황과 희망 전공을 남겨 주세요.<br>지원 자격과 전형 일정, 비용을 정리해 안내해 드립니다.",
+    points: preset.points || ["모집 45명 선착순 — 마감 전 상담을 권합니다", "영어 성적이 없어도 지원 가능 여부 확인", "대학별 비용·장학금 절감 방법까지 함께 안내"],
+  });
+}
+
+// 대학 개별 페이지 — 표의 한 줄을 검색 키워드가 붙는 한 장으로
+function buildElcUniv(u) {
+  const groupText = {
+    waiver4: `이 학교는 별도 영어 시험이 필요 없는 <strong>공인영어 면제 대학</strong>입니다. ELC 6개월 과정에서 각 단계 평균 B(80점) 이상을 만들면 그 자체로 영어 요건이 끝나고, 국내대학 교양 ${u.credits}을 채우면 지원 준비가 완성됩니다. ${u.hs === "면제" ? "고교 내신은 보지 않습니다." : `고교 내신은 ${u.hs} 이상인지 확인합니다.`}`,
+    cc: `커뮤니티컬리지는 4년제의 1·2학년 과정을 대신하는 학교입니다. ELC 수료로 공인영어가 면제된 상태로 입학한 뒤, 2년간 GPA와 이수 과목을 만들어 UC·CSU 계열 4년제로 편입하는 것이 기본 그림입니다. ELC의 UC/CSU 편입준비반이 GPA 관리·에세이·비교과 활동·TAG(편입보장) 전략까지 함께 잡습니다. ${u.hs === "면제" ? "고교 내신은 보지 않습니다." : `고교 내신은 ${u.hs} 이상을 확인합니다.`}`,
+    det: `이 학교는 ELC 수료에 더해 <strong>DET(듀오링고 영어 시험) ${u.english.replace("DET ", "")}점</strong>이 필요합니다. 명문대 패스웨이반에서 6개월 ESL 과정과 DET 준비를 병행하고, 점수를 만들면 ${u.hs === "면제" ? "고교 내신 없이" : `내신 ${u.hs} 확인을 거쳐`} 지원합니다. 국내대학 교양은 ${u.credits}이 기준입니다.`,
+  }[u.group];
+  const groupLabel = { waiver4: "공인영어 면제 대학", cc: "UC 편입 커뮤니티컬리지", det: "DET 명문대 패스웨이" }[u.group];
+  const siblings = ELC.universities.filter((x) => x.group === u.group && x.slug !== u.slug);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">🎓 ${u.city} · ${u.kind}</p>
+    <h1>${u.name}</h1>
+    <p class="hero-sub">${u.tag} — 미국·캐나다 대학 토플면제교육원 진학처</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">입학 요건 · 연간 예상 비용</h2>
+  <dl class="info-list">
+    <div><dt>학교 형태</dt><dd>${u.kind} (${u.city})</dd></div>
+    <div><dt>공인영어</dt><dd>${u.english === "면제" ? "면제 — ELC 6개월 공인 ESL 과정 이수로 대체" : `${u.english} (듀오링고 영어 시험 기준 점수)`}</dd></div>
+    <div><dt>국내대학 교양</dt><dd>${u.credits} (미국 대학 인정 교양학점 기준)</dd></div>
+    <div><dt>고교 내신</dt><dd>${u.hs === "면제" ? "면제 — 내신 제출 없이 지원" : `${u.hs} 이상 확인`}</dd></div>
+    <div><dt>연간 학비</dt><dd>${u.tuition}</dd></div>
+    <div><dt>기숙사·식비</dt><dd>${u.room}</dd></div>
+    <div><dt>연간 합계</dt><dd><strong>${u.total}</strong> <span class="dim">(생활비·보험·항공·비자 별도, 2026~2027학년도 기준)</span></dd></div>
+    <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
+  </dl>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">어떤 학교인가요</h2>
+  <p class="lead">${u.blurb}</p>
+  <p style="margin-top:14px">${groupText}</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">이 학교까지 가는 순서</h2>
+  <ol class="step-list">
+    <li>토플면제교육원 지원 — 서류(생기부·자기소개서) + 자체 영어테스트·면접 (공인 영어 성적 불필요)</li>
+    <li>국내 6개월 공인 ESL 과정 + 국내대학 교양과목 이수 (${u.credits})</li>
+    ${u.group === "det" ? `<li>명문대 패스웨이반에서 DET ${u.english.replace("DET ", "")}점 취득</li>` : `<li>각 단계 평균 B(80점) 이상으로 공인영어 면제 확정</li>`}
+    <li>대학 지원·입학 수속 대행 → 합격 후 출국</li>
+    <li>현지 도착 후 공항 픽업·기숙사 입실·계좌 개설 등 정착 지원</li>
+  </ol>
+  <p class="sec-sub" style="margin-top:14px">전형은 연 4회(1·3·7·9월 개강)이며, 어느 전형이든 6개월 뒤 바로 다음 학기에 출발합니다. 일정은 <a href="elc.html">과정 전체 안내</a>에 정리되어 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">같은 유형의 다른 학교</h2>
+  <p class="sec-sub">${groupLabel}: ${siblings.map((x) => `<a href="${x.slug}.html">${x.name.split(" (")[0]}</a>`).join(" · ")}</p>
+  ${elcNav(`${u.slug}.html`)}
+</div></section>
+${elcConsult({ title: `${u.name.split(" (")[0]} 진학 상담`, copy: "학생의 현재 상황(졸업 연도·재학 여부)과 희망 전공을 남겨 주세요.<br>이 학교 기준의 요건 충족 방법과 비용을 안내해 드립니다." })}`;
+  return page({
+    file: `${u.slug}.html`,
+    title: `${u.name} 입학 안내 | ${u.english === "면제" ? "토플 면제 입학" : `${u.english} 요건`} · 연간 ${u.total} — 토플면제교육원`,
+    desc: `${u.city} ${u.kind} ${u.name.split(" (")[0]} — 공인영어 ${u.english}, 국내 교양 ${u.credits}, 내신 ${u.hs}. 연간 예상 비용 ${u.total}(학비+기숙사·식비). 국내 6개월 ESL 과정으로 준비하는 진학 경로와 상담 안내.`,
+    hero, body,
+    jsonld: { "@context": "https://schema.org", "@type": "Service", name: `${u.name} 진학 안내`, provider: { "@type": "Organization", name: "러닝트래블" } },
+  });
+}
+
+// 대상별 페이지 — 고3·재수생·검정고시·대학생
+function buildElcAudience(a) {
+  const others = ELC_AUDIENCES.filter((x) => x.slug !== a.slug);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">🎓 ${a.kicker}</p>
+    <h1>${a.h1}</h1>
+    <p class="hero-sub">${a.tag}</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  ${a.lead.map((p, i) => `<p class="${i === 0 ? "lead" : ""}" ${i > 0 ? 'style="margin-top:14px"' : ""}>${p}</p>`).join("\n  ")}
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">${a.label} 기준으로 정리하면</h2>
+  <ul class="check-list">${a.points.map((p) => `<li>${p}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:16px"><strong>미리 확인할 것</strong> — ${a.caution}</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">과정 개요</h2>
+  <dl class="info-list">
+    <div><dt>과정</dt><dd>국내 6개월 공인 ESL + 국내대학 교양과목 → 미국·캐나다 파트너 대학 진학</dd></div>
+    <div><dt>전형</dt><dd>연 4회 (1·3·7·9월 개강) · 서류 50% + 영어테스트·면접 50%</dd></div>
+    <div><dt>진학처</dt><dd>텍사스·뉴욕·캘리포니아 주립대, UC 편입 컬리지, 캐나다 세네카 등 <a href="elc.html#univs">20개교 비교표</a></dd></div>
+    <div><dt>비용</dt><dd>교육원 학비는 상담 안내 · 대학 연간 비용은 학비+기숙사 기준 $27,000~60,000</dd></div>
+  </dl>
+  <p class="sec-sub" style="margin-top:14px">전형 절차·교육과정·트랙은 <a href="elc.html">과정 전체 안내</a>에 정리되어 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title-sm">다른 상황이라면</h2>
+  <p class="sec-sub">${others.map((x) => `<a href="${x.slug}.html">${x.label} 안내</a>`).join(" · ")}</p>
+  ${elcNav(`${a.slug}.html`)}
+</div></section>
+${elcConsult({ title: a.consultTitle, copy: a.consultCopy })}`;
+  return page({
+    file: `${a.slug}.html`,
+    title: `${a.label} 미국·캐나다 대학 진학 | ${a.kicker} — 토플면제교육원`,
+    desc: `${a.tag}. TOEFL·SAT 없이 자체 전형으로 선발, 국내 6개월 과정 후 미국·캐나다 20개 대학 진학. ${a.label} 기준의 지원 자격·일정·확인할 점 안내.`,
+    hero, body,
+    jsonld: { "@context": "https://schema.org", "@type": "Service", name: `${a.label} 미국·캐나다 대학 진학 안내`, provider: { "@type": "Organization", name: "러닝트래블" } },
   });
 }
 
@@ -2835,6 +2974,8 @@ pages.push(buildStPaulLife());
 pages.push(buildStPaulVsAbroad());
 pages.push(buildStPaulFaq());
 pages.push(buildElc());
+for (const u of ELC.universities) pages.push(buildElcUniv(u));
+for (const a of ELC_AUDIENCES) pages.push(buildElcAudience(a));
 pages.push(buildSummerHub());
 for (const s of SUMMER_COUNTRIES) pages.push(buildSummerCountry(s));
 for (const ic of INFO_COUNTRIES) pages.push(buildInfoCountry(ic));
