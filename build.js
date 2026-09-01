@@ -1084,7 +1084,7 @@ function buildCountry(ct) {
     <li>미국 동부(뉴욕·보스턴)와 아이비리그 투어를 묶을 수 있는 유일한 지역</li>
     <li>토론토 직항으로 이동 부담이 적음</li>` : ""}
     ${ct.slug === "newzealand" ? `
-    <li>한국의 겨울이 현지의 여름, 야외활동에 최적의 계절</li>
+    <li>한국의 겨울이 현지의 여름이라 야외활동하기 좋은 계절</li>
     <li>유학생 비율이 낮은 학교에서 현지 학생들과 깊게 어울리는 환경</li>
     <li>1월 영어캠프 + 2월 정규과정으로 기초부터 실전까지 단계적 구성</li>
     <li>3주·4주·7주 선택 + 주 단위 연장 가능한 유연함</li>` : ""}
@@ -1251,7 +1251,7 @@ function buildSummerHub() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <p class="lead">여름 해외캠프는 방학이 짧아 2~4주 과정 중심으로 운영됩니다. 2027 여름 시즌의 국가·학교·일정은 확정 단계에 있으며,
-  겨울캠프와 동일한 운영 원칙(인솔자 동행, 검증된 홈스테이, 학부모 실시간 공유)이 그대로 적용됩니다.</p>
+  겨울캠프와 같은 운영 원칙(인솔자 동행, 신원조회를 거친 홈스테이, 학부모 실시간 공유)이 그대로 적용됩니다.</p>
   <h2 class="sec-title-sm" style="margin-top:26px">국가별 여름 캠프 방향</h2>
   <div class="fit-grid">
     ${SUMMER_COUNTRIES.map((s) => `<div><strong><a href="summer-${s.slug}.html">${s.name} 여름캠프</a></strong><p>${s.note}</p></div>`).join("\n")}
