@@ -120,7 +120,7 @@ function crumbsJsonld(trail, pageUrl) {
 // ------------------------------------------------------------
 // 레이아웃
 // ------------------------------------------------------------
-function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null }) {
+function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null, og = null }) {
   const url = `${BASE_URL}/${file === "index.html" ? "" : file}`;
   const isHome = file === "index.html";
 
@@ -157,7 +157,7 @@ function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${BASE_URL}/og-image.png?v=3">
+<meta property="og:image" content="${og ? absUrl(og) : `${BASE_URL}/og-image.png?v=3`}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
@@ -1909,7 +1909,8 @@ ${studyConsult(s.slug, {
   })}`;
   return page({
     file: "elc.html",
-    title: `미국·캐나다 대학 토플면제교육원 | TOEFL·SAT·내신 없이 미국 대학 진학 — 2027 겨울학기 모집`,
+    og: elcOg("elc"),
+    title: `토플 없이 미국 대학 진학 | 미국·캐나다 대학 토플면제교육원 2027 모집`,
     desc: `국내 6개월 공인 ESL 과정으로 TOEFL·SAT·내신 없이 미국·캐나다 대학 진학. 텍사스·뉴욕·캘리포니아 주립대, UCLA·UC버클리 편입 트랙, 캐나다 세네카까지 20개 대학. 고3 졸업생·재수생·검정고시생 대상, 2027년 1월 개강 45명 선착순.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "Service", name: s.name, provider: { "@type": "Organization", name: "러닝트래블" } },
@@ -1999,7 +2000,8 @@ ${elcUnivDetail(u)}
 ${elcConsult({ title: `${u.name.split(" (")[0]} 진학 상담`, copy: "학생의 현재 상황(졸업 연도·재학 여부)과 희망 전공을 남겨 주세요.<br>이 학교 기준의 요건 충족 방법과 비용을 안내해 드립니다." })}`;
   return page({
     file: `${u.slug}.html`,
-    title: `${u.name} 입학 안내 | ${u.english === "면제" ? "토플 면제 입학" : `${u.english} 요건`} · 연간 ${u.total} — 토플면제교육원`,
+    og: elcOg(u.slug),
+    title: `${u.name.replace(" (", "(")} 입학 조건·연간 ${u.total} | ${u.english === "면제" ? (u.city.startsWith("캐나다") ? "토플 없이 캐나다 대학" : "토플 없이 미국 대학") : `${u.english} 토플면제 진학`}`,
     desc: `${u.city} ${u.kind} ${u.name.split(" (")[0]} — 공인영어 ${u.english}, 국내 교양 ${u.credits}, 내신 ${u.hs}. 연간 예상 비용 ${u.total}(학비+기숙사·식비). 국내 6개월 ESL 과정으로 준비하는 진학 경로와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "Service", name: `${u.name} 진학 안내`, provider: { "@type": "Organization", name: "러닝트래블" } },
@@ -2044,7 +2046,8 @@ function buildElcAudience(a) {
 ${elcConsult({ title: a.consultTitle, copy: a.consultCopy })}`;
   return page({
     file: `${a.slug}.html`,
-    title: `${a.label} 미국·캐나다 대학 진학 | ${a.kicker} — 토플면제교육원`,
+    og: elcOg(a.slug),
+    title: a.seoTitle || `${a.label} 미국·캐나다 대학 진학 | ${a.kicker} — 토플면제교육원`,
     desc: `${a.tag}. TOEFL·SAT 없이 자체 전형으로 선발, 국내 6개월 과정 후 미국·캐나다 20개 대학 진학. ${a.label} 기준의 지원 자격·일정·확인할 점 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "Service", name: `${a.label} 미국·캐나다 대학 진학 안내`, provider: { "@type": "Organization", name: "러닝트래블" } },
@@ -2054,6 +2057,11 @@ ${elcConsult({ title: a.consultTitle, copy: a.consultCopy })}`;
 // ------------------------------------------------------------
 // 토플면제교육원 — 대학별 상세 섹션(elc-data.js) + 주제별 페이지(SUNY·정착·장학금·UC편입·텍사스·용어)
 // ------------------------------------------------------------
+function elcOg(key) {
+  const ph = ELC_PHOTOS[key];
+  return ph && ph[0] ? `img/elc/og/${ph[0].src}` : "img/elc/og/elc-building.jpg";
+}
+
 function elcPhotos(key) {
   const ph = ELC_PHOTOS[key];
   if (!ph || !ph.length) return "";
@@ -2092,13 +2100,14 @@ function elcUnivDetail(u) {
 }
 
 function elcPage({ file, kicker, h1, sub, body, title, desc, consult = {}, jsonld = null }) {
+  const og = elcOg(file.replace(/\.html$/, ""));
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
     <p class="hero-kicker">${kicker}</p>
     <h1>${h1}</h1>
     <p class="hero-sub">${sub}</p>
   </div></section>`;
   return page({
-    file, title, desc, hero,
+    file, title, desc, hero, og,
     jsonld: jsonld || { "@context": "https://schema.org", "@type": "Service", name: String(title).split(" | ")[0], provider: { "@type": "Organization", name: "러닝트래블" } },
     body: `${body}
 <section class="${altAfter(body)}"><div class="wrap narrow">
@@ -2149,7 +2158,7 @@ function buildElcPartners() {
     kicker: "🏫 미국 8곳 · 캐나다 1곳",
     h1: "토플면제 파트너 대학 9곳",
     sub: "ETAMU·프레즈노·오스위고·UCO·버클리컬리지·세네카·산타모니카·디아블로밸리·디앤자 — 설립·규모·비용·장학금 한 장 정리",
-    title: "토플면제 파트너 대학 9곳 | 텍사스·캘리포니아·뉴욕·오클라호마·캐나다 — 미국·캐나다 대학 토플면제교육원",
+    title: "토플면제 파트너 대학 9곳 | 미국 8·캐나다 1 입학 조건·비용",
     desc: "토플면제교육원 수료를 공인영어로 인정하는 파트너 대학 9곳(미국 8·캐나다 1) — 이스트 텍사스 A&M, CSU 프레즈노, SUNY 오스위고, UCO, 버클리컬리지, 세네카, 산타모니카·디아블로밸리·디앤자 컬리지. 설립·재학생·전공·설명회 기준 비용과 이 과정을 고르는 다섯 가지 이유.",
     consult: { title: "파트너 대학 진학 상담", copy: "희망 지역(텍사스·캘리포니아·뉴욕·캐나다)과 전공, 예산을 남겨 주세요.<br>9곳 중 맞는 학교를 골라 요건과 비용을 안내해 드립니다." },
   });
@@ -2223,7 +2232,7 @@ function buildElcSuny() {
     kicker: "🗽 2027학년도 겨울학기 수시전형",
     h1: "뉴욕주립대(SUNY) 진학 가이드",
     sub: "오스위고 입학보장에서 스토니브룩·빙엄턴·버팔로·올버니 편입까지 — 5개 캠퍼스 조건 비교",
-    title: "뉴욕주립대 SUNY 진학 가이드 | 오스위고 입학보장·스토니브룩·버팔로·올버니 — 토플면제교육원",
+    title: "뉴욕주립대 SUNY 입학 조건 | 오스위고 입학보장·편입 가이드",
     desc: "SUNY 5개 캠퍼스(오스위고·스토니브룩·빙엄턴·버팔로·올버니) 입학 조건 비교표. 오스위고 입학보장(ELC Level 3 + 교양 24학점/2.3), DET 95~110 종합평가 캠퍼스, 조건 미달 시 오스위고 진학 후 편입 경로까지.",
     consult: { title: "뉴욕주립대(SUNY) 진학 상담", copy: "희망 캠퍼스와 현재 상황(졸업 연도·재학 여부)을 남겨 주세요.<br>오스위고 입학보장 조건과 상위 캠퍼스 편입 경로를 안내해 드립니다." },
   });
@@ -2267,7 +2276,7 @@ function buildElcSettlement() {
     kicker: "✈️ 공항 픽업부터 기숙사·은행·장보기까지",
     h1: "미국 현지 도착·정착 서비스",
     sub: "ETAMU·프레즈노·UCO·UNT·UTSA — 도착 첫날부터 학교 쪽 사람이 붙어 정착까지 함께합니다",
-    title: "미국 대학 현지 도착·정착 서비스 | 공항 픽업·기숙사 입실·은행 계좌 — 토플면제교육원",
+    title: "미국 대학 공항 픽업·정착 서비스 | 기숙사·은행 계좌까지 학교별 순서",
     desc: "토플면제교육원 진학생의 미국 현지 정착 서비스. ETAMU(2011년부터 현지 교수진 주관)·CSU 프레즈노·UCO·UNT·UTSA에서 공항 픽업, 국제처 OT, 기숙사 입실, 학생증·은행 계좌, 월마트 장보기까지 진행한 순서.",
     consult: { title: "현지 정착 서비스 상담", copy: "희망 학교와 출국 예정 시기를 남겨 주세요.<br>그 학교의 도착 프로그램과 준비물을 안내해 드립니다." },
   });
@@ -2310,7 +2319,7 @@ function buildElcScholarship() {
     kicker: "💰 장학금 사례 · In-State 학비 · 학점 선이수",
     h1: "미국 대학 장학금과<br>유학 비용 줄이는 방법",
     sub: "UCO $64,000 · 오스위고 3년 $12,000 보장 · 세네카 C$5,000 · 텍사스 In-State 학비 — 그리고 20개 대학 비용 순위",
-    title: "미국 대학 장학금·유학 비용 절감 | UCO $64,000 사례·In-State 학비·CLEP — 토플면제교육원",
+    title: "미국 대학 장학금·유학 비용 절감 | 20개 대학 연간 비용 순위",
     desc: "토플면제교육원 진학생 장학금 사례(UCO 합계 $64,000, SUNY 오스위고 3년 $12,000 보장, 세네카 최대 C$5,000)와 비용 절감 제도(텍사스 In-State 학비, 장학금 트랙, CLEP 12학점, 온라인 학기). 20개 대학 연간 비용 순위표.",
     consult: { title: "장학금·비용 상담", copy: "예산 범위와 희망 지역·전공을 남겨 주세요.<br>그 범위에서 갈 수 있는 학교와 장학금 가능성을 계산해 드립니다.", points: ["대학별 연간 비용과 장학금 가능성 정리", "장학금 트랙·CLEP·온라인 학기 활용 여부", "교육원 학비·예치금은 상담 시 안내"] },
   });
@@ -2365,7 +2374,7 @@ function buildElcUcTransfer() {
     kicker: "🌉 커뮤니티컬리지 2년 → UC·CSU 편입",
     h1: "UCLA·UC버클리 편입 경로 —<br>커뮤니티컬리지에서 시작하기",
     sub: "산타모니카·디앤자·디아블로밸리 컬리지를 거쳐 UC 계열로 편입하는 UC/CSU 편입준비반 안내",
-    title: "UCLA·UC버클리 편입 경로 | 산타모니카·디앤자·디아블로밸리 커뮤니티컬리지 — 토플면제교육원",
+    title: "UCLA·UC버클리 편입 경로 | 커뮤니티컬리지에 토플 없이 입학",
     desc: "토플 없이 커뮤니티컬리지(산타모니카·디앤자·디아블로밸리)에 입학해 2년 뒤 UCLA·UC버클리 등 UC·CSU로 편입하는 경로. 컬리지별 비용 비교, 편입준비반의 GPA 관리·TAG 전략, 준비 순서 안내.",
     consult: { title: "UC 편입 경로 상담", copy: "목표 UC 캠퍼스와 희망 전공, 현재 상황을 남겨 주세요.<br>맞는 컬리지와 2년 편입 계획을 정리해 드립니다." },
   });
@@ -2406,7 +2415,7 @@ function buildElcTexas() {
     kicker: "🤠 ETAMU · UNT · UTSA · UH · TXST",
     h1: "텍사스 주립대 5곳 —<br>토플 없이 가는 미국 대학",
     sub: "In-State 학비 적용과 DFW 공항 픽업부터 시작하는 정착 서비스, 텍사스 학교끼리 비교",
-    title: "텍사스 주립대 유학 | ETAMU·UNT·UTSA·휴스턴·텍사스주립대 비교 — 토플면제교육원",
+    title: "텍사스 주립대 유학 5곳 비교 | In-State 학비·토플 없이 입학",
     desc: "토플면제교육원 진학처 중 텍사스 주립대 5곳(이스트 텍사스 A&M·노스텍사스·UT 샌안토니오·휴스턴·텍사스주립대) 요건·비용 비교. In-State 학비 적용 조건, DFW 공항 픽업 정착 서비스 안내.",
     consult: { title: "텍사스 주립대 진학 상담", copy: "희망 도시(댈러스·샌안토니오·휴스턴 등)와 전공을 남겨 주세요.<br>텍사스 학교 중 요건과 비용이 맞는 곳을 골라 안내해 드립니다." },
   });
@@ -2434,7 +2443,7 @@ function buildElcGlossary() {
     kicker: "📖 DET · 교양학점 · 입학보장 · In-State · PGWP",
     h1: "토플면제 유학 용어 풀이",
     sub: "안내문과 비교표에 나오는 말을 처음 보는 분 기준으로 풀었습니다",
-    title: "토플면제 미국 대학 진학 용어 풀이 | DET·교양학점·입학보장·In-State·PGWP·CLEP — 토플면제교육원",
+    title: "토플면제 유학 용어 풀이 | DET·교양학점·입학보장·PGWP",
     desc: "토플면제교육원 안내에 나오는 용어 20개 풀이 — 공인 ESL, TOEFL 면제, DET(듀오링고), 국내대학 교양학점, GPA, 내신 면제, 입학보장, 패스웨이, 커뮤니티컬리지, UC/CSU, SUNY, TAG, In-State 학비, CLEP, OPT, PGWP, Co-op, Rolling Base, 정착 서비스.",
     consult: { title: "토플면제 과정 상담", copy: "용어를 다 몰라도 됩니다. 학생의 현재 상황과 희망 방향만 남겨 주세요.<br>과정과 비용을 처음부터 설명해 드립니다." },
     jsonld: { "@context": "https://schema.org", "@type": "DefinedTermSet", name: "토플면제 미국 대학 진학 용어", hasDefinedTerm: ELC_GLOSSARY.map(([t, d]) => ({ "@type": "DefinedTerm", name: t, description: d })) },

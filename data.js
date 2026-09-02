@@ -601,6 +601,7 @@ const ELC = {
 const ELC_AUDIENCES = [
   {
     slug: "elc-go3",
+    seoTitle: "수능 없이 미국 대학 진학 | 고3·졸업생 토플면제 과정",
     label: "고3·졸업생",
     kicker: "수능 이후의 다른 선택지",
     h1: "수능 끝난 고3에게,<br>미국·캐나다 대학이라는 선택지",
@@ -621,6 +622,7 @@ const ELC_AUDIENCES = [
   },
   {
     slug: "elc-jaesu",
+    seoTitle: "재수 대신 미국 대학 | 재수생 토플면제 진학 과정",
     label: "재수생",
     kicker: "재수 1년의 다른 사용법",
     h1: "재수 1년이면,<br>미국 대학 1학년이 시작됩니다",
@@ -642,6 +644,7 @@ const ELC_AUDIENCES = [
   },
   {
     slug: "elc-geomjeong",
+    seoTitle: "검정고시 미국 대학 진학 | 내신·토플 없이 입학",
     label: "검정고시",
     kicker: "내신 없이 가는 미국 대학",
     h1: "검정고시생에게는<br>오히려 유리한 전형입니다",
@@ -663,6 +666,7 @@ const ELC_AUDIENCES = [
   },
   {
     slug: "elc-daehak",
+    seoTitle: "대학생 미국 대학 편입 | 국내 대학에서 토플 없이 옮기기",
     label: "대학생·편입",
     kicker: "국내 대학에서 미국 대학으로",
     h1: "다니던 대학이 아쉽다면,<br>미국 대학으로 옮기는 방법",
