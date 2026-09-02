@@ -16,12 +16,134 @@ const CSS_VER = Date.now().toString(36);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // ------------------------------------------------------------
+// 페이지 날짜 — 파일명 시드 기반, 월 단위로만 변동 (주간 랜덤 회전 없음)
+//   dateModified: 이번 달 안의 시드 고정 날짜(1~28일). 아직 오지 않은 날이면 지난달 같은 날.
+//   datePublished: 시드로 2026-07-01 ~ 2026-08-21 사이에 분산 고정.
+// ------------------------------------------------------------
+const SITE_LAUNCH_EPOCH = Date.UTC(2026, 6, 1); // 2026-07-01
+const LAUNCH_SPAN_DAYS = 52;                    // ~ 2026-08-21
+function seedHash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function pageDates(seed) {
+  const h = seedHash(String(seed));
+  const h2 = seedHash("m:" + String(seed));
+  const published = new Date(SITE_LAUNCH_EPOCH + (h % LAUNCH_SPAN_DAYS) * 86400000);
+  const nowKst = new Date(Date.now() + 9 * 3600 * 1000);
+  const y = nowKst.getUTCFullYear();
+  const m = nowKst.getUTCMonth();
+  const dayOff = h2 % 28;
+  let modified = new Date(Date.UTC(y, m, 1 + dayOff));
+  if (modified.getTime() > nowKst.getTime()) modified = new Date(Date.UTC(y, m - 1, 1 + dayOff));
+  if (modified.getTime() < published.getTime()) modified = published;
+  return {
+    dateModified: modified.toISOString().split("T")[0],
+    datePublished: published.toISOString().split("T")[0],
+  };
+}
+
+// ------------------------------------------------------------
+// 브레드크럼 — 파일명으로 상위 경로 유도 (호출부에서 crumbs로 직접 넘겨도 됨)
+//   캠프·country-·duration-·budget-·depart-·info-·calendar·compare → 홈 › 캠프 안내 › 페이지
+//   schedule-{camp}   → 홈 › 캠프 안내 › 캠프 › 일정표
+//   grade-XX          → 홈 › (초등/중/고등학생 캠프) › 학년 캠프
+//   grade-XX-{국가|기간} → 홈 › 연령대 캠프 › 학년 캠프 › 페이지
+//   summer-* / stpaul-* / elc-* / study-* → 각 허브(summer/stpaul/elc/study.html) › 페이지
+//   guide-*           → 캠프 가이드(guide.html) 또는 유학 안내 › 유학 가이드(study-guide.html) › 글
+// ------------------------------------------------------------
+const CRUMB_CAMPS = { label: "캠프 안내", href: "index.html#camps" };
+const CRUMB_STUDY = { label: "유학 안내", href: "study.html" };
+function crumbsFor(file, title) {
+  const cur = String(title).split(" | ")[0].trim();
+  const base = file.replace(/\.html$/, "");
+  const t = [{ label: "홈", href: "index.html" }];
+  const ageOf = (g) => AGE_GROUPS.find((a) => a.keys.includes(g.key));
+  const grade = GRADES.find((g) => g.slug === base);
+  const gradeParent = GRADES.find((g) => base.startsWith(g.slug + "-"));
+  const isCampish = CAMPS[base] || AGE_GROUPS.some((a) => a.slug === base) || /^(country|duration|budget|depart|info)-/.test(base) || base === "calendar" || base === "compare";
+  if (isCampish) {
+    t.push(CRUMB_CAMPS);
+  } else if (base.startsWith("schedule-")) {
+    const c = CAMPS[base.slice("schedule-".length)];
+    t.push(CRUMB_CAMPS);
+    if (c) t.push({ label: c.name, href: `${c.slug}.html` });
+  } else if (grade) {
+    const a = ageOf(grade);
+    t.push(a ? { label: `${a.label} 캠프`, href: `${a.slug}.html` } : CRUMB_CAMPS);
+  } else if (gradeParent) {
+    const a = ageOf(gradeParent);
+    if (a) t.push({ label: `${a.label} 캠프`, href: `${a.slug}.html` });
+    t.push({ label: `${gradeParent.label} 캠프`, href: `${gradeParent.slug}.html` });
+  } else if (base.startsWith("summer-")) {
+    t.push({ label: "여름캠프 사전상담", href: "summer.html" });
+  } else if (base.startsWith("stpaul-")) {
+    t.push({ label: "세인트폴 대치 아카데미", href: "stpaul.html" });
+  } else if (base.startsWith("elc-")) {
+    t.push({ label: "토플면제교육원", href: "elc.html" });
+  } else if (base.startsWith("study-")) {
+    t.push(CRUMB_STUDY);
+  } else if (base.startsWith("guide-")) {
+    const g = ALL_GUIDES.find((x) => x.slug === base);
+    if (g && g.cat === "study") {
+      t.push(CRUMB_STUDY);
+      t.push({ label: "유학 가이드", href: "study-guide.html" });
+    } else {
+      t.push({ label: "캠프 가이드", href: "guide.html" });
+    }
+  }
+  t.push({ label: cur });
+  return t;
+}
+const absUrl = (href) => `${BASE_URL}/${href === "index.html" ? "" : href.replace(/^index\.html/, "")}`;
+function crumbsHtml(trail, dateLabel) {
+  const items = trail
+    .map((c, i) => (i === trail.length - 1 ? `<li aria-current="page">${esc(c.label)}</li>` : `<li><a href="${c.href}">${esc(c.label)}</a></li>`))
+    .join("");
+  return `<nav class="crumbs" aria-label="현재 위치"><div class="wrap"><ol>${items}</ol><span class="crumbs-date">정보 업데이트 ${dateLabel}</span></div></nav>`;
+}
+function crumbsJsonld(trail, pageUrl) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.label,
+      item: c.href ? absUrl(c.href) : pageUrl,
+    })),
+  };
+}
+
+// ------------------------------------------------------------
 // 레이아웃
 // ------------------------------------------------------------
-function page({ file, title, desc, body, hero = "", jsonld = null }) {
+function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null }) {
   const url = `${BASE_URL}/${file === "index.html" ? "" : file}`;
+  const isHome = file === "index.html";
+
+  // 날짜: 기존 JSON-LD에 실제 발행일(가이드 Article 등)이 있으면 그 값을 우선
+  const dates = pageDates(file);
+  const published = jsonld && !Array.isArray(jsonld) && typeof jsonld.datePublished === "string" ? jsonld.datePublished : dates.datePublished;
+  const modified = dates.dateModified < published ? published : dates.dateModified;
+  const dateLabel = modified.replace(/-/g, ".");
+
+  // JSON-LD: 기존 객체에 날짜 추가(Organization 제외) → 없으면 WebPage 추가, 브레드크럼은 별도 블록
+  const datable = jsonld && !Array.isArray(jsonld) && jsonld["@type"] !== "Organization";
+  const ld = [];
+  if (jsonld) ld.push(datable ? { ...jsonld, datePublished: published, dateModified: modified } : jsonld);
+  if (!datable) ld.push({ "@context": "https://schema.org", "@type": "WebPage", name: title, description: desc, url, datePublished: published, dateModified: modified, inLanguage: "ko-KR" });
+  const trail = isHome ? null : crumbs || crumbsFor(file, title);
+  if (trail && trail.length > 1) ld.push(crumbsJsonld(trail, url));
+  const ldScripts = ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
+
+  const crumbsBlock = trail && trail.length > 1 ? crumbsHtml(trail, dateLabel) : "";
+  const homeDate = isHome ? `<p class="page-date wrap">정보 업데이트 ${dateLabel}</p>` : "";
+
   return {
     file,
+    lastmod: modified,
     html: `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -38,12 +160,14 @@ function page({ file, title, desc, body, hero = "", jsonld = null }) {
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
+<meta property="article:published_time" content="${published}T00:00:00+09:00">
+<meta property="article:modified_time" content="${modified}T00:00:00+09:00">
 <meta name="google-site-verification" content="Og-iGasiwVbAcetzn0H82vPY5damjOoCzdJTnbObbFE">
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="style.css?v=${CSS_VER}">
-${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>` : ""}
+${ldScripts}
 </head>
 <body>
 <header class="site-header">
@@ -79,7 +203,9 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
 </header>
 ${hero}
 <main>
+${crumbsBlock}
 ${body}
+${homeDate}
 </main>
 ${footer()}
 <a class="float-cta" href="#consult">상담 신청</a>
@@ -2795,6 +2921,17 @@ a{color:inherit;text-decoration:none}
 .lead{font-size:17px;color:#33404d;margin-bottom:24px}
 .lead a,.fit-grid a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
+/* breadcrumbs · 업데이트 표기 */
+.crumbs{font-size:13px;color:var(--muted);padding:14px 0 0}
+.crumbs .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 16px}
+.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;align-items:center;margin:0;padding:0}
+.crumbs li+li::before{content:"›";margin:0 7px;color:#a3aeb9}
+.crumbs a{color:var(--muted)}
+.crumbs a:hover{color:var(--sky);text-decoration:underline;text-underline-offset:3px}
+.crumbs [aria-current]{color:var(--ink);font-weight:600}
+.crumbs-date,.page-date{font-size:12.5px;color:#8a95a1;white-space:nowrap}
+.page-date{text-align:right;padding:0 22px 18px}
+
 /* camp cards */
 .camp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
 @media(max-width:760px){.camp-grid{grid-template-columns:1fr}}
@@ -2998,7 +3135,7 @@ const INDEXNOW_KEY = "5e5ad86af25533efae3948773b676a6c";
 fs.writeFileSync(path.join(OUT, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 
 // sitemap + robots + rss
-const urls = pages.map((p) => `<url><loc>${BASE_URL}/${p.file === "index.html" ? "" : p.file}</loc></url>`).join("\n");
+const urls = pages.map((p) => `<url><loc>${BASE_URL}/${p.file === "index.html" ? "" : p.file}</loc><lastmod>${p.lastmod}</lastmod></url>`).join("\n");
 fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`);
 fs.writeFileSync(path.join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\nSitemap: ${BASE_URL}/rss.xml`);
 
