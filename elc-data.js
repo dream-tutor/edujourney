@@ -521,4 +521,50 @@ const ELC_REASONS = [
 
 const ELC_FLOW = ["국내 6개월 영어과정 + 교양 15학점", "미국 출국·도착", "미국 공항 픽업", "기숙사·숙소 입실", "오리엔테이션·캠퍼스 투어", "담당교수 미팅", "전공별 수업 시작"];
 
-module.exports = { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW };
+// 사진 — 2027 입학설명회 PDF에서 추출 (docs/img/elc/). 얼굴이 식별되는 사진은 제외(사용자 지시 2026-09-02)
+//   key = 페이지 slug (대학 slug 또는 elc / elc-partners / elc-suny / elc-texas / elc-uc-transfer / elc-uc-transfer-2 / elc-settlement)
+const P = (src, alt, cap) => ({ src, alt, cap });
+const PH = {
+  dallas: P("dallas-skyline.jpg", "댈러스 시내 전경", "댈러스 시내 — ETAMU·UNT에서 차로 한 시간 거리"),
+  etamuDallas: P("etamu-dallas.jpg", "이스트 텍사스 A&M 대학교와 댈러스 야경", "이스트 텍사스 A&M 대학교 (ETAMU)"),
+  etamuCampus: P("etamu-campus.jpg", "이스트 텍사스 A&M 캠퍼스 분수와 본관", "ETAMU 캠퍼스"),
+  fresno: P("fresno-campus.jpg", "캘리포니아주립대 프레즈노 캠퍼스 항공 사진", "CSU 프레즈노 캠퍼스"),
+  goldenGate: P("golden-gate.jpg", "샌프란시스코 금문교", "샌프란시스코 — DVC·디앤자가 있는 베이 지역"),
+  oswego: P("oswego-campus.jpg", "온타리오 호수를 낀 SUNY 오스위고 캠퍼스", "SUNY 오스위고 — 온타리오 호숫가 캠퍼스"),
+  ucoBuilding: P("uco-building.jpg", "센트럴오클라호마대 본관 건물", "UCO 캠퍼스"),
+  stonybrook: P("stonybrook-sign.jpg", "스토니브룩 대학교 정문 표지석", "SUNY 스토니브룩 정문"),
+  ucoClock: P("uco-clocktower.jpg", "센트럴오클라호마대 시계탑 건물", "UCO 시계탑 (Old North)"),
+  berkeley: P("berkeley-college.jpg", "뉴욕 맨해튼 버클리컬리지 입구", "버클리컬리지 맨해튼 캠퍼스 입구"),
+  senecaCampus: P("seneca-campus.jpg", "세네카 폴리테크닉 캠퍼스 항공 사진", "세네카 폴리테크닉 캠퍼스"),
+  senecaHall: P("seneca-hall.jpg", "세네카 폴리테크닉 건물 내부 복도", "세네카 캠퍼스 내부"),
+  dorm: P("dorm-room.jpg", "기숙사 1인실 침대와 책상", "기숙사 방 — 입실 지원으로 첫날 정리"),
+  smc: P("smc-campus.jpg", "산타모니카컬리지 캠퍼스 야자수 광장", "산타모니카컬리지 캠퍼스"),
+  dvcSign: P("dvc-sign.jpg", "디아블로밸리컬리지 정문 표지석", "디아블로밸리컬리지 (1949년 설립)"),
+  dvcPost: P("dvc-signpost.jpg", "디아블로밸리컬리지 캠퍼스 안내 표지판", "DVC 캠퍼스 안내판"),
+  deanza: P("deanza-sign.jpg", "디앤자컬리지 정문 전광판", "디앤자컬리지 정문"),
+  elcBuilding: P("elc-building.jpg", "서울 광진구 토플면제교육원 건물 외관", "교육원 건물 — 광진구 능동로 239"),
+  elcLounge: P("elc-lounge.jpg", "교육원 1층 라운지 내부", "교육원 라운지"),
+  elcTerrace: P("elc-terrace.jpg", "교육원 야외 테라스와 파라솔", "교육원 야외 테라스"),
+};
+const ELC_PHOTOS = {
+  "elc": [PH.elcBuilding, PH.elcLounge, PH.elcTerrace],
+  "elc-partners": [PH.etamuDallas, PH.fresno, PH.oswego, PH.ucoClock, PH.senecaCampus, PH.smc],
+  "elc-suny": [PH.oswego, PH.stonybrook],
+  "elc-texas": [PH.dallas, PH.etamuDallas, PH.etamuCampus],
+  "elc-uc-transfer": [PH.goldenGate, PH.dvcPost],
+  "elc-uc-transfer-2": [PH.smc, PH.dvcSign, PH.deanza],
+  "elc-settlement": [PH.dorm, PH.senecaHall, PH.etamuCampus],
+  "elc-etamu": [PH.etamuDallas, PH.etamuCampus, PH.dallas],
+  "elc-fresno": [PH.fresno],
+  "elc-oswego": [PH.oswego],
+  "elc-uco": [PH.ucoClock, PH.ucoBuilding],
+  "elc-stonybrook": [PH.stonybrook],
+  "elc-berkeley-college": [PH.berkeley],
+  "elc-seneca": [PH.senecaCampus, PH.senecaHall, PH.dorm],
+  "elc-smc": [PH.smc],
+  "elc-dvc": [PH.dvcSign, PH.dvcPost],
+  "elc-dac": [PH.deanza],
+  "elc-unt": [PH.dallas],
+};
+
+module.exports = { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW, ELC_PHOTOS };

@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
-const { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW } = require("./elc-data.js");
+const { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW, ELC_PHOTOS } = require("./elc-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
 const STUDY_GUIDES = require("./guides-study.js");
@@ -1783,6 +1783,7 @@ function buildElc() {
   미국 대학이 학점으로 인정하는 국내대학 교양과목까지 채운 뒤에 나갑니다. 시험 점수 없이 지원이 되는 이유가 여기에 있고, 현지에서 어학연수로 쓰는 시간과 돈도 그만큼 줄어듭니다.</p>
   <p style="margin-top:12px">미국 대학에 바로 지원하려면 보통 iBT TOEFL 79점 이상, SAT 1,100점 이상, 고교 내신 4등급 이상을 요구합니다(설명회 자료 기준). 이 과정은 그 세 가지를 국내 6개월 ESL 과정 이수와 국내대학 교양 15~24학점으로 대신합니다. 수업은 주 30시간, 원어민 교수진의 소규모 수업입니다.</p>
   <ul class="check-list" style="margin-top:20px">${s.points.map((p) => `<li>${p}</li>`).join("")}</ul>
+  ${elcPhotos("elc")}
 </div></section>
 
 <section class="section"><div class="wrap narrow">
@@ -1975,6 +1976,7 @@ function buildElcUniv(u) {
   <h2 class="sec-title">어떤 학교인가요</h2>
   <p class="lead">${u.blurb}</p>
   <p style="margin-top:14px">${groupText}</p>
+  ${elcPhotos(u.slug)}
 </div></section>
 ${elcUnivDetail(u)}
 <section class="section"><div class="wrap narrow">
@@ -2052,6 +2054,13 @@ ${elcConsult({ title: a.consultTitle, copy: a.consultCopy })}`;
 // ------------------------------------------------------------
 // 토플면제교육원 — 대학별 상세 섹션(elc-data.js) + 주제별 페이지(SUNY·정착·장학금·UC편입·텍사스·용어)
 // ------------------------------------------------------------
+function elcPhotos(key) {
+  const ph = ELC_PHOTOS[key];
+  if (!ph || !ph.length) return "";
+  const cls = ph.length === 1 ? " one" : ph.length === 2 || ph.length === 4 ? " two" : "";
+  return `<div class="photo-grid${cls}">${ph.map((p) => `<figure><img src="img/elc/${p.src}" alt="${esc(p.alt)}" loading="lazy" draggable="false"><figcaption>${p.cap}</figcaption></figure>`).join("")}</div><p class="photo-src">사진: 2027학년도 입학설명회 자료</p>`;
+}
+
 function elcRenderSection(sec) {
   let html = `<h2 class="sec-title">${sec.title}</h2>`;
   if (sec.intro) html += `<p class="lead">${sec.intro}</p>`;
@@ -2119,6 +2128,7 @@ function buildElcPartners() {
   <div class="fit-grid">
     ${ELC_PARTNERS.filter((p) => p.region === r).map((p) => { const u = bySlug[p.slug]; return `<div><strong><a href="${u.slug}.html">${u.name}</a></strong><p>${u.city} · ${u.kind}<br>${p.line}<br><span class="dim">요강 기준 연간 ${u.total} (학비 ${u.tuition} + 기숙사·식비 ${u.room})</span></p></div>`; }).join("\n    ")}
   </div>`).join("\n  ")}
+  ${elcPhotos("elc-partners")}
 </div></section>
 
 <section class="section"><div class="wrap narrow">
@@ -2183,6 +2193,7 @@ function buildElcSuny() {
   <div class="fit-grid">
     ${g.campuses.map((c) => `<div><strong>${link(c)} <span class="dim" style="font-weight:500">${c.name}</span></strong><p>설립 ${c.founded} · ${c.city} · 재학생 ${c.students}<br>${c.feature}<br>가까운 공항: ${c.airport}</p></div>`).join("\n    ")}
   </div>
+  ${elcPhotos("elc-suny")}
 </div></section>
 
 <section class="section alt"><div class="wrap narrow">
@@ -2227,6 +2238,7 @@ function buildElcSettlement() {
   <p class="lead">${s.intro}</p>
   <p style="margin-top:14px">유학의 첫 일주일이 가장 어렵습니다. 공항에서 학교까지 가는 법, 기숙사 체크인, 학생증과 은행 계좌, 이불과 세제를 어디서 사는지 — 하나하나는 사소해도 영어로 처음 겪으면 하루가 다 갑니다. 이 과정에서는 그 하루를 학교 쪽 인력과 함께 보냅니다.</p>
   <ol class="step-list" style="margin-top:18px">${s.steps.map((x) => `<li>${x}</li>`).join("")}</ol>
+  ${elcPhotos("elc-settlement")}
 </div></section>
 
 <section class="section alt"><div class="wrap">
@@ -2319,6 +2331,7 @@ function buildElcUcTransfer() {
     <li>컬리지 1년 반~2년간 GPA 관리·필수 과목 이수·에세이·비교과 활동 — 편입준비반이 함께</li>
     <li>UC·CSU 편입 지원 (TAG 편입보장 제도 활용 가능한 캠퍼스는 전략에 포함)</li>
   </ol>
+  ${elcPhotos("elc-uc-transfer")}
 </div></section>
 
 <section class="section alt"><div class="wrap">
@@ -2332,6 +2345,7 @@ function buildElcUcTransfer() {
     <tbody>${ccs.map((u) => `<tr><th><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("")}</tbody>
   </table></div>
   <p class="sec-sub" style="margin-top:14px">세 곳 모두 학비는 연 $10,000~13,000 수준이지만 LA·실리콘밸리·샌프란시스코권 물가 때문에 기숙사·식비가 학비보다 큽니다. 예산은 합계 기준으로 잡아야 합니다.</p>
+  ${elcPhotos("elc-uc-transfer-2")}
 </div></section>
 
 <section class="section"><div class="wrap narrow">
@@ -2365,6 +2379,7 @@ function buildElcTexas() {
   <h2 class="sec-title">왜 텍사스 학교가 다섯 곳이나 되나요</h2>
   <p class="lead">이 과정의 진학처 20곳 중 5곳이 텍사스 주립대입니다. 가장 오래된 진학처인 이스트 텍사스 A&M이 2011년부터 현지 교수진이 도착 프로그램을 직접 진행해 온 곳이고, 댈러스(DFW)·샌안토니오·휴스턴 등 텍사스 주요 도시마다 파트너 학교가 있습니다.</p>
   <p style="margin-top:14px">비용 면에서도 이유가 있습니다. 텍사스 주요 주립대는 연간 $1,000 이상 경쟁 장학금을 받으면 주 내 거주자(In-State) 학비가 적용되어 연 US$13,000~20,000이 줄어듭니다. 이 과정의 장학금 트랙이 텍사스 학교와 잘 맞는 이유입니다.</p>
+  ${elcPhotos("elc-texas")}
 </div></section>
 
 <section class="section alt"><div class="wrap">
@@ -3241,6 +3256,14 @@ const CSS = `/* 러닝트래블 — 생성 파일 (build.js 재생성) */
 html{scroll-behavior:smooth}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif;color:var(--ink);background:var(--white);line-height:1.65;word-break:keep-all}
 img{max-width:100%;display:block}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.photo-grid.two{grid-template-columns:repeat(2,1fr)}
+.photo-grid.one{grid-template-columns:1fr;max-width:640px}
+@media(max-width:700px){.photo-grid,.photo-grid.two{grid-template-columns:1fr 1fr}.photo-grid.one{grid-template-columns:1fr}}
+.photo-grid figure{margin:0;border-radius:12px;overflow:hidden;background:#e9eef3;border:1px solid var(--line)}
+.photo-grid img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
+.photo-grid figcaption{font-size:12.5px;color:var(--muted);padding:7px 10px;background:#fff}
+.photo-src{font-size:12px;color:var(--muted);margin-top:8px}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
 .narrow{max-width:860px}
