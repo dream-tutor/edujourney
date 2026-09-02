@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
+const { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW } = require("./elc-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
 const STUDY_GUIDES = require("./guides-study.js");
@@ -252,7 +253,7 @@ function footer() {
         <h3 style="margin-top:26px">유학 · 세인트폴 대치 아카데미</h3>
         <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a></div>
         <h3 style="margin-top:26px">미국·캐나다 대학 토플면제</h3>
-        <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
+        <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n<a href="elc-partners.html">파트너 대학 9곳</a>\n<a href="elc-suny.html">SUNY 진학 가이드</a>\n<a href="elc-uc-transfer.html">UC 편입 경로</a>\n<a href="elc-texas.html">텍사스 주립대 5곳</a>\n<a href="elc-settlement.html">현지 정착 서비스</a>\n<a href="elc-scholarship.html">장학금·비용 절감</a>\n<a href="elc-glossary.html">용어 풀이</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
       </div>
     </div>
     <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료 출처: 쏠루트 유학</p>
@@ -1780,7 +1781,30 @@ function buildElc() {
   <p class="lead">${s.intro}</p>
   <p style="margin-top:14px">보통은 TOEFL 점수부터 만들고 유학을 떠나는데, 이 과정은 순서가 반대입니다. <strong>한국에서 6개월 동안 대학 수업을 따라갈 영어를 먼저 만들고</strong>,
   미국 대학이 학점으로 인정하는 국내대학 교양과목까지 채운 뒤에 나갑니다. 시험 점수 없이 지원이 되는 이유가 여기에 있고, 현지에서 어학연수로 쓰는 시간과 돈도 그만큼 줄어듭니다.</p>
+  <p style="margin-top:12px">미국 대학에 바로 지원하려면 보통 iBT TOEFL 79점 이상, SAT 1,100점 이상, 고교 내신 4등급 이상을 요구합니다(설명회 자료 기준). 이 과정은 그 세 가지를 국내 6개월 ESL 과정 이수와 국내대학 교양 15~24학점으로 대신합니다. 수업은 주 30시간, 원어민 교수진의 소규모 수업입니다.</p>
   <ul class="check-list" style="margin-top:20px">${s.points.map((p) => `<li>${p}</li>`).join("")}</ul>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">처음이라면 이 순서로 보세요</h2>
+  <p class="sec-sub">과정은 네 단계로 끝납니다. 국내에서 세 단계, 그다음이 출국입니다.</p>
+  <ol class="step-list">${ELC_SUNY.program.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <h3 class="sec-title-sm" style="margin-top:28px">출국 뒤에도 이어집니다</h3>
+  <ol class="step-list">${ELC_SUNY.oneStop.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">DET·교양학점·입학보장·In-State 같은 말이 낯설면 <a href="elc-glossary.html">용어 풀이</a>를 먼저 읽고 오시면 아래 표가 훨씬 쉽게 읽힙니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">주제별로 자세히 보기</h2>
+  <div class="camp-grid">
+    <a class="camp-card" href="elc-partners.html"><span class="camp-flag">🏫 파트너 대학</span><h3>토플면제 파트너 대학 9곳</h3><p class="camp-tag">미국 8곳·캐나다 1곳 — 설립·규모·전공·비용을 한 장에, 그리고 이 과정을 고르는 다섯 가지 이유</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="elc-suny.html"><span class="camp-flag">🗽 뉴욕주립대</span><h3>SUNY 진학 가이드</h3><p class="camp-tag">오스위고 입학보장, 스토니브룩·빙엄턴·버팔로·올버니 조건 비교와 편입 경로</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="elc-uc-transfer.html"><span class="camp-flag">🌉 UC 편입</span><h3>UCLA·UC버클리 편입 경로</h3><p class="camp-tag">산타모니카·디앤자·디아블로밸리 컬리지 2년 → UC·CSU 편입</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="elc-texas.html"><span class="camp-flag">🤠 텍사스</span><h3>텍사스 주립대 5곳</h3><p class="camp-tag">ETAMU·UNT·UTSA·휴스턴·텍사스주립대, In-State 학비와 DFW 픽업</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="elc-settlement.html"><span class="camp-flag">✈️ 정착</span><h3>현지 도착·정착 서비스</h3><p class="camp-tag">공항 픽업부터 기숙사·은행·장보기까지, 학교별 진행 순서</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="elc-scholarship.html"><span class="camp-flag">💰 비용</span><h3>장학금·비용 절감</h3><p class="camp-tag">UCO $64,000 사례, In-State 학비, CLEP·온라인 학기, 20개 대학 비용 순위</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="elc-glossary.html"><span class="camp-flag">📖 용어</span><h3>용어 풀이</h3><p class="camp-tag">DET·교양학점·입학보장·TAG·PGWP — 처음 보는 분 기준으로</p><span class="camp-more">자세히 보기 →</span></a>
+  </div>
 </div></section>
 
 <section class="section"><div class="wrap narrow">
@@ -1823,6 +1847,7 @@ function buildElc() {
     ${s.tracks.map(([k, v]) => `<div><strong>${k}</strong><p>${v}</p></div>`).join("\n    ")}
   </div>
   <p class="sec-sub" style="margin-top:16px">${s.clep}</p>
+  <p class="sec-sub" style="margin-top:10px">트랙별 자세한 안내: <a href="elc-suny.html">SUNY 진학 가이드(명문대 패스웨이)</a> · <a href="elc-uc-transfer.html">UC 편입 경로</a> · <a href="elc-scholarship.html">장학금 트랙·비용 절감</a></p>
 </div></section>
 
 <section class="section" id="univs"><div class="wrap">
@@ -1834,6 +1859,7 @@ function buildElc() {
     <tbody>${s.universities.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
   <ul class="check-list" style="margin-top:20px">${s.universityNotes.map((n) => `<li>${n}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:14px">묶어서 보기: <a href="elc-texas.html">텍사스 주립대 5곳</a> · <a href="elc-suny.html">뉴욕주립대 SUNY</a> · <a href="elc-uc-transfer.html">UC 편입 컬리지 3곳</a> · 비용 순위는 <a href="elc-scholarship.html">장학금·비용 절감</a></p>
 </div></section>
 
 <section class="section alt"><div class="wrap">
@@ -1849,6 +1875,7 @@ function buildElc() {
   <p class="lead">${s.settlement.intro}</p>
   <ol class="step-list" style="margin-top:18px">${s.settlement.steps.map((x) => `<li>${x}</li>`).join("")}</ol>
   <p class="sec-sub" style="margin-top:16px">${s.settlement.result}</p>
+  <p class="sec-sub" style="margin-top:10px">학교별 진행 순서(${ELC_SETTLEMENT.map((x) => `<a href="${x.slug}.html">${x.name.split(" (")[0]}</a>`).join(" · ")})는 <a href="elc-settlement.html">현지 도착·정착 서비스</a>에 정리했습니다.</p>
 </div></section>
 
 <section class="section alt"><div class="wrap narrow">
@@ -1896,6 +1923,13 @@ function elcNav(current = "") {
     ["elc.html", "과정 전체 안내"],
     ...ELC_AUDIENCES.map((a) => [`${a.slug}.html`, `${a.label} 안내`]),
     ["elc.html#univs", "대학 20곳 비교표"],
+    ["elc-partners.html", "파트너 대학 9곳"],
+    ["elc-suny.html", "SUNY 진학 가이드"],
+    ["elc-uc-transfer.html", "UC 편입 경로"],
+    ["elc-texas.html", "텍사스 주립대"],
+    ["elc-settlement.html", "현지 정착 서비스"],
+    ["elc-scholarship.html", "장학금·비용 절감"],
+    ["elc-glossary.html", "용어 풀이"],
   ].filter(([href]) => href !== current);
   return `<p class="sec-sub" style="margin-top:18px">토플면제교육원 더 보기: ${items.map(([h, t]) => `<a href="${h}">${t}</a>`).join(" · ")}</p>`;
 }
@@ -1942,7 +1976,7 @@ function buildElcUniv(u) {
   <p class="lead">${u.blurb}</p>
   <p style="margin-top:14px">${groupText}</p>
 </div></section>
-
+${elcUnivDetail(u)}
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">이 학교까지 가는 순서</h2>
   <ol class="step-list">
@@ -2012,6 +2046,383 @@ ${elcConsult({ title: a.consultTitle, copy: a.consultCopy })}`;
     desc: `${a.tag}. TOEFL·SAT 없이 자체 전형으로 선발, 국내 6개월 과정 후 미국·캐나다 20개 대학 진학. ${a.label} 기준의 지원 자격·일정·확인할 점 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "Service", name: `${a.label} 미국·캐나다 대학 진학 안내`, provider: { "@type": "Organization", name: "러닝트래블" } },
+  });
+}
+
+// ------------------------------------------------------------
+// 토플면제교육원 — 대학별 상세 섹션(elc-data.js) + 주제별 페이지(SUNY·정착·장학금·UC편입·텍사스·용어)
+// ------------------------------------------------------------
+function elcRenderSection(sec) {
+  let html = `<h2 class="sec-title">${sec.title}</h2>`;
+  if (sec.intro) html += `<p class="lead">${sec.intro}</p>`;
+  if (sec.steps) html += `<ol class="step-list" style="margin-top:18px">${sec.steps.map((x) => `<li>${x}</li>`).join("")}</ol>`;
+  if (sec.list) html += `<ul class="check-list" style="margin-top:18px">${sec.list.map((x) => `<li>${x}</li>`).join("")}</ul>`;
+  if (sec.grid) html += `<div class="fit-grid" style="margin-top:18px">${sec.grid.map(([k, v]) => `<div><strong>${k}</strong><p>${v}</p></div>`).join("")}</div>`;
+  if (sec.table) html += `<div class="table-wrap" style="margin-top:18px"><table class="cmp" style="min-width:520px"><thead><tr>${sec.table.head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${sec.table.rows.map((r) => `<tr><th>${r[0]}</th>${r.slice(1).map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  if (sec.note) html += `<p class="sec-sub" style="margin-top:14px">${sec.note}</p>`;
+  return html;
+}
+
+// 대학 페이지에 붙는 상세 블록 — 앞뒤 섹션 교대(alt)를 깨지 않도록 항상 짝수 개 섹션으로 만든다
+function elcUnivDetail(u) {
+  const d = ELC_UNIV_DETAIL[u.slug];
+  if (!d) return "";
+  const facts = d.facts && d.facts.length
+    ? `<h2 class="sec-title">학교 정보 더 보기</h2><dl class="info-list">${d.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`
+    : "";
+  const secs = (d.sections || []).map(elcRenderSection);
+  let blocks = [];
+  if (facts) {
+    if ((secs.length + 1) % 2 === 0) blocks = [facts, ...secs];
+    else if (secs.length === 0) blocks = [facts + `<p class="sec-sub" style="margin-top:14px">정착 서비스·장학금 등 공통 안내는 <a href="elc-settlement.html">현지 정착 서비스</a>, <a href="elc-scholarship.html">장학금·비용 절감</a> 페이지를 보세요.</p>`, ""];
+    else blocks = [facts + `<div style="margin-top:34px">${secs[0]}</div>`, ...secs.slice(1)];
+  } else {
+    blocks = secs.length % 2 === 0 ? secs : [...secs.slice(0, -2), secs[secs.length - 2] + `<div style="margin-top:34px">${secs[secs.length - 1]}</div>`];
+  }
+  return blocks.filter((b) => b !== "").map((b, i) => `\n<section class="section${i % 2 ? " alt" : ""}"><div class="wrap narrow">\n  ${b}\n</div></section>`).join("");
+}
+
+function elcPage({ file, kicker, h1, sub, body, title, desc, consult = {}, jsonld = null }) {
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${kicker}</p>
+    <h1>${h1}</h1>
+    <p class="hero-sub">${sub}</p>
+  </div></section>`;
+  return page({
+    file, title, desc, hero,
+    jsonld: jsonld || { "@context": "https://schema.org", "@type": "Service", name: String(title).split(" | ")[0], provider: { "@type": "Organization", name: "러닝트래블" } },
+    body: `${body}
+<section class="${altAfter(body)}"><div class="wrap narrow">
+  ${elcNav(file)}
+  <p class="sec-sub" style="margin-top:10px">아직 중·고등학생이라면 <a href="study.html">중·고등 유학 안내</a>와 <a href="stpaul.html">세인트폴 대치 아카데미</a>가 앞 단계입니다.</p>
+</div></section>
+${elcConsult(consult)}`,
+  });
+}
+
+// 토플면제 파트너 대학 9곳 (설명회 기준)
+function buildElcPartners() {
+  const bySlug = Object.fromEntries(ELC.universities.map((u) => [u.slug, u]));
+  const regions = [...new Set(ELC_PARTNERS.map((p) => p.region))];
+  const det = ELC.universities.filter((u) => u.group === "det");
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">이 과정을 고르는 다섯 가지 이유</h2>
+  <p class="lead">2027학년도 입학설명회에서 교육원이 정리한 다섯 가지입니다. 파트너 대학은 미국 8곳·캐나다 1곳으로, 모두 이 과정 수료를 공인영어 대신 인정하는 학교입니다.</p>
+  <ol class="step-list" style="margin-top:18px">${ELC_REASONS.map(([k, v]) => `<li><strong>${k}</strong><br><span style="font-size:14.5px">${v}</span></li>`).join("")}</ol>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">파트너 대학 9곳 — 지역별로</h2>
+  <p class="sec-sub">학교명을 누르면 요건·비용·정착 서비스까지 정리된 학교별 안내로 이동합니다. 아래 한 줄 요약은 설명회 자료 기준이라 요강 표의 금액과 산정 기준이 다를 수 있습니다.</p>
+  ${regions.map((r) => `<h3 class="sec-title-sm" style="margin-top:26px">${r}</h3>
+  <div class="fit-grid">
+    ${ELC_PARTNERS.filter((p) => p.region === r).map((p) => { const u = bySlug[p.slug]; return `<div><strong><a href="${u.slug}.html">${u.name}</a></strong><p>${u.city} · ${u.kind}<br>${p.line}<br><span class="dim">요강 기준 연간 ${u.total} (학비 ${u.tuition} + 기숙사·식비 ${u.room})</span></p></div>`; }).join("\n    ")}
+  </div>`).join("\n  ")}
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">그 밖의 진학처 11곳 — DET 명문대 패스웨이</h2>
+  <p class="lead">위 9곳 외에 ELC 수료에 DET(듀오링고 영어 시험) 점수를 더해 지원하는 학교가 11곳 있습니다. 뉴욕주립대 스토니브룩·버팔로·올버니, 애리조나주립대, 텍사스 주립대 4곳 등이 여기에 속합니다.</p>
+  <p class="sec-sub" style="margin-top:14px">${det.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join(" · ")}</p>
+  <p class="sec-sub" style="margin-top:10px">뉴욕주립대 5개 캠퍼스는 <a href="elc-suny.html">SUNY 진학 가이드</a>, 텍사스 5개 학교는 <a href="elc-texas.html">텍사스 주립대 5곳</a>에서 묶어 볼 수 있습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">출국부터 첫 수업까지</h2>
+  <ol class="step-list">${ELC_FLOW.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p style="margin-top:18px">설명회에서 교육원이 쓰는 말이 있습니다. "못 가는 유학이 아니라 다른 방식의 유학", 그리고 "혼자가 아닌 친구랑 같이 가는 유학". 한 기수가 서울에서 같이 6개월을 보내고 같은 학교로 함께 출발하는 구조라 나온 말입니다. 교육원은 2011년 설립 이후 1,000명 넘는 학생을 이 방식으로 보냈습니다.</p>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-partners.html",
+    kicker: "🏫 미국 8곳 · 캐나다 1곳",
+    h1: "토플면제 파트너 대학 9곳",
+    sub: "ETAMU·프레즈노·오스위고·UCO·버클리컬리지·세네카·산타모니카·디아블로밸리·디앤자 — 설립·규모·비용·장학금 한 장 정리",
+    title: "토플면제 파트너 대학 9곳 | 텍사스·캘리포니아·뉴욕·오클라호마·캐나다 — 미국·캐나다 대학 토플면제교육원",
+    desc: "토플면제교육원 수료를 공인영어로 인정하는 파트너 대학 9곳(미국 8·캐나다 1) — 이스트 텍사스 A&M, CSU 프레즈노, SUNY 오스위고, UCO, 버클리컬리지, 세네카, 산타모니카·디아블로밸리·디앤자 컬리지. 설립·재학생·전공·설명회 기준 비용과 이 과정을 고르는 다섯 가지 이유.",
+    consult: { title: "파트너 대학 진학 상담", copy: "희망 지역(텍사스·캘리포니아·뉴욕·캐나다)과 전공, 예산을 남겨 주세요.<br>9곳 중 맞는 학교를 골라 요건과 비용을 안내해 드립니다." },
+  });
+}
+
+// 뉴욕주립대(SUNY) 진학 가이드
+function buildElcSuny() {
+  const g = ELC_SUNY;
+  const link = (c) => (c.slug ? `<a href="${c.slug}.html">${c.ko}</a>` : c.ko);
+  const row = (label, key) => `<tr><th>${label}</th>${g.campuses.map((c) => `<td>${c[key]}</td>`).join("")}</tr>`;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">SUNY로 가는 구조</h2>
+  <p class="lead">${g.intro}</p>
+  <ul class="check-list" style="margin-top:18px">${g.highlights.map((h) => `<li>${h}</li>`).join("")}</ul>
+  <p class="sec-sub" style="margin-top:14px">오스위고 입학보장 + 상위 SUNY 진학 + 미국 대학 졸업까지 한 곳에서 이어집니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">한눈에 보는 SUNY 5개 캠퍼스</h2>
+  <p class="sec-sub">2027학년도 겨울학기 수시전형 기준입니다. 캠퍼스명을 누르면 학교별 안내로 이동합니다.</p>
+  <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
+  <div class="table-wrap"><table class="cmp" style="min-width:820px">
+    <thead><tr><th>구분</th>${g.campuses.map((c) => `<th>${link(c)}<br><span style="font-weight:500;font-size:12px">${c.name}</span></th>`).join("")}</tr></thead>
+    <tbody>
+      ${row("2026 U.S. News", "rank")}
+      ${row("장학금", "scholarship")}
+      ${row("입학 사정", "admission")}
+      ${row("국내대학 교양", "credits")}
+      ${row("영어 조건", "english")}
+      ${row("추천서", "rec")}
+      ${row("에세이", "essay")}
+    </tbody>
+  </table></div>
+  <dl class="info-list" style="margin-top:20px">${g.common.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+  <p class="sec-sub" style="margin-top:14px">${g.note}</p>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">캠퍼스별로 보면</h2>
+  <div class="fit-grid">
+    ${g.campuses.map((c) => `<div><strong>${link(c)} <span class="dim" style="font-weight:500">${c.name}</span></strong><p>설립 ${c.founded} · ${c.city} · 재학생 ${c.students}<br>${c.feature}<br>가까운 공항: ${c.airport}</p></div>`).join("\n    ")}
+  </div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">진학 옵션 — 조건을 통과했을 때, 못 했을 때</h2>
+  <h3 class="sec-title-sm">2027 봄학기 입학사정 조건 통과 시</h3>
+  <p>${g.pass}</p>
+  <h3 class="sec-title-sm" style="margin-top:26px">조건 미통과 시 — 오스위고 패스웨이</h3>
+  <p>${g.fail}</p>
+  <ol class="step-list" style="margin-top:18px">${g.fallbackFlow.map((x) => `<li>${x}</li>`).join("")}</ol>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">국내 6개월 프로그램 구성</h2>
+  <ol class="step-list">${g.program.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <h3 class="sec-title-sm" style="margin-top:28px">출국 후 One-Stop 서비스</h3>
+  <ol class="step-list">${g.oneStop.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">학교별 정착 서비스 진행 순서는 <a href="elc-settlement.html">현지 도착·정착 서비스</a>에 정리했습니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">주요 전공 분야 (일부)</h2>
+  <ul class="check-list">${g.majors.map((m) => `<li>${m}</li>`).join("")}</ul>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-suny.html",
+    kicker: "🗽 2027학년도 겨울학기 수시전형",
+    h1: "뉴욕주립대(SUNY) 진학 가이드",
+    sub: "오스위고 입학보장에서 스토니브룩·빙엄턴·버팔로·올버니 편입까지 — 5개 캠퍼스 조건 비교",
+    title: "뉴욕주립대 SUNY 진학 가이드 | 오스위고 입학보장·스토니브룩·버팔로·올버니 — 토플면제교육원",
+    desc: "SUNY 5개 캠퍼스(오스위고·스토니브룩·빙엄턴·버팔로·올버니) 입학 조건 비교표. 오스위고 입학보장(ELC Level 3 + 교양 24학점/2.3), DET 95~110 종합평가 캠퍼스, 조건 미달 시 오스위고 진학 후 편입 경로까지.",
+    consult: { title: "뉴욕주립대(SUNY) 진학 상담", copy: "희망 캠퍼스와 현재 상황(졸업 연도·재학 여부)을 남겨 주세요.<br>오스위고 입학보장 조건과 상위 캠퍼스 편입 경로를 안내해 드립니다." },
+  });
+}
+
+// 현지 도착·정착 서비스
+function buildElcSettlement() {
+  const s = ELC.settlement;
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">도착 첫날, 누가 옆에 있는지가 다릅니다</h2>
+  <p class="lead">${s.intro}</p>
+  <p style="margin-top:14px">유학의 첫 일주일이 가장 어렵습니다. 공항에서 학교까지 가는 법, 기숙사 체크인, 학생증과 은행 계좌, 이불과 세제를 어디서 사는지 — 하나하나는 사소해도 영어로 처음 겪으면 하루가 다 갑니다. 이 과정에서는 그 하루를 학교 쪽 인력과 함께 보냅니다.</p>
+  <ol class="step-list" style="margin-top:18px">${s.steps.map((x) => `<li>${x}</li>`).join("")}</ol>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">학교별 진행 순서</h2>
+  <p class="sec-sub">2026년 가을학기에 실제 진행된 정착 서비스입니다. 학교마다 순서와 항목이 조금씩 다릅니다.</p>
+  <div class="fit-grid">
+    ${ELC_SETTLEMENT.map((x) => `<div><strong><a href="${x.slug}.html">${x.name}</a></strong><p class="dim" style="margin-bottom:10px">${x.since}</p><ol class="step-list" style="gap:6px">${x.steps.map((st) => `<li style="padding:10px 14px 10px 54px">${st}</li>`).join("")}</ol></div>`).join("\n    ")}
+  </div>
+  <p class="sec-sub" style="margin-top:16px">${s.result}</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">출국 전부터 이어지는 One-Stop 지원</h2>
+  <ol class="step-list">${ELC_SUNY.oneStop.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">비자 서류 준비와 대학 지원·입학 수속은 교육원이 대행하고, 도착 이후에는 위 순서로 정착까지 이어집니다. 학교생활이 시작된 뒤에도 학업·커리어 상담과 졸업 후 OPT 취업 안내가 계속됩니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">출국부터 첫 수업까지, 실제 순서</h2>
+  <p class="sec-sub">설명회 자료에 사진으로 정리된 순서 그대로입니다. 한 기수가 같이 6개월을 보내고 같은 학교로 함께 출발하기 때문에, 공항에서 첫 수업까지 혼자 겪는 구간이 거의 없습니다.</p>
+  <ol class="step-list">${ELC_FLOW.map((x) => `<li>${x}</li>`).join("")}</ol>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-settlement.html",
+    kicker: "✈️ 공항 픽업부터 기숙사·은행·장보기까지",
+    h1: "미국 현지 도착·정착 서비스",
+    sub: "ETAMU·프레즈노·UCO·UNT·UTSA — 도착 첫날부터 학교 쪽 사람이 붙어 정착까지 함께합니다",
+    title: "미국 대학 현지 도착·정착 서비스 | 공항 픽업·기숙사 입실·은행 계좌 — 토플면제교육원",
+    desc: "토플면제교육원 진학생의 미국 현지 정착 서비스. ETAMU(2011년부터 현지 교수진 주관)·CSU 프레즈노·UCO·UNT·UTSA에서 공항 픽업, 국제처 OT, 기숙사 입실, 학생증·은행 계좌, 월마트 장보기까지 진행한 순서.",
+    consult: { title: "현지 정착 서비스 상담", copy: "희망 학교와 출국 예정 시기를 남겨 주세요.<br>그 학교의 도착 프로그램과 준비물을 안내해 드립니다." },
+  });
+}
+
+// 장학금·비용 절감
+function buildElcScholarship() {
+  const sc = ELC_SCHOLARSHIP;
+  const sorted = [...ELC.universities].sort((a, b) => parseInt(a.total.replace(/\D/g, ""), 10) - parseInt(b.total.replace(/\D/g, ""), 10));
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">실제로 받은 장학금</h2>
+  <p class="lead">미국 대학 학비는 큰 숫자지만, 장학금과 학비 제도를 어떻게 쓰느냐에 따라 실제 부담은 꽤 달라집니다. 이 과정 진학생들이 받은 장학금과 제도를 사례별로 정리했습니다.</p>
+  <div class="fit-grid" style="margin-top:20px">
+    ${sc.cases.map((c) => `<div><strong>${c.title}</strong><p>${c.body}</p><p style="margin-top:8px"><a href="${c.href}">자세히 보기 →</a></p></div>`).join("\n    ")}
+  </div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">비용을 줄이는 다섯 가지 방법</h2>
+  <div class="faq-list">
+    ${sc.methods.map(([q, a]) => `<details class="faq-item" open><summary>${q}</summary><p>${a}</p></details>`).join("\n    ")}
+  </div>
+  <p class="sec-sub" style="margin-top:14px">${sc.note}</p>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">연간 비용이 낮은 순서로 본 20개 대학</h2>
+  <p class="sec-sub">학비 + 기숙사·식비 기준(2026~2027학년도). 생활비·보험·항공·비자는 별도입니다.</p>
+  <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>순위</th><th>대학명</th><th>공인영어</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
+    <tbody>${sorted.map((u, i) => `<tr><th>${i + 1}</th><td><a href="${u.slug}.html">${u.name}</a></td><td>${u.english}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
+  </table></div>
+  <p class="sec-sub" style="margin-top:14px">가장 낮은 축은 ${sorted[0].name.split(" (")[0]}(${sorted[0].total})과 ${sorted[1].name.split(" (")[0]}(${sorted[1].total}), 가장 높은 곳은 ${sorted[sorted.length - 1].name.split(" (")[0]}(${sorted[sorted.length - 1].total})입니다. 같은 주립대라도 In-State 학비가 적용되면 순서가 바뀔 수 있습니다.</p>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-scholarship.html",
+    kicker: "💰 장학금 사례 · In-State 학비 · 학점 선이수",
+    h1: "미국 대학 장학금과<br>유학 비용 줄이는 방법",
+    sub: "UCO $64,000 · 오스위고 3년 $12,000 보장 · 세네카 C$5,000 · 텍사스 In-State 학비 — 그리고 20개 대학 비용 순위",
+    title: "미국 대학 장학금·유학 비용 절감 | UCO $64,000 사례·In-State 학비·CLEP — 토플면제교육원",
+    desc: "토플면제교육원 진학생 장학금 사례(UCO 합계 $64,000, SUNY 오스위고 3년 $12,000 보장, 세네카 최대 C$5,000)와 비용 절감 제도(텍사스 In-State 학비, 장학금 트랙, CLEP 12학점, 온라인 학기). 20개 대학 연간 비용 순위표.",
+    consult: { title: "장학금·비용 상담", copy: "예산 범위와 희망 지역·전공을 남겨 주세요.<br>그 범위에서 갈 수 있는 학교와 장학금 가능성을 계산해 드립니다.", points: ["대학별 연간 비용과 장학금 가능성 정리", "장학금 트랙·CLEP·온라인 학기 활용 여부", "교육원 학비·예치금은 상담 시 안내"] },
+  });
+}
+
+// UC 편입 — 커뮤니티컬리지 경로
+function buildElcUcTransfer() {
+  const ccs = ELC.universities.filter((u) => u.group === "cc");
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">UCLA·UC버클리로 가는 현실적인 경로</h2>
+  <p class="lead">UC 계열 대학은 고교 졸업 직후 신입생으로 들어가기가 매우 어렵습니다. 그래서 캘리포니아 학생들도 커뮤니티컬리지에서 2년을 보내고 편입하는 길을 많이 씁니다. 이 과정의 UC/CSU 편입준비반은 그 경로를 한국 학생 기준으로 다시 짠 것입니다.</p>
+  <p style="margin-top:14px">순서는 이렇습니다. 국내 6개월 과정으로 공인영어를 면제받고 파트너 컬리지에 입학한 뒤, GPA와 이수 과목을 만들어 UCLA·UC버클리 같은 UC 캠퍼스나 CSU로 편입합니다. 교육원에서는 이를 <strong>0.5 + 1.5 + 2 편입 제도</strong>라고 부릅니다. 국내 6개월(0.5), 컬리지 1년 반(1.5), UC·CSU 2년(2) — 국내에서 딴 교양학점이 졸업학점으로 인정되어 컬리지 기간이 한 학기 줄고, 컬리지 학비가 4년제의 절반 수준이라 앞쪽 비용도 줄어듭니다.</p>
+  <ol class="step-list" style="margin-top:18px">
+    <li>토플면제교육원 지원 — 서류 + 자체 영어테스트·면접 (공인 영어 성적 불필요)</li>
+    <li>국내 6개월 공인 ESL 과정 + 국내대학 교양 15학점(GPA 2.0 이상)</li>
+    <li>파트너 커뮤니티컬리지 입학 (공인영어 면제, 내신 면제)</li>
+    <li>컬리지 1년 반~2년간 GPA 관리·필수 과목 이수·에세이·비교과 활동 — 편입준비반이 함께</li>
+    <li>UC·CSU 편입 지원 (TAG 편입보장 제도 활용 가능한 캠퍼스는 전략에 포함)</li>
+  </ol>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">파트너 컬리지 세 곳</h2>
+  <div class="fit-grid">
+    ${ccs.map((u) => `<div><strong><a href="${u.slug}.html">${u.name}</a></strong><p>${u.tag}<br>${u.city} · 학비 ${u.tuition} · 기숙사·식비 ${u.room} · 연간 ${u.total}</p></div>`).join("\n    ")}
+  </div>
+  <p class="table-hint" style="margin-top:20px">← 옆으로 밀어서 보세요 →</p>
+  <div class="table-wrap"><table class="cmp" style="min-width:600px">
+    <thead><tr><th>컬리지</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
+    <tbody>${ccs.map((u) => `<tr><th><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("")}</tbody>
+  </table></div>
+  <p class="sec-sub" style="margin-top:14px">세 곳 모두 학비는 연 $10,000~13,000 수준이지만 LA·실리콘밸리·샌프란시스코권 물가 때문에 기숙사·식비가 학비보다 큽니다. 예산은 합계 기준으로 잡아야 합니다.</p>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">편입준비반이 하는 일</h2>
+  <ul class="check-list">
+    <li>수강신청 안내와 GPA 관리 전략 — 편입 심사의 핵심이라 과목별 성적 분포(Grade Distribution)까지 보고 과목을 고릅니다</li>
+    <li>UC·CSU 편입 필수 과목 이수 계획 (전공별로 요구 과목이 다릅니다)</li>
+    <li>편입 에세이(Personal Insight Questions)와 비교과 활동 설계</li>
+    <li>TAG(Transfer Admission Guarantee) 전략 — UC어바인·UC데이비스 등 조건을 채우면 편입이 보장되는 UC 6개 캠퍼스 활용</li>
+    <li>4년제 진학 후 NYU·컬럼비아·미시간 등 최상위권 편입을 노리는 별도 반도 있습니다</li>
+  </ul>
+  <p class="sec-sub" style="margin-top:14px">편입은 '2년 뒤의 시험'이 아니라 2년 내내 쌓는 기록입니다. 첫 학기부터 편입준비반과 같이 움직이는 이유입니다. 용어가 낯설면 <a href="elc-glossary.html">용어 풀이</a>를 먼저 보세요.</p>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-uc-transfer.html",
+    kicker: "🌉 커뮤니티컬리지 2년 → UC·CSU 편입",
+    h1: "UCLA·UC버클리 편입 경로 —<br>커뮤니티컬리지에서 시작하기",
+    sub: "산타모니카·디앤자·디아블로밸리 컬리지를 거쳐 UC 계열로 편입하는 UC/CSU 편입준비반 안내",
+    title: "UCLA·UC버클리 편입 경로 | 산타모니카·디앤자·디아블로밸리 커뮤니티컬리지 — 토플면제교육원",
+    desc: "토플 없이 커뮤니티컬리지(산타모니카·디앤자·디아블로밸리)에 입학해 2년 뒤 UCLA·UC버클리 등 UC·CSU로 편입하는 경로. 컬리지별 비용 비교, 편입준비반의 GPA 관리·TAG 전략, 준비 순서 안내.",
+    consult: { title: "UC 편입 경로 상담", copy: "목표 UC 캠퍼스와 희망 전공, 현재 상황을 남겨 주세요.<br>맞는 컬리지와 2년 편입 계획을 정리해 드립니다." },
+  });
+}
+
+// 텍사스 주립대 모음
+function buildElcTexas() {
+  const tx = ELC.universities.filter((u) => u.city.startsWith("미국 텍사스"));
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">왜 텍사스 학교가 다섯 곳이나 되나요</h2>
+  <p class="lead">이 과정의 진학처 20곳 중 5곳이 텍사스 주립대입니다. 가장 오래된 진학처인 이스트 텍사스 A&M이 2011년부터 현지 교수진이 도착 프로그램을 직접 진행해 온 곳이고, 댈러스(DFW)·샌안토니오·휴스턴 등 텍사스 주요 도시마다 파트너 학교가 있습니다.</p>
+  <p style="margin-top:14px">비용 면에서도 이유가 있습니다. 텍사스 주요 주립대는 연간 $1,000 이상 경쟁 장학금을 받으면 주 내 거주자(In-State) 학비가 적용되어 연 US$13,000~20,000이 줄어듭니다. 이 과정의 장학금 트랙이 텍사스 학교와 잘 맞는 이유입니다.</p>
+</div></section>
+
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title">텍사스 5개 대학 비교</h2>
+  <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
+  <div class="table-wrap"><table class="cmp">
+    <thead><tr><th>대학명</th><th>도시</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
+    <tbody>${tx.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.city.replace("미국 텍사스 ", "")}</td><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
+  </table></div>
+  <div class="fit-grid" style="margin-top:20px">
+    ${tx.map((u) => `<div><strong><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></strong><p>${u.tag}</p></div>`).join("\n    ")}
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">DFW 공항에 내리면</h2>
+  <p class="lead">ETAMU와 UNT는 댈러스 포트워스(DFW) 국제공항에서 픽업이 시작됩니다. 공항에서 학교 버스로 캠퍼스까지 이동하고, 국제처 오리엔테이션·기숙사 입실·학생증·월마트 장보기까지 첫날에 정리합니다. UTSA(샌안토니오)도 같은 방식으로 정착 서비스가 진행됩니다.</p>
+  <ol class="step-list" style="margin-top:18px">${ELC_SETTLEMENT[0].steps.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">학교별 진행 순서는 <a href="elc-settlement.html">현지 도착·정착 서비스</a>, 장학금·In-State 학비는 <a href="elc-scholarship.html">장학금·비용 절감</a>에 정리했습니다.</p>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-texas.html",
+    kicker: "🤠 ETAMU · UNT · UTSA · UH · TXST",
+    h1: "텍사스 주립대 5곳 —<br>토플 없이 가는 미국 대학",
+    sub: "In-State 학비 적용과 DFW 공항 픽업부터 시작하는 정착 서비스, 텍사스 학교끼리 비교",
+    title: "텍사스 주립대 유학 | ETAMU·UNT·UTSA·휴스턴·텍사스주립대 비교 — 토플면제교육원",
+    desc: "토플면제교육원 진학처 중 텍사스 주립대 5곳(이스트 텍사스 A&M·노스텍사스·UT 샌안토니오·휴스턴·텍사스주립대) 요건·비용 비교. In-State 학비 적용 조건, DFW 공항 픽업 정착 서비스 안내.",
+    consult: { title: "텍사스 주립대 진학 상담", copy: "희망 도시(댈러스·샌안토니오·휴스턴 등)와 전공을 남겨 주세요.<br>텍사스 학교 중 요건과 비용이 맞는 곳을 골라 안내해 드립니다." },
+  });
+}
+
+// 용어 풀이
+function buildElcGlossary() {
+  const body = `
+<section class="section"><div class="wrap narrow">
+  <h2 class="sec-title">처음 보면 낯선 말들</h2>
+  <p class="lead">토플면제교육원 안내를 읽다 보면 DET, 교양학점, 입학보장, In-State 같은 말이 계속 나옵니다. 하나씩 풀어 두었으니 표를 읽다가 막히면 여기로 돌아오세요.</p>
+  <div class="faq-list" style="margin-top:20px">
+    ${ELC_GLOSSARY.map(([t, d]) => `<details class="faq-item" open><summary>${t}</summary><p>${d}</p></details>`).join("\n    ")}
+  </div>
+</div></section>
+
+<section class="section alt"><div class="wrap narrow">
+  <h2 class="sec-title">과정을 한 줄로 요약하면</h2>
+  <ol class="step-list">${ELC_SUNY.program.map((x) => `<li>${x}</li>`).join("")}</ol>
+  <p class="sec-sub" style="margin-top:14px">전형·교육과정·20개 대학 비교표는 <a href="elc.html">과정 전체 안내</a>에 있습니다.</p>
+</div></section>`;
+  return elcPage({
+    body,
+    file: "elc-glossary.html",
+    kicker: "📖 DET · 교양학점 · 입학보장 · In-State · PGWP",
+    h1: "토플면제 유학 용어 풀이",
+    sub: "안내문과 비교표에 나오는 말을 처음 보는 분 기준으로 풀었습니다",
+    title: "토플면제 미국 대학 진학 용어 풀이 | DET·교양학점·입학보장·In-State·PGWP·CLEP — 토플면제교육원",
+    desc: "토플면제교육원 안내에 나오는 용어 20개 풀이 — 공인 ESL, TOEFL 면제, DET(듀오링고), 국내대학 교양학점, GPA, 내신 면제, 입학보장, 패스웨이, 커뮤니티컬리지, UC/CSU, SUNY, TAG, In-State 학비, CLEP, OPT, PGWP, Co-op, Rolling Base, 정착 서비스.",
+    consult: { title: "토플면제 과정 상담", copy: "용어를 다 몰라도 됩니다. 학생의 현재 상황과 희망 방향만 남겨 주세요.<br>과정과 비용을 처음부터 설명해 드립니다." },
+    jsonld: { "@context": "https://schema.org", "@type": "DefinedTermSet", name: "토플면제 미국 대학 진학 용어", hasDefinedTerm: ELC_GLOSSARY.map(([t, d]) => ({ "@type": "DefinedTerm", name: t, description: d })) },
   });
 }
 
@@ -3113,6 +3524,13 @@ pages.push(buildStPaulFaq());
 pages.push(buildElc());
 for (const u of ELC.universities) pages.push(buildElcUniv(u));
 for (const a of ELC_AUDIENCES) pages.push(buildElcAudience(a));
+pages.push(buildElcPartners());
+pages.push(buildElcSuny());
+pages.push(buildElcUcTransfer());
+pages.push(buildElcTexas());
+pages.push(buildElcSettlement());
+pages.push(buildElcScholarship());
+pages.push(buildElcGlossary());
 pages.push(buildSummerHub());
 for (const s of SUMMER_COUNTRIES) pages.push(buildSummerCountry(s));
 for (const ic of INFO_COUNTRIES) pages.push(buildInfoCountry(ic));
