@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
+const { SITE_PHOTOS } = require("./photos.js");
 const { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW, ELC_PHOTOS } = require("./elc-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
@@ -775,6 +776,7 @@ function buildCamp(key) {
   <div class="wrap narrow">
     <h2 class="sec-title">${c.school}</h2>
     <p class="lead">${c.schoolDesc}</p>
+    ${sitePhotos(c.slug)}
   </div>
 </section>
 
@@ -814,6 +816,7 @@ ${consultSection({ camp: c.slug })}`;
 
   return page({
     file: `${c.slug}.html`,
+    og: siteOg(c.slug),
     title: `${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`,
     desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}. ${c.school} · ${c.stay}. ${c.deadline}.`,
     hero,
@@ -1626,6 +1629,7 @@ function buildStudy(key) {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">${s.school}</h2>
   <p class="lead">${s.schoolDesc}</p>
+  ${sitePhotos(s.slug)}
 </div></section>
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">유학 중 관리는 이렇게 합니다</h2>
@@ -1656,6 +1660,7 @@ function buildStudy(key) {
 ${studyConsult(s.slug, { title: `${s.name} 상담 신청` })}`;
   return page({
     file: `${s.slug}.html`,
+    og: siteOg(s.slug),
     title: `${s.name} | ${s.school} — ${s.price} · ${s.target.split("(")[0].trim()}`,
     desc: `${s.tag}. ${s.period}. ${s.price}, ${s.school}. 관리 체계·비용·절차 안내와 상담 신청.`,
     hero, body,
@@ -2062,11 +2067,22 @@ function elcOg(key) {
   return ph && ph[0] ? `img/elc/og/${ph[0].src}` : "img/elc/og/elc-building.jpg";
 }
 
-function elcPhotos(key) {
-  const ph = ELC_PHOTOS[key];
+function photoGrid(ph, dir, label) {
   if (!ph || !ph.length) return "";
   const cls = ph.length === 1 ? " one" : ph.length === 2 || ph.length === 4 ? " two" : "";
-  return `<div class="photo-grid${cls}">${ph.map((p) => `<figure><img src="img/elc/${p.src}" alt="${esc(p.alt)}" loading="lazy" draggable="false"><figcaption>${p.cap}</figcaption></figure>`).join("")}</div><p class="photo-src">사진: 2027학년도 입학설명회 자료</p>`;
+  return `<div class="photo-grid${cls}">${ph.map((p) => `<figure><img src="${dir}/${p.src}" alt="${esc(p.alt)}" loading="lazy" draggable="false"><figcaption>${p.cap}</figcaption></figure>`).join("")}</div><p class="photo-src">사진: ${label}</p>`;
+}
+function elcPhotos(key) {
+  return photoGrid(ELC_PHOTOS[key], "img/elc", "2027학년도 입학설명회 자료");
+}
+function sitePhotos(key) {
+  return photoGrid(SITE_PHOTOS[key], "img/camp", "캠프·학교 안내 자료");
+}
+function siteOg(key) {
+  const ph = SITE_PHOTOS[key];
+  if (!ph || !ph[0]) return null;
+  const rel = `img/camp/og/${ph[0].src}`;
+  return fs.existsSync(path.join(OUT, rel)) ? rel : null;
 }
 
 function elcRenderSection(sec) {
