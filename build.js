@@ -622,14 +622,14 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
 <section class="section alt" id="stpaul">
   <div class="wrap">
     <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
-    <p class="sec-sub">집에서 통학하면서 미국 교과과정 8~12학년을 그대로 밟는 길입니다. 전 과목 영어 수업, AP 15과목 이상, 졸업 시 미국 고교 졸업장. 서울 대치동에 있습니다.</p>
+    <p class="sec-sub">집에서 통학하면서 미국 교과과정 8~12학년을 그대로 밟는 길입니다. 전 과목 영어 수업, AP 15과목 이상. 서울 대치동에 있습니다.</p>
     <div class="two-col">
       <div>
         <dl class="info-list">
           <div><dt>대상</dt><dd>중2~고2 편입학 (고3은 상담 후 결정)</dd></div>
           <div><dt>모집</dt><dd>매년 2월·8월 학기 · 학년당 12~22명</dd></div>
           <div><dt>규모</dt><dd>전교 95명 소수정예 · 전 과목 영어 수업</dd></div>
-          <div><dt>학비</dt><dd>연 2,540만원 (등록비·교재비 별도)</dd></div>
+          <div><dt>학비</dt><dd>연 2,540만원</dd></div>
         </dl>
       </div>
       <div>
@@ -1691,7 +1691,7 @@ function buildStPaul() {
   <h2 class="sec-title">어떤 학교인가요</h2>
   <p class="lead">${s.name}는 미국 Saint Paul American School System(SPASS)이 운영하는 서울 캠퍼스입니다.
   미네소타 본교를 비롯해 베이징·파리 등 8개 캠퍼스가 같은 학사 기준으로 운영되고, 서울에서도 미국 커리큘럼
-  그대로 전 과목을 영어로 수업합니다. Common Core(영어·수학)·NGSS(과학) 표준을 따르며, 졸업하면 미국 고교 졸업장이 수여됩니다.</p>
+  그대로 전 과목을 영어로 수업합니다. Common Core(영어·수학)·NGSS(과학) 표준을 따릅니다.</p>
   <p style="margin-top:14px">해외로 나가지 않고 미국 교과과정을 밟는다는 점이 핵심입니다. 아이는 집에서 통학하고, 부모는 매일 얼굴을 보면서
   진로만 미국 쪽으로 돌리는 구조입니다. 대신 <strong>국내 학력이 인정되지 않는 미인가 과정</strong>이라는 점은 입학 전에 반드시 짚고 가야 합니다.</p>
   <div class="two-col" style="margin-top:24px">
@@ -1720,10 +1720,10 @@ function buildStPaul() {
   <div class="camp-grid">
     <a class="camp-card" href="stpaul-admission.html"><span class="camp-flag">📝 입학</span><h3>입학 안내</h3><p class="camp-tag">모집 일정, 입학 테스트, 제출 서류, 학년 배정까지</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-curriculum.html"><span class="camp-flag">📚 수업</span><h3>커리큘럼 · AP</h3><p class="camp-tag">8~12학년 과목 구성, AP, 제2외국어, MAP 진단</p><span class="camp-more">자세히 보기 →</span></a>
-    <a class="camp-card" href="stpaul-tuition.html"><span class="camp-flag">💳 비용</span><h3>학비 안내</h3><p class="camp-tag">등록비·학비·교재비와 첫 해 실제 총액</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-tuition.html"><span class="camp-flag">💳 비용</span><h3>학비 안내</h3><p class="camp-tag">연간 학비와 해외 유학과의 비용 비교</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-college.html"><span class="camp-flag">🎓 진학</span><h3>진학 실적 · 상담</h3><p class="camp-tag">합격 실적과 College Counselor 상담 체계</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-life.html"><span class="camp-flag">🏫 생활</span><h3>학교생활</h3><p class="camp-tag">하루 일과, 클럽, 통학과 학사, 학교 분위기</p><span class="camp-more">자세히 보기 →</span></a>
-    <a class="camp-card" href="stpaul-vs-abroad.html"><span class="camp-flag">⚖️ 비교</span><h3>해외 유학과 비교</h3><p class="camp-tag">비용·생활·졸업장·되돌릴 여지를 표로</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-vs-abroad.html"><span class="camp-flag">⚖️ 비교</span><h3>해외 유학과 비교</h3><p class="camp-tag">비용·생활·학력·되돌릴 여지를 표로</p><span class="camp-more">자세히 보기 →</span></a>
   </div>
 </div></section>
 
@@ -2495,8 +2495,6 @@ function buildStPaulAdmission() {
   <dl class="info-list" style="margin-top:20px">
     <div><dt>대상</dt><dd>${STPAUL.target}</dd></div>
     <div><dt>정원</dt><dd>전교 95명 · 학년당 12~22명</dd></div>
-    <div><dt>테스트비</dt><dd>25만원 (지원 시 1회)</dd></div>
-    <div><dt>등록비</dt><dd>450만원 (신입생 1회)</dd></div>
   </dl>
 </div></section>
 
@@ -2535,7 +2533,7 @@ function buildStPaulAdmission() {
     sub: "2월·8월 학기 모집 · 중2~고2 편입학 · 입학 테스트와 학년 배정까지",
     body,
     title: "세인트폴 대치 아카데미 입학 안내 | 모집 일정·입학 테스트·제출 서류",
-    desc: "세인트폴 대치 아카데미 입학 절차 — 2월·8월 학기 모집, 중2~고2 편입학, 입학 테스트(25만원)와 학년 배정 기준, 제출 서류, 등록비 450만원. 상담부터 입학까지 순서를 정리했습니다.",
+    desc: "세인트폴 대치 아카데미 입학 절차 — 2월·8월 학기 모집, 중2~고2 편입학, 입학 테스트와 학년 배정 기준, 제출 서류. 상담부터 입학까지 순서를 정리했습니다.",
   });
 }
 
@@ -2597,23 +2595,6 @@ function buildStPaulTuition() {
 </div></section>
 
 <section class="section alt"><div class="wrap narrow">
-  <h2 class="sec-title">첫 해에 실제로 드는 돈</h2>
-  <p class="lead">등록비는 신입생이 한 번만 냅니다. 그래서 1학년차와 2학년차의 금액이 다릅니다.</p>
-  <div class="table-wrap" style="margin-top:20px"><table class="cmp">
-    <thead><tr><th>구분</th><th>첫 해</th><th>다음 해부터</th></tr></thead>
-    <tbody>
-      <tr><th>등록비</th><td>450만원</td><td>없음</td></tr>
-      <tr><th>연간 학비</th><td>2,540만원</td><td>2,540만원</td></tr>
-      <tr><th>교재비</th><td>54만 6천원</td><td>54만 6천원</td></tr>
-      <tr><th>테스트비</th><td>25만원</td><td>없음</td></tr>
-      <tr><th>급식·현장학습</th><td>실비</td><td>실비</td></tr>
-      <tr><th>TOEFL·SAT 방과후 (선택)</th><td>과목당 월 50만원</td><td>과목당 월 50만원</td></tr>
-    </tbody>
-  </table></div>
-  <p class="sec-sub" style="margin-top:14px">학비는 학교 정책에 따라 변경될 수 있습니다. 납부 방법과 분납 가능 여부는 상담 시 확인해 드립니다.</p>
-</div></section>
-
-<section class="section"><div class="wrap narrow">
   <h2 class="sec-title">해외 유학과 비교하면</h2>
   <p>같은 1년을 두고 보면 <a href="study-newzealand.html">뉴질랜드 유학</a>은 연 3,200만원, <a href="study-canada.html">캐나다 관리형</a>은 연 4,250만원입니다.
   여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 학비는 낮지만 집에서 통학하니 숙식비가 들지 않는다는 점이 가장 큰 차이입니다.</p>
@@ -2624,10 +2605,10 @@ function buildStPaulTuition() {
     file: "stpaul-tuition.html",
     kicker: "💳 학비",
     h1: "세인트폴 대치 아카데미<br>학비 안내",
-    sub: "연간 학비 2,540만원 · 등록비 450만원 · 첫 해와 다음 해의 차이까지",
+    sub: "연간 학비 2,540만원 · 해외 유학과의 비용 비교까지",
     body,
-    title: "세인트폴 대치 아카데미 학비 | 등록비·연간 학비·첫 해 총액 정리",
-    desc: "세인트폴 대치 아카데미 학비 — 연간 2,540만원, 신입생 등록비 450만원, 교재비 54만 6천원, 테스트비 25만원, 급식·현장학습 실비. 첫 해와 다음 해 금액 차이, 해외 유학과의 비용 비교까지.",
+    title: "세인트폴 대치 아카데미 학비 | 연간 학비·해외 유학 비용 비교",
+    desc: "세인트폴 대치 아카데미 학비 — 연간 학비 2,540만원. 집에서 통학하는 국내 미국 교과과정과 해외 유학의 연간 비용 비교까지 정리했습니다.",
   });
 }
 
@@ -2760,10 +2741,10 @@ function buildStPaulVsAbroad() {
     file: "stpaul-vs-abroad.html",
     kicker: "⚖️ 비교",
     h1: "국내 미국 과정 vs 해외 유학",
-    sub: "비용·생활·졸업장·되돌릴 여지까지, 두 길을 같은 기준으로 놓고 봅니다",
+    sub: "비용·생활·학력·되돌릴 여지까지, 두 길을 같은 기준으로 놓고 봅니다",
     body,
-    title: "세인트폴 대치 아카데미 vs 조기유학 | 비용·생활·졸업장 비교",
-    desc: "국내 미국 교과과정과 해외 조기유학을 같은 기준으로 비교 — 보호자, 연간 비용, 졸업장, 국내 학력 인정, 영어 환경, 되돌릴 여지. 아이 성향별로 어느 쪽이 맞는지 정리했습니다.",
+    title: "세인트폴 대치 아카데미 vs 조기유학 | 비용·생활·학력 비교",
+    desc: "국내 미국 교과과정과 해외 조기유학을 같은 기준으로 비교 — 보호자, 연간 비용, 국내 학력 인정, 영어 환경, 되돌릴 여지. 아이 성향별로 어느 쪽이 맞는지 정리했습니다.",
   });
 }
 
@@ -2784,7 +2765,7 @@ function buildStPaulFaq() {
     sub: "학적 처리, 국내 대학, 영어 수준, 학비까지 — 상담에서 가장 많이 받는 질문들",
     body,
     title: "세인트폴 대치 아카데미 FAQ | 학적·검정고시·영어 수준·학비 질문",
-    desc: "세인트폴 대치 아카데미에 대해 가장 많이 받는 질문 — 한국 학교 학적 처리, 국내 대학 진학과 검정고시, 영어 수준, 해외 유학으로 전환, 실제 총비용, 고3 편입학 가능 여부까지.",
+    desc: "세인트폴 대치 아카데미에 대해 가장 많이 받는 질문 — 한국 학교 학적 처리, 국내 대학 진학과 검정고시, 영어 수준, 해외 유학으로 전환, 학비, 고3 편입학 가능 여부까지.",
     jsonld: {
       "@context": "https://schema.org", "@type": "FAQPage",
       mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
@@ -2902,10 +2883,10 @@ function buildStudyCost() {
   <div class="table-wrap"><table class="cmp">
     <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
     <tbody>
-      <tr><th>연간 학비·참가비</th><td>2,540만원 (등록비 450만원 첫 해 1회)</td><td>3,200만~4,250만원</td></tr>
+      <tr><th>연간 학비·참가비</th><td>2,540만원</td><td>3,200만~4,250만원</td></tr>
       <tr><th>숙식</th><td>집에서 통학 (숙식비 없음)</td><td>홈스테이비가 참가비에 포함</td></tr>
       <tr><th>항공·비자</th><td>없음</td><td>왕복 항공 + 비자 진행비</td></tr>
-      <tr><th>그 외</th><td>교재비·테스트비, 급식·현장학습 실비</td><td>용돈, UM 서비스, 방학 귀국 항공</td></tr>
+      <tr><th>그 외</th><td>통학·학사 비용 (해당 시)</td><td>용돈, UM 서비스, 방학 귀국 항공</td></tr>
     </tbody>
   </table></div>
   <p class="sec-sub" style="margin-top:14px">자세한 학비는 <a href="stpaul-tuition.html">세인트폴 학비 안내</a>에 있습니다.</p>
