@@ -161,6 +161,23 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 
 /* fit grid */
 .fit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* 후기·프로그램 카드·태그 (2026-09-05) */
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+@media(max-width:860px){.review-grid{grid-template-columns:1fr}}
+.review{margin:0;background:#fff;border:1px solid var(--line);border-left:4px solid var(--coral,#e8674a);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.section:not(.alt) .review{background:var(--paper,#f7f6f2)}
+.review-prog{font-weight:800;font-size:14px;color:var(--navy,#1d3557)}
+.review p{font-size:15px;line-height:1.7;margin:0}
+.review cite{font-style:normal;font-size:13px;color:var(--muted,#6b6f72);margin-top:auto}
+.prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.prog-grid{grid-template-columns:1fr}}
+.prog-card{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff;transition:.15s}
+.prog-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.06)}
+.prog-kicker{font-size:12.5px;font-weight:700;color:var(--muted,#6b6f72);letter-spacing:.02em}
+.prog-card h3{font-size:17px;margin:0}
+.prog-card p{font-size:14px;color:var(--muted,#6b6f72);margin:0}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;font-size:13.5px;font-weight:600}
 @media(max-width:700px){.fit-grid{grid-template-columns:1fr}}
 .fit-grid>div{background:var(--ice);border:1px solid var(--sky-soft);border-radius:14px;padding:22px}
 .section.alt .fit-grid>div{background:#fff;border-color:var(--line)}

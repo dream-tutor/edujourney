@@ -6,6 +6,7 @@ const path = require("path");
 const { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ } = require("./data.js");
 const { STPAUL_DETAIL, STUDY_INFO, STUDY_GRADES } = require("./study-data.js");
 const { SITE_PHOTOS } = require("./photos.js");
+const { PROGRAM_TAGS, REVIEWS, PROGRAMS, STRENGTHS } = require("./extra-data.js"); // 2026-09-05 후기·추천 프로그램·태그
 const { ELC_UNIV_DETAIL, ELC_SUNY, ELC_SETTLEMENT, ELC_SCHOLARSHIP, ELC_GLOSSARY, ELC_PARTNERS, ELC_REASONS, ELC_FLOW, ELC_PHOTOS } = require("./elc-data.js");
 const CAMP_COUNT = Object.keys(CAMPS).length;
 const GUIDES = [...require("./guides.js"), ...require("./guides2.js"), ...require("./guides3.js")];
@@ -127,14 +128,16 @@ function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null
 
   // 날짜: 기존 JSON-LD에 실제 발행일(가이드 Article 등)이 있으면 그 값을 우선
   const dates = pageDates(file);
-  const published = jsonld && !Array.isArray(jsonld) && typeof jsonld.datePublished === "string" ? jsonld.datePublished : dates.datePublished;
+  const primaryLd = Array.isArray(jsonld) ? jsonld[0] : jsonld; // 배열이면 첫 항목(Article 등)을 날짜 기준으로
+  const published = primaryLd && typeof primaryLd.datePublished === "string" ? primaryLd.datePublished : dates.datePublished;
   const modified = dates.dateModified < published ? published : dates.dateModified;
   const dateLabel = modified.replace(/-/g, ".");
 
   // JSON-LD: 기존 객체에 날짜 추가(Organization 제외) → 없으면 WebPage 추가, 브레드크럼은 별도 블록
-  const datable = jsonld && !Array.isArray(jsonld) && jsonld["@type"] !== "Organization";
+  const datable = !!primaryLd && primaryLd["@type"] !== "Organization";
   const ld = [];
-  if (jsonld) ld.push(datable ? { ...jsonld, datePublished: published, dateModified: modified } : jsonld);
+  if (Array.isArray(jsonld)) ld.push({ ...jsonld[0], datePublished: published, dateModified: modified }, ...jsonld.slice(1));
+  else if (jsonld) ld.push(datable ? { ...jsonld, datePublished: published, dateModified: modified } : jsonld);
   if (!datable) ld.push({ "@context": "https://schema.org", "@type": "WebPage", name: title, description: desc, url, datePublished: published, dateModified: modified, inLanguage: "ko-KR" });
   const trail = isHome ? null : crumbs || crumbsFor(file, title);
   if (trail && trail.length > 1) ld.push(crumbsJsonld(trail, url));
@@ -253,6 +256,8 @@ function footer() {
         <div class="footer-linkset">${campLinks}\n${ageLinks}\n<a href="summer.html">여름캠프 사전상담</a>\n<a href="compare.html">캠프 비교</a>\n<a href="guide.html">캠프 가이드</a>\n<a href="faq.html">자주 묻는 질문</a>\n<a href="info-usa.html">미국</a>\n<a href="info-uk.html">영국</a>\n<a href="info-australia.html">호주</a>\n<a href="info-philippines.html">필리핀</a>\n<a href="info-singapore.html">싱가포르</a></div>
         <h3 style="margin-top:26px">유학 · 세인트폴 대치 아카데미</h3>
         <div class="footer-linkset"><a href="study.html">유학 전체 안내</a>\n<a href="study-newzealand.html">뉴질랜드 중·고등 유학</a>\n<a href="study-canada.html">캐나다 관리형 유학</a>\n<a href="study-compare.html">유학 비교</a>\n<a href="study-cost.html">유학 비용</a>\n<a href="study-process.html">준비 절차</a>\n<a href="study-visa.html">비자·서류</a>\n<a href="study-guardian.html">현지 관리</a>\n<a href="study-after.html">졸업 후 진로</a>\n<a href="study-faq.html">유학 FAQ</a>\n<a href="study-guide.html">유학 가이드</a>\n${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.label} 유학</a>`).join("\n")}\n<a href="stpaul.html">세인트폴 대치 아카데미</a>\n<a href="stpaul-admission.html">입학 안내</a>\n<a href="stpaul-curriculum.html">수업·커리큘럼</a>\n<a href="stpaul-tuition.html">학비</a>\n<a href="stpaul-college.html">진학 실적</a>\n<a href="stpaul-life.html">학교생활</a>\n<a href="stpaul-vs-abroad.html">유학과 비교</a>\n<a href="stpaul-faq.html">세인트폴 FAQ</a></div>
+        <h3 style="margin-top:26px">프로그램 안내</h3>
+        <div class="footer-linkset">${PROGRAMS.filter((p) => p.detail).map((p) => `<a href="${p.href}">${p.name}</a>`).join("\n")}\n<a href="index.html#reviews">다녀온 학생들의 이야기</a></div>
         <h3 style="margin-top:26px">미국·캐나다 대학 토플면제</h3>
         <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n<a href="elc-partners.html">파트너 대학 9곳</a>\n<a href="elc-suny.html">SUNY 진학 가이드</a>\n<a href="elc-uc-transfer.html">UC 편입 경로</a>\n<a href="elc-texas.html">텍사스 주립대 5곳</a>\n<a href="elc-settlement.html">현지 정착 서비스</a>\n<a href="elc-scholarship.html">장학금·비용 절감</a>\n<a href="elc-glossary.html">용어 풀이</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
       </div>
@@ -529,6 +534,24 @@ function buildIndex() {
   </div>
 </section>
 
+<section class="section alt" id="reviews">
+  <div class="wrap">
+    <h2 class="sec-title">다녀온 학생들의 이야기</h2>
+    <p class="sec-sub">캠프와 유학을 다녀온 학생들이 직접 남긴 글입니다. 이름은 일부 가렸습니다.</p>
+    ${reviewCards(REVIEWS)}
+  </div>
+</section>
+
+<section class="section" id="programs">
+  <div class="wrap">
+    <h2 class="sec-title">캠프 다음도 안내합니다</h2>
+    <p class="sec-sub">겨울캠프에서 시작해 교환학생, 유학, 국내에서 다니는 미국 학교, 대학 진학까지. 학생의 학년과 목적에 따라 맞는 길이 다릅니다.</p>
+    <div class="prog-grid">
+      ${PROGRAMS.map((p) => `<a class="prog-card" href="${p.href}"><span class="prog-kicker">${p.kicker}</span><h3>${p.name}</h3><p>${p.blurb}</p><span class="camp-more">자세히 보기 →</span></a>`).join("\n")}
+    </div>
+  </div>
+</section>
+
 ${foldSection(safetySection())}
 
 <section class="section">
@@ -769,6 +792,10 @@ function buildCamp(key) {
   <div class="wrap narrow">
     <h2 class="sec-title">이 캠프의 하이라이트</h2>
     <ul class="check-list">${c.highlights.map((h) => `<li>${h}</li>`).join("")}</ul>
+    ${PROGRAM_TAGS[c.slug] ? `<h3 class="sec-title-sm" style="margin-top:28px">프로그램 구성</h3>
+    <div class="tag-row">${PROGRAM_TAGS[c.slug].map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+    <p class="dim" style="margin-top:10px">세부 구성은 기수와 기간에 따라 조금씩 달라집니다.</p>` : ""}
+    ${reviewCards(REVIEWS.filter((r) => r.camp === c.slug), "다녀온 학생의 이야기")}
   </div>
 </section>
 
@@ -1140,6 +1167,14 @@ function buildAbout() {
     <div><strong>학부모 실시간 공유</strong><p>네이버 밴드에 전체 공지방과 학생별 개인방을 운영합니다. 아이의 하루가 매일 사진과 글로 도착합니다.</p></div>
     <div><strong>명문화된 원칙</strong><p>규정 위반 3단계 원칙, 단계별 환불 규정까지, 모든 원칙이 계약서에 문서로 존재합니다.</p></div>
   </div>
+</div></section>
+<section class="section"><div class="wrap">
+  <h2 class="sec-title">캠프 너머까지 같이 봅니다</h2>
+  <p class="sec-sub">캠프를 다녀온 뒤 유학이나 대학 진학으로 이어지는 학생이 많습니다. 그때도 같은 기준으로 안내합니다.</p>
+  <div class="fit-grid">
+    ${STRENGTHS.map(([t, d]) => `<div><strong>${t}</strong><p>${d}</p></div>`).join("\n")}
+  </div>
+  <p class="sec-sub" style="margin-top:14px"><a href="index.html#programs">안내하는 프로그램 전체 보기 →</a></p>
 </div></section>
 ${safetySection()}
 <section class="section"><div class="wrap narrow">
@@ -3414,6 +3449,23 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 
 /* fit grid */
 .fit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* 후기·프로그램 카드·태그 (2026-09-05) */
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+@media(max-width:860px){.review-grid{grid-template-columns:1fr}}
+.review{margin:0;background:#fff;border:1px solid var(--line);border-left:4px solid var(--coral,#e8674a);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.section:not(.alt) .review{background:var(--paper,#f7f6f2)}
+.review-prog{font-weight:800;font-size:14px;color:var(--navy,#1d3557)}
+.review p{font-size:15px;line-height:1.7;margin:0}
+.review cite{font-style:normal;font-size:13px;color:var(--muted,#6b6f72);margin-top:auto}
+.prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.prog-grid{grid-template-columns:1fr}}
+.prog-card{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff;transition:.15s}
+.prog-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.06)}
+.prog-kicker{font-size:12.5px;font-weight:700;color:var(--muted,#6b6f72);letter-spacing:.02em}
+.prog-card h3{font-size:17px;margin:0}
+.prog-card p{font-size:14px;color:var(--muted,#6b6f72);margin:0}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;font-size:13.5px;font-weight:600}
 @media(max-width:700px){.fit-grid{grid-template-columns:1fr}}
 .fit-grid>div{background:var(--ice);border:1px solid var(--sky-soft);border-radius:14px;padding:22px}
 .section.alt .fit-grid>div{background:#fff;border-color:var(--line)}
@@ -3521,6 +3573,46 @@ img{-webkit-user-drag:none;user-drag:none}
 // ------------------------------------------------------------
 // 생성
 // ------------------------------------------------------------
+// ------------------------------------------------------------
+// 후기 카드 + 추천 프로그램 상세 페이지 (2026-09-05, extra-data.js)
+// ------------------------------------------------------------
+function reviewCards(list, title = null) {
+  if (!list || !list.length) return "";
+  return `${title ? `<h3 class="sec-title-sm" style="margin-top:28px">${title}</h3>` : ""}
+    <div class="review-grid">${list.map((r) => `<blockquote class="review"><span class="review-prog">${r.program}</span><p>${r.text}</p><cite>${r.who}</cite></blockquote>`).join("\n")}</div>`;
+}
+
+function buildProgram(p) {
+  const d = p.detail;
+  const related = (d.related || []).map((href) => {
+    const found = pages.find((pg) => pg.file === href);
+    const m = found && found.html.match(/<title>([^<|]*)/);
+    return m ? `<a href="${href}">${m[1].trim()}</a>` : null;
+  }).filter(Boolean);
+  const others = PROGRAMS.filter((x) => x.slug !== p.slug);
+  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+    <p class="hero-kicker">${p.kicker}</p>
+    <h1>${p.name}</h1>
+    <p class="hero-sub">${p.blurb}</p>
+  </div></section>`;
+  const body = `
+<section class="section"><div class="wrap narrow guide-body">
+  <p class="lead">${d.lead}</p>
+  ${d.sections.map((s) => `<h2 class="sec-title-sm">${s.h}</h2>${s.p}`).join("\n")}
+  ${d.faq && d.faq.length ? `<h2 class="sec-title-sm">자주 묻는 질문</h2><div class="faq-list">${d.faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><div class="faq-a"><p>${a}</p></div></details>`).join("")}</div>` : ""}
+  ${reviewCards(REVIEWS.filter((r) => r.camp === p.slug), "다녀온 학생의 이야기")}
+  ${related.length ? `<p class="sec-sub" style="margin-top:26px">같이 보시면 좋은 안내: ${related.join(" · ")}</p>` : ""}
+</div></section>
+<section class="section alt"><div class="wrap">
+  <h2 class="sec-title-sm">다른 프로그램</h2>
+  <div class="prog-grid">${others.map((x) => `<a class="prog-card" href="${x.href}"><span class="prog-kicker">${x.kicker}</span><h3>${x.name}</h3><p>${x.blurb}</p><span class="camp-more">자세히 보기 →</span></a>`).join("\n")}</div>
+</div></section>
+${consultSection({ title: `${p.name} 상담 신청` })}`;
+  const jsonld = [{ "@context": "https://schema.org", "@type": "Article", headline: p.name, description: d.desc, datePublished: "2026-09-05", author: { "@type": "Organization", name: "러닝트래블" } }];
+  if (d.faq && d.faq.length) jsonld.push({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a.replace(/<[^>]+>/g, "") } })) });
+  return page({ file: `${p.slug}.html`, title: d.title, desc: d.desc, hero, body, jsonld });
+}
+
 const pages = [];
 pages.push(buildIndex());
 pages.push(buildCompare());
@@ -3571,6 +3663,7 @@ pages.push(buildCalendar());
 for (const bd of BUDGETS) pages.push(buildBudget(bd));
 pages.push(buildGuideIndex());
 for (const g of ALL_GUIDES) pages.push(buildGuideArticle(g));
+for (const p of PROGRAMS) if (p.detail) pages.push(buildProgram(p)); // 추천 프로그램 상세 4p (관련 링크 제목 조회를 위해 마지막에 생성)
 
 for (const p of pages) fs.writeFileSync(path.join(OUT, p.file), p.html);
 fs.writeFileSync(path.join(OUT, "style.css"), CSS);
