@@ -559,7 +559,7 @@ ${foldSection(safetySection())}
     <details class="sec-fold"><summary><h2 class="sec-title">어떤 캠프를 골라야 할지 모르겠다면</h2></summary>
     <div class="fit-grid">
       <div><strong>처음 나가는 초등학생이라면</strong><p>3주짜리가 무난합니다. 학교에서 버디 친구를 붙여주는 <a href="canada-3week.html">캐나다 3주</a>나, 1월이 여름이라 지내기 좋은 <a href="newzealand.html">뉴질랜드</a>로 시작하는 집이 많습니다.</p></div>
-      <div><strong>유학을 진지하게 고민 중이라면</strong><p>바로 보내지 마시고 <a href="canada-4week.html">캐나다 4주</a>부터 겪어보게 하세요. 사립학교 수업을 그대로 다녀보고 결정해도 늦지 않습니다.</p></div>
+      <div><strong>유학을 진지하게 고민 중이라면</strong><p>바로 보내지 마시고 <a href="canada-7week.html">캐나다 7주</a>부터 겪어보게 하세요. 사립학교 수업을 그대로 다녀보고 결정해도 늦지 않습니다.</p></div>
       <div><strong>영어가 아직 자신 없다면</strong><p><a href="newzealand.html">뉴질랜드 캠프</a>가 부담이 덜합니다. 1월엔 캠프생끼리 영어수업으로 몸을 풀고, 2월에 현지 수업에 들어가는 순서라서요.</p></div>
       <div><strong>일본어에 빠진 중고생이라면</strong><p><a href="japan.html">교토 2주</a> 다녀오면 일본어 진로를 계속 갈지 본인 입으로 답이 나옵니다.</p></div>
       <div><strong>말하기 연습량이 절실하다면</strong><p><a href="philippines.html">필리핀 클락</a>이 답입니다. 매일 1:1 수업만 4시간입니다. 다른 어느 캠프보다 입을 여는 시간이 깁니다.</p></div>
@@ -874,7 +874,7 @@ const PRICE_ROWS = [
   { camp: "newzealand",   label: "뉴질랜드 4주",    won: 810,  weeks: 4 },
   { camp: "canada-3week", label: "캐나다 3주",      won: 890,  weeks: 3 },
   { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1090, weeks: 7 },
-  { camp: "canada-4week", label: "캐나다 4주",      won: 1290, weeks: 4 },
+  { camp: "canada-7week", label: "캐나다 7주",      won: 1290, weeks: 7 },
 ];
 const DURATIONS = [
   { slug: "2week", weeks: 2, label: "2주", note: "학기 중 부담이 가장 적은 기간입니다. 처음 보내는 집에서 많이 고릅니다." },
@@ -3668,10 +3668,6 @@ for (const g of ALL_GUIDES) pages.push(buildGuideArticle(g));
 for (const p of PROGRAMS) if (p.detail) pages.push(buildProgram(p)); // 추천 프로그램 상세 4p (관련 링크 제목 조회를 위해 마지막에 생성)
 
 for (const p of pages) fs.writeFileSync(path.join(OUT, p.file), p.html);
-// 옛 주소 리다이렉트 — 캐나다 7주 → 4주 과정 개편(2026-09-05). 사이트맵에는 넣지 않는다.
-for (const [from, to] of [["canada-7week.html", "canada-4week.html"], ["schedule-canada-7week.html", "schedule-canada-4week.html"]]) {
-  fs.writeFileSync(path.join(OUT, from), `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><title>이동 중…</title><link rel="canonical" href="${BASE_URL}/${to}"><meta http-equiv="refresh" content="0; url=${to}"><meta name="robots" content="noindex"></head><body><p>과정이 개편되어 <a href="${to}">새 페이지</a>로 이동합니다.</p></body></html>`);
-}
 fs.writeFileSync(path.join(OUT, "style.css"), CSS);
 fs.writeFileSync(path.join(OUT, "CNAME"), BASE_URL.replace(/^https?:\/\//, ""));
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");

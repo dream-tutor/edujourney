@@ -10,7 +10,7 @@ const SITE_PHOTOS = {
     P("canada-aquarium.jpg", "대형 수족관 앞에 선 학생들 뒷모습", "토론토 수족관 견학"),
     P("canada-school-snow.jpg", "담쟁이로 덮인 캐나다 학교 건물 겨울 외관", "캐나다 캠프 현지 학교 (자료 사진)"),
   ],
-  "canada-4week": [
+  "canada-7week": [
     P("canada-hockey.jpg", "아이스하키 경기 장면", "아이스하키 경기 관람"),
     P("canada-skating.jpg", "야간 야외 스케이트장", "야외 스케이트장 — 저녁 체험 활동"),
   ],
