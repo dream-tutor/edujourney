@@ -273,12 +273,13 @@ function footer() {
 function campCard(c) {
   return `<a class="camp-card" href="${c.slug}.html">
     <span class="camp-flag">${c.flag} ${c.countryName}</span>
+    ${c.promo ? `<span class="promo-badge">${c.promo.badge}</span>` : ""}
     <h3>${c.name}</h3>
     <p class="camp-tag">${c.tag}</p>
     <dl class="camp-meta">
       <div><dt>기간</dt><dd>${c.periodShort}</dd></div>
       <div><dt>대상</dt><dd>${c.target}</dd></div>
-      <div><dt>참가비</dt><dd>${c.price}</dd></div>
+      <div><dt>참가비</dt><dd>${c.promo ? `<s class="was">${c.price}</s> <strong class="now">${c.promo.priceAfter}</strong><br><span class="promo-mini">${c.promo.cond}</span>` : c.price}</dd></div>
     </dl>
     <span class="camp-more">자세히 보기 →</span>
   </a>`;
@@ -296,7 +297,7 @@ function compareTable() {
       ${row("기간", (c) => c.periodShort)}
       ${row("대상", (c) => br(c.target))}
       ${row("정원", (c) => c.capacity)}
-      ${row("참가비", (c) => `<strong>${br(c.price)}</strong>`)}
+      ${row("참가비", (c) => `<strong>${br(c.price)}</strong>${c.promo ? `<br><span class="promo-mini">${c.promo.until}까지 ${c.promo.limit} ${c.promo.badge} → ${c.promo.priceAfter}</span>` : ""}`)}
       ${row("숙소", (c) => c.stay)}
       ${row("모집 마감", (c) => c.deadline)}
     </tbody>
@@ -528,6 +529,7 @@ function buildIndex() {
   <div class="wrap">
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
     <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 모두 인솔자 동행, 선착순 마감입니다.</p>
+    ${Object.values(CAMPS).filter((c) => c.promo).map((c) => `<p class="promo-bar"><a href="${c.slug}.html"><span class="promo-bar-tag">${c.promo.badge}</span><span><strong>${c.name}</strong> — ${c.promo.short}</span><span class="promo-bar-go">자세히 보기 →</span></a></p>`).join("")}
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
     <div class="btn-row"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
     <a class="btn btn-coral" href="summer.html">2027 여름캠프 사전 상담 →</a></div>
@@ -769,6 +771,7 @@ function buildCamp(key) {
     <p class="hero-kicker">${c.flag} ${c.countryName} · ${c.type}</p>
     <h1>${c.name}</h1>
     <p class="hero-sub">${c.tag}</p>
+    ${c.promo ? `<p class="hero-promo">${c.promo.short}</p>` : ""}
   </div>
 </section>`;
 
@@ -776,11 +779,17 @@ function buildCamp(key) {
 <section class="section">
   <div class="wrap narrow">
     <h2 class="sec-title">모집 안내</h2>
+    ${c.promo ? `<div class="promo-box">
+      <span class="promo-box-tag">${c.promo.badge}</span>
+      <p>${c.promo.detail}</p>
+    </div>` : ""}
     <dl class="info-list">
       <div><dt>기간</dt><dd>${c.period}</dd></div>
       <div><dt>대상</dt><dd>${c.target}</dd></div>
       <div><dt>정원</dt><dd>${c.capacity} (선착순)</dd></div>
-      <div><dt>참가비</dt><dd><strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span></dd></div>
+      <div><dt>참가비</dt><dd>${c.promo
+        ? `<strong class="now">${c.promo.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${c.promo.until}까지 ${c.promo.limit}에게 적용되는 ${c.promo.badge} 금액입니다 · ${c.priceNote}</span>`
+        : `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`}</dd></div>
       <div><dt>숙소</dt><dd>${c.stay}</dd></div>
       <div><dt>모집 마감</dt><dd>${c.deadline}</dd></div>
       <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
@@ -845,7 +854,7 @@ ${consultSection({ camp: c.slug })}`;
     file: `${c.slug}.html`,
     og: siteOg(c.slug),
     title: `${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`,
-    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}. ${c.school} · ${c.stay}. ${c.deadline}.`,
+    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}.${c.promo ? ` ${c.promo.short}.` : ""} ${c.school} · ${c.stay}. ${c.deadline}.`,
     hero,
     body,
     jsonld: {
@@ -3422,6 +3431,22 @@ a{color:inherit;text-decoration:none}
 .camp-meta dt{color:var(--muted);font-weight:700}
 .camp-meta dd{font-weight:600}
 .camp-more{font-size:14px;font-weight:700;color:var(--coral)}
+
+/* 한시 할인 표기 */
+.promo-badge{align-self:flex-start;background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;border-radius:999px;padding:5px 12px}
+.was{color:var(--muted);font-weight:600;text-decoration:line-through;margin-right:4px}
+.now{color:var(--coral)}
+.promo-mini{display:inline-block;margin-top:4px;font-size:12.5px;color:var(--coral);font-weight:700;line-height:1.4}
+.promo-box{border:1px solid var(--coral-soft);background:#fff6f2;border-radius:14px;padding:18px 20px;margin-bottom:20px}
+.promo-box-tag{display:inline-block;background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 11px;margin-bottom:9px}
+.promo-box p{font-size:15px}
+.hero-promo{display:inline-block;margin-top:18px;background:var(--coral);color:#fff;font-size:14.5px;font-weight:800;border-radius:999px;padding:8px 17px}
+.promo-bar{margin:0 0 18px}
+.promo-bar a{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--coral-soft);background:#fff6f2;border-radius:14px;padding:13px 17px;font-size:15px}
+.promo-bar-tag{background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 11px;white-space:nowrap}
+.promo-bar strong{color:var(--navy)}
+.promo-bar-go{margin-left:auto;font-weight:800;color:var(--coral);white-space:nowrap}
+@media(max-width:700px){.promo-bar-go{margin-left:0}}
 
 /* compare table */
 .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:#fff;-webkit-overflow-scrolling:touch}
