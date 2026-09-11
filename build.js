@@ -378,11 +378,9 @@ function consultSection(preset = {}) {
         <span class="lab-plain">상담 받고 싶은 내용 <em class="lab-sub">여러 개 선택 가능</em></span>
         <div class="chip-row">${["일정·비용", "현지 학교 수업", "홈스테이·숙소", "인솔·현지 관리", "항공·출국 준비", "유학 연계"].map((v) => `<label class="chip"><input type="checkbox" name="궁금한점" value="${v}"><span>${v}</span></label>`).join("")}</div>
       </div>
+
       <div class="form-row">
-        <label class="agree"><input type="checkbox" name="형제동반" value="희망"> <span>형제·자매가 함께 참가하고 싶어요</span></label>
-      </div>
-      <div class="form-row">
-        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
+        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <div class="form-row">
         <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" required> <span>개인정보 수집·이용에 동의합니다 <b class="req">*</b></span></label>
@@ -418,7 +416,7 @@ function consultSection(preset = {}) {
           if(f.get('해외경험')) rows.push('해외 경험: ' + f.get('해외경험'));
           if(f.getAll('기대').length) rows.push('기대하는 점: ' + f.getAll('기대').join(', '));
           if(f.getAll('궁금한점').length) rows.push('상담 희망 내용: ' + f.getAll('궁금한점').join(', '));
-          if(f.get('형제동반')) rows.push('형제·자매 동반 참가 희망');
+
           var free = (f.get('문의내용')||'').trim();
           if(free) rows.push((rows.length ? NL : '') + free);
           return rows.join(NL);

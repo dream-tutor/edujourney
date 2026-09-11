@@ -20,7 +20,7 @@
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=mtwleeps">
+<link rel="stylesheet" href="style.css?v=mtwmcaj8">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"세인트폴 대치 아카데미 입학 안내 | 모집 일정·입학 테스트·제출 서류","description":"세인트폴 대치 아카데미 입학 절차 — 2월·8월 학기 모집, 중2~고2 편입학, 입학 테스트와 학년 배정 기준, 제출 서류. 상담부터 입학까지 순서를 정리했습니다.","url":"https://edujourney.co.kr/stpaul-admission.html","datePublished":"2026-07-29","dateModified":"2026-08-22","inLanguage":"ko-KR"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://edujourney.co.kr/"},{"@type":"ListItem","position":2,"name":"세인트폴 대치 아카데미","item":"https://edujourney.co.kr/stpaul.html"},{"@type":"ListItem","position":3,"name":"세인트폴 대치 아카데미 입학 안내","item":"https://edujourney.co.kr/stpaul-admission.html"}]}</script>
 </head>
@@ -140,11 +140,9 @@
         <span class="lab-plain">상담 받고 싶은 내용 <em class="lab-sub">여러 개 선택 가능</em></span>
         <div class="chip-row"><label class="chip"><input type="checkbox" name="궁금한점" value="일정·비용"><span>일정·비용</span></label><label class="chip"><input type="checkbox" name="궁금한점" value="현지 학교 수업"><span>현지 학교 수업</span></label><label class="chip"><input type="checkbox" name="궁금한점" value="홈스테이·숙소"><span>홈스테이·숙소</span></label><label class="chip"><input type="checkbox" name="궁금한점" value="인솔·현지 관리"><span>인솔·현지 관리</span></label><label class="chip"><input type="checkbox" name="궁금한점" value="항공·출국 준비"><span>항공·출국 준비</span></label><label class="chip"><input type="checkbox" name="궁금한점" value="유학 연계"><span>유학 연계</span></label></div>
       </div>
+
       <div class="form-row">
-        <label class="agree"><input type="checkbox" name="형제동반" value="희망"> <span>형제·자매가 함께 참가하고 싶어요</span></label>
-      </div>
-      <div class="form-row">
-        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
+        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <div class="form-row">
         <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" required> <span>개인정보 수집·이용에 동의합니다 <b class="req">*</b></span></label>
@@ -180,7 +178,7 @@
           if(f.get('해외경험')) rows.push('해외 경험: ' + f.get('해외경험'));
           if(f.getAll('기대').length) rows.push('기대하는 점: ' + f.getAll('기대').join(', '));
           if(f.getAll('궁금한점').length) rows.push('상담 희망 내용: ' + f.getAll('궁금한점').join(', '));
-          if(f.get('형제동반')) rows.push('형제·자매 동반 참가 희망');
+
           var free = (f.get('문의내용')||'').trim();
           if(free) rows.push((rows.length ? NL : '') + free);
           return rows.join(NL);
