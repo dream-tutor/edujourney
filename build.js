@@ -366,10 +366,16 @@ function consultSection(preset = {}) {
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
         <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="여름캠프">${summerOpt}</optgroup><optgroup label="유학·진학 과정">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
-      <div class="form-row two">
+      <div class="form-row">
+        <span class="lab-plain">희망 상담 방법</span>
+        <div class="radio-row"><label class="radio"><input type="radio" name="상담방법" value="전화 상담" checked> 전화 상담</label><label class="radio"><input type="radio" name="상담방법" value="카카오톡 상담"> 카카오톡 상담</label></div>
       </div>
       <div class="form-row">
         <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이의 영어 수준, 해외 경험 여부, 현재 복용하는 약, 알레르기 여부(음식·동물), 궁금한 점을 자유롭게 남겨 주세요"></textarea></label>
+      </div>
+      <div class="form-row">
+        <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" required> <span>개인정보 수집·이용에 동의합니다 <b class="req">*</b></span></label>
+        <p class="agree-note">수집 항목: 학생 이름·연락처·학년·문의 내용 / 이용 목적: 캠프 상담 안내 / 보유 기간: 상담 목적을 달성하면 지체 없이 파기. 만 14세 미만 학생은 학부모(법정대리인)가 작성·동의해 주세요.</p>
       </div>
       <button type="submit" class="btn btn-coral form-submit">상담 신청하기</button>
       <p class="form-fine">남겨주신 정보는 상담 목적으로만 사용됩니다.</p>
@@ -389,12 +395,13 @@ function consultSection(preset = {}) {
       var f = new FormData(form);
       var name = (f.get('이름')||'').trim(), tel = (function(p,v){v=String(v||'').replace(/\\D/g,'');return v.length===11?v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7):v.length===10?v.slice(0,3)+'-'+v.slice(3,6)+'-'+v.slice(6):v.length===8?p+'-'+v.slice(0,4)+'-'+v.slice(4):v.length===7?p+'-'+v.slice(0,3)+'-'+v.slice(3):p+'-'+v;})((f.get('연락처앞')||'010'),(f.get('연락처')||'').trim());
       if(!name || !tel){ alert('성함과 연락처를 입력해 주세요.'); return; }
+      if(!f.get('개인정보동의')){ alert('개인정보 수집·이용에 동의해 주세요.'); return; }
       var btn = form.querySelector('.form-submit');
       btn.disabled = true; btn.textContent = '접수 중...';
       var data = {
         '이름': name, '연락처': tel,
         '학년': f.get('학년')||'', '관심캠프': f.get('관심캠프')||'',
-        '문의내용': f.get('문의내용')||'',
+        '문의내용': (f.get('상담방법') ? '[희망 상담: ' + f.get('상담방법') + '] ' : '') + (f.get('문의내용')||''),
         '신청일': new Date().toLocaleString('ko-KR'),
         '유입페이지': location.href, '유입페이지제목': document.title,
         '유입경로': document.referrer || '직접입력'
@@ -437,7 +444,7 @@ function buildIndex() {
       <div class="wrap hero-inner">
         <p class="hero-kicker">${SEASON_LABEL} 해외캠프 모집</p>
         <h1>겨울방학 3주,<br>캐나다 학교에 다녀보면 어떨까요</h1>
-        <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링부터 대학 캠퍼스 영어캠프까지. 캐나다·뉴질랜드·일본·말레이시아·필리핀 ${CAMP_COUNT}개 과정,<br>신청부터 귀국까지 한국인 인솔자가 붙어 있습니다.</p>
+        <p class="hero-sub">현지 학교 수업에 직접 들어가는 스쿨링부터 대학 캠퍼스 영어캠프까지. 캐나다·뉴질랜드·일본·말레이시아·필리핀 ${CAMP_COUNT}개 과정,<br>캠프마다 한국인 인솔자와 현지 관리자가 함께 관리합니다.</p>
         <div class="hero-actions">
           <a class="btn btn-coral" href="#camps">${SEASON_LABEL} 캠프 보기</a>
           <a class="btn btn-line" href="compare.html">한눈에 비교하기</a>
@@ -519,7 +526,7 @@ function buildIndex() {
   <div class="wrap stats-grid">
     <div><strong>16,000+</strong><span>누적 참가 학생</span></div>
     <div><strong>${CAMP_COUNT}개 캠프</strong><span>${SEASON_LABEL} 시즌 운영</span></div>
-    <div><strong>전 일정</strong><span>한국인 인솔자 동행</span></div>
+    <div><strong>이중 관리</strong><span>인솔자 + 현지 관리자</span></div>
     <div><strong>실시간</strong><span>학부모 밴드 공유</span></div>
   </div>
 </section>`;
@@ -528,7 +535,7 @@ function buildIndex() {
 <section class="section" id="camps">
   <div class="wrap">
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
-    <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 모두 인솔자 동행, 선착순 마감입니다.</p>
+    <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 인솔자와 현지 관리자가 함께하고, 모두 선착순 마감입니다.</p>
     ${Object.values(CAMPS).filter((c) => c.promo).map((c) => `<p class="promo-bar"><a href="${c.slug}.html"><span class="promo-bar-tag">${c.promo.badge}</span><span><strong>${c.name}</strong> — ${c.promo.short}</span><span class="promo-bar-go">자세히 보기 →</span></a></p>`).join("")}
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
     <div class="btn-row"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
@@ -876,13 +883,13 @@ ${consultSection({ camp: c.slug })}`;
 // (뉴질랜드처럼 한 캠프에 기간이 여러 개면 행을 나눠 둡니다)
 // ------------------------------------------------------------
 const PRICE_ROWS = [
-  { camp: "japan",        label: "일본 교토 2주",   won: 594,  weeks: 2 },
-  { camp: "malaysia",     label: "말레이시아 4주",  won: 599,  weeks: 4 },
-  { camp: "philippines",  label: "필리핀 클락 4주", won: 599,  weeks: 4 },
+  { camp: "japan",        label: "일본 교토 2주",   won: 594,  weeks: 2, air: true },
+  { camp: "malaysia",     label: "말레이시아 4주",  won: 599,  weeks: 4, air: true },
+  { camp: "philippines",  label: "필리핀 클락 4주", won: 599,  weeks: 4, air: true },
   { camp: "newzealand",   label: "뉴질랜드 3주",    won: 690,  weeks: 3 },
   { camp: "newzealand",   label: "뉴질랜드 4주",    won: 810,  weeks: 4 },
   { camp: "canada-3week", label: "캐나다 3주",      won: 890,  weeks: 3 },
-  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1090, weeks: 7 },
+  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1330, weeks: 7 },
   { camp: "canada-7week", label: "캐나다 7주",      won: 1290, weeks: 7 },
 ];
 const DURATIONS = [
@@ -1101,14 +1108,14 @@ function buildBudget(bd) {
 <section class="section"><div class="wrap">
   <h2 class="sec-title">${bd.label} 과정 ${rows.length}개</h2>
   <dl class="info-list" style="max-width:760px;margin:0 auto 26px">
-    ${rows.map((r) => `<div><dt>${r.label}</dt><dd><strong>${r.won.toLocaleString()}만원</strong> <span class="dim">· ${r.weeks}주 · 항공료 별도</span></dd></div>`).join("")}
+    ${rows.map((r) => `<div><dt>${r.label}</dt><dd><strong>${r.won.toLocaleString()}만원</strong> <span class="dim">· ${r.weeks}주 · ${r.air ? "항공권 포함" : "항공료 별도"}</span></dd></div>`).join("")}
   </dl>
   <div class="camp-grid">${camps.map(campCard).join("\n")}</div>
 </div></section>
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title-sm">참가비 외에 더 드는 돈</h2>
   <ul class="check-list">
-    <li>항공료가 가장 큽니다. 캐나다 토론토 직항 기준 250만~300만원, 일본은 훨씬 낮습니다.</li>
+    <li>캐나다·뉴질랜드는 항공료가 가장 큽니다 (캐나다 토론토 직항 기준 250만~300만원). 일본·말레이시아·필리핀은 왕복 항공권이 참가비에 들어 있습니다.</li>
     <li>여권 발급비와 개인 용돈은 따로입니다. 3주 기준 현지화 300~500달러(일본은 70만~80만원)를 권해 드립니다.</li>
     <li>개별 출·귀국을 하시면 항공사 UM 서비스 비용이 붙습니다.</li>
     <li>참가비에는 학비·홈스테이비·현지 관리비·보험료·전자비자 진행비가 들어 있습니다.</li>
@@ -1134,7 +1141,7 @@ function buildCompare() {
   const body = `
 <section class="section"><div class="wrap">
   ${compareTable()}
-  <p class="sec-sub" style="margin-top:18px">캐나다·뉴질랜드·일본 캠프의 항공료는 별도이며 단체 예약으로 진행합니다 (개별 발권 가능). 말레이시아·필리핀 캠프는 왕복 항공권이 참가비에 포함되어 있습니다. 어떤 캠프가 맞을지 고민되시면 아이 학년·영어 수준을 적어 상담을 남겨 주세요.</p>
+  <p class="sec-sub" style="margin-top:18px">캐나다·뉴질랜드 캠프의 항공료는 별도이며 단체 예약으로 진행합니다 (개별 발권 가능). 일본·말레이시아·필리핀 캠프는 왕복 항공권이 참가비에 포함되어 있습니다. 어떤 캠프가 맞을지 고민되시면 아이 학년·영어 수준을 적어 상담을 남겨 주세요.</p>
 </div></section>
 <section class="section alt"><div class="wrap">
   <h2 class="sec-title">고르기 어려울 때 참고하세요</h2>
@@ -1152,7 +1159,7 @@ ${consultSection()}`;
   return page({
     file: "compare.html",
     title: `해외 겨울캠프 비교 | 캐나다·뉴질랜드·일본·말레이시아·필리핀 기간·비용·대상 총정리`,
-    desc: `${SEASON_LABEL} 해외캠프 ${CAMP_COUNT}종 비교표. 캐나다 스쿨링 3주(890만원)·7주(1,290만원), 뉴질랜드 3~7주(690만원~), 일본 교토 2주(594만원), 말레이시아·필리핀 4주(각 599만원·항공 포함). 기간·대상·숙소·마감일 한눈에.`,
+    desc: `${SEASON_LABEL} 해외캠프 ${CAMP_COUNT}종 비교표. 캐나다 스쿨링 3주(890만원)·7주(1,290만원), 뉴질랜드 3~7주(690만원~), 일본 교토 2주(594만원·항공 포함), 말레이시아·필리핀 4주(각 599만원·항공 포함). 기간·대상·숙소·마감일 한눈에.`,
     hero, body,
   });
 }
@@ -1172,7 +1179,7 @@ function buildAbout() {
   <h2 class="sec-title">러닝트래블 캠프의 운영 원칙</h2>
   <div class="fit-grid">
     <div><strong>교육기관과 직접 연결</strong><p>학교·교육청과 직접 연계된 프로그램만 운영합니다. 홈스테이도 교육기관이 검증한 가정만 배정됩니다.</p></div>
-    <div><strong>인솔자 + 현지 관리자 이중 체계</strong><p>한국에서 함께 출국한 인솔자와, 현지에 상주하는 관리자가 학교와 홈스테이 양쪽을 살핍니다.</p></div>
+    <div><strong>인솔자 + 현지 관리자 이중 체계</strong><p>한국인 인솔자와, 현지에 상주하는 관리자가 학교와 홈스테이 양쪽을 살핍니다.</p></div>
     <div><strong>학부모 실시간 공유</strong><p>네이버 밴드에 전체 공지방과 학생별 개인방을 운영합니다. 아이의 하루가 매일 사진과 글로 도착합니다.</p></div>
     <div><strong>명문화된 원칙</strong><p>규정 위반 3단계 원칙, 단계별 환불 규정까지, 모든 원칙이 계약서에 문서로 존재합니다.</p></div>
   </div>
@@ -3567,6 +3574,11 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .consult-form input,.consult-form select,.consult-form textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;background:#fafbfc;color:var(--ink)}
 .consult-form input:focus,.consult-form select:focus,.consult-form textarea:focus{outline:none;border-color:var(--sky);background:#fff}
 .consult-form textarea{resize:vertical}
+.consult-form .lab-plain{font-size:13.5px;font-weight:700;color:#3b4754;margin-bottom:-6px}
+.consult-form .radio-row{display:flex;gap:20px;flex-wrap:wrap}
+.consult-form label.radio,.consult-form label.agree{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.consult-form label.radio input,.consult-form label.agree input{width:18px;height:18px;padding:0;margin:0;flex:0 0 auto;accent-color:var(--coral)}
+.consult-form .agree-note{font-size:12px;color:#8a95a1;line-height:1.55;margin-top:-6px}
 .form-submit{width:100%;border:none;cursor:pointer;font-size:16px;padding:15px}
 .form-submit:disabled{opacity:.6;cursor:default}
 .form-fine{margin-top:12px;font-size:12.5px;color:#8a95a1;text-align:center}
