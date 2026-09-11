@@ -270,9 +270,15 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .consult-form input:focus,.consult-form select:focus,.consult-form textarea:focus{outline:none;border-color:var(--sky);background:#fff}
 .consult-form textarea{resize:vertical}
 .consult-form .lab-plain{font-size:13.5px;font-weight:700;color:#3b4754;margin-bottom:-6px}
-.consult-form .radio-row{display:flex;gap:20px;flex-wrap:wrap}
-.consult-form label.radio,.consult-form label.agree{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer}
-.consult-form label.radio input,.consult-form label.agree input{width:18px;height:18px;padding:0;margin:0;flex:0 0 auto;accent-color:var(--coral)}
+.consult-form .lab-sub{font-style:normal;font-weight:500;color:#8a95a1;font-size:12px;margin-left:4px}
+.consult-form .chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.consult-form label.chip{display:inline-flex;position:relative;cursor:pointer;font-weight:600}
+.consult-form label.chip input{position:absolute;opacity:0;width:1px;height:1px;padding:0;margin:0;pointer-events:none}
+.consult-form label.chip span{border:1.5px solid var(--line);background:#fafbfc;border-radius:999px;padding:7px 13px;font-size:13.5px;color:#3b4754;transition:.12s}
+.consult-form label.chip input:checked+span{border-color:var(--coral);background:#fff3ee;color:var(--coral)}
+.consult-form label.chip input:focus-visible+span{outline:2px solid var(--sky);outline-offset:2px}
+.consult-form label.agree{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.consult-form label.agree input{width:18px;height:18px;padding:0;margin:0;flex:0 0 auto;accent-color:var(--coral)}
 .consult-form .agree-note{font-size:12px;color:#8a95a1;line-height:1.55;margin-top:-6px}
 .form-submit{width:100%;border:none;cursor:pointer;font-size:16px;padding:15px}
 .form-submit:disabled{opacity:.6;cursor:default}

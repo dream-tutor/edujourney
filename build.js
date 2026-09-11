@@ -321,7 +321,7 @@ function applySection(steps = null) {
   <div class="wrap narrow">
     <h2 class="sec-title">참가 신청 절차</h2>
     <ol class="step-list">${(steps || COMMON.applySteps).map((s) => `<li>${s}</li>`).join("")}</ol>
-    <p class="sec-sub" style="margin-top:14px">모집은 선착순이며 정원이 차면 조기 마감됩니다. 환불 규정은 <a href="faq.html#refund">여기</a>에서 확인하세요.</p>
+    <p class="sec-sub" style="margin-top:14px">환불 규정은 <a href="faq.html#refund">여기</a>에서 확인하세요.</p>
   </div>
 </section>`;
 }
@@ -354,7 +354,7 @@ function consultSection(preset = {}) {
       <h2>${preset.title || "캠프 상담 신청"}</h2>
       <p>${preset.copy || "아이 학년과 궁금한 점을 남겨 주세요.<br>확인 후 맞는 캠프와 일정을 안내해 드립니다."}</p>
       <ul class="consult-points">
-        ${(preset.points || ["모집은 선착순, 정원 마감 전 상담을 권합니다", "영어 실력·성향에 맞는 캠프 추천", "유학 연계, 형제 동반 참가 문의 환영"]).map((p) => `<li>${p}</li>`).join("\n        ")}
+        ${(preset.points || ["일정·비용부터 출국 준비까지 한 번에 안내", "영어 실력·성향에 맞는 캠프 추천", "유학 연계, 형제 동반 참가 문의 환영"]).map((p) => `<li>${p}</li>`).join("\n        ")}
       </ul>
     </div>
     <form class="consult-form" id="consultForm" autocomplete="off">
@@ -366,16 +366,27 @@ function consultSection(preset = {}) {
         <label>자녀 학년<select name="학년"><option value="">선택해 주세요</option>${gradeOpts}<option value="기타">기타</option></select></label>
         <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="여름캠프">${summerOpt}</optgroup><optgroup label="유학·진학 과정">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
-      <div class="form-row">
-        <span class="lab-plain">희망 상담 방법</span>
-        <div class="radio-row"><label class="radio"><input type="radio" name="상담방법" value="전화 상담" checked> 전화 상담</label><label class="radio"><input type="radio" name="상담방법" value="카카오톡 상담"> 카카오톡 상담</label></div>
+      <div class="form-row two">
+        <label>영어 수준<select name="영어수준"><option value="">선택해 주세요</option><option>이제 막 배우는 단계</option><option>짧은 문장으로 대화 가능</option><option>일상 대화 가능</option><option>자유롭게 대화 가능</option></select></label>
+        <label>해외 경험<select name="해외경험"><option value="">선택해 주세요</option><option>없음</option><option>가족 여행만</option><option>캠프·어학연수 경험 있음</option><option>해외 거주·유학 경험 있음</option></select></label>
       </div>
       <div class="form-row">
-        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이의 영어 수준, 해외 경험 여부, 현재 복용하는 약, 알레르기 여부(음식·동물), 궁금한 점을 자유롭게 남겨 주세요"></textarea></label>
+        <span class="lab-plain">캠프에서 가장 기대하는 점 <em class="lab-sub">여러 개 선택 가능</em></span>
+        <div class="chip-row">${["영어 자신감", "의사소통 능력", "해외 학교생활 경험", "현지 친구 사귀기", "진로·유학 탐색", "장기 유학 전 사전 경험"].map((v) => `<label class="chip"><input type="checkbox" name="기대" value="${v}"><span>${v}</span></label>`).join("")}</div>
+      </div>
+      <div class="form-row">
+        <span class="lab-plain">상담 받고 싶은 내용 <em class="lab-sub">여러 개 선택 가능</em></span>
+        <div class="chip-row">${["일정·비용", "현지 학교 수업", "홈스테이·숙소", "인솔·현지 관리", "항공·출국 준비", "유학 연계"].map((v) => `<label class="chip"><input type="checkbox" name="궁금한점" value="${v}"><span>${v}</span></label>`).join("")}</div>
+      </div>
+      <div class="form-row">
+        <label class="agree"><input type="checkbox" name="형제동반" value="희망"> <span>형제·자매가 함께 참가하고 싶어요</span></label>
+      </div>
+      <div class="form-row">
+        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <div class="form-row">
         <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" required> <span>개인정보 수집·이용에 동의합니다 <b class="req">*</b></span></label>
-        <p class="agree-note">수집 항목: 학생 이름·연락처·학년·문의 내용 / 이용 목적: 캠프 상담 안내 / 보유 기간: 상담 목적을 달성하면 지체 없이 파기. 만 14세 미만 학생은 학부모(법정대리인)가 작성·동의해 주세요.</p>
+        <p class="agree-note">수집 항목: 학생 이름·연락처·학년·영어 수준·해외 경험·문의 내용 / 이용 목적: 캠프 상담 안내 / 보유 기간: 상담 목적을 달성하면 지체 없이 파기. 만 14세 미만 학생은 학부모(법정대리인)가 작성·동의해 주세요.</p>
       </div>
       <button type="submit" class="btn btn-coral form-submit">상담 신청하기</button>
       <p class="form-fine">남겨주신 정보는 상담 목적으로만 사용됩니다.</p>
@@ -401,7 +412,17 @@ function consultSection(preset = {}) {
       var data = {
         '이름': name, '연락처': tel,
         '학년': f.get('학년')||'', '관심캠프': f.get('관심캠프')||'',
-        '문의내용': (f.get('상담방법') ? '[희망 상담: ' + f.get('상담방법') + '] ' : '') + (f.get('문의내용')||''),
+        '문의내용': (function(){
+          var NL = String.fromCharCode(10), rows = [];
+          if(f.get('영어수준')) rows.push('영어 수준: ' + f.get('영어수준'));
+          if(f.get('해외경험')) rows.push('해외 경험: ' + f.get('해외경험'));
+          if(f.getAll('기대').length) rows.push('기대하는 점: ' + f.getAll('기대').join(', '));
+          if(f.getAll('궁금한점').length) rows.push('상담 희망 내용: ' + f.getAll('궁금한점').join(', '));
+          if(f.get('형제동반')) rows.push('형제·자매 동반 참가 희망');
+          var free = (f.get('문의내용')||'').trim();
+          if(free) rows.push((rows.length ? NL : '') + free);
+          return rows.join(NL);
+        })(),
         '신청일': new Date().toLocaleString('ko-KR'),
         '유입페이지': location.href, '유입페이지제목': document.title,
         '유입경로': document.referrer || '직접입력'
@@ -535,7 +556,7 @@ function buildIndex() {
 <section class="section" id="camps">
   <div class="wrap">
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
-    <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 인솔자와 현지 관리자가 함께하고, 모두 선착순 마감입니다.</p>
+    <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 인솔자와 현지 관리자가 함께합니다.</p>
     ${Object.values(CAMPS).filter((c) => c.promo).map((c) => `<p class="promo-bar"><a href="${c.slug}.html"><span class="promo-bar-tag">${c.promo.badge}</span><span><strong>${c.name}</strong> — ${c.promo.short}</span><span class="promo-bar-go">자세히 보기 →</span></a></p>`).join("")}
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
     <div class="btn-row"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
@@ -721,7 +742,7 @@ ${consultSection()}`;
   return page({
     file: "index.html",
     title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 미국·캐나다 대학 토플면제`,
-    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원까지. 캠프 체험에서 유학·대학 진학까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 선착순 모집.`,
+    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원까지. 캠프 체험에서 유학·대학 진학까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 모집 중.`,
     hero,
     body,
     jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
@@ -793,7 +814,7 @@ function buildCamp(key) {
     <dl class="info-list">
       <div><dt>기간</dt><dd>${c.period}</dd></div>
       <div><dt>대상</dt><dd>${c.target}</dd></div>
-      <div><dt>정원</dt><dd>${c.capacity} (선착순)</dd></div>
+      <div><dt>정원</dt><dd>${c.capacity}</dd></div>
       <div><dt>참가비</dt><dd>${c.promo
         ? `<strong class="now">${c.promo.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${c.promo.until}까지 ${c.promo.limit}에게 적용되는 ${c.promo.badge} 금액입니다 · ${c.priceNote}</span>`
         : `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`}</dd></div>
@@ -861,7 +882,7 @@ ${consultSection({ camp: c.slug })}`;
     file: `${c.slug}.html`,
     og: siteOg(c.slug),
     title: `${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`,
-    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}.${c.promo ? ` ${c.promo.short}.` : ""} ${c.school} · ${c.stay}. ${c.deadline}.`,
+    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}.${c.promo ? ` ${c.promo.short}.` : ""} ${c.school} · ${c.stay}. 모집 마감 ${c.deadline}.`,
     hero,
     body,
     jsonld: {
@@ -1328,7 +1349,7 @@ ${consultSection()}`;
   return page({
     file: `${a.slug}.html`,
     title: `${a.label} 해외 겨울캠프 추천 | ${a.kw} — ${SEASON_LABEL} 모집`,
-    desc: `${a.label}이 참가할 수 있는 해외 겨울캠프 — ${fits.map((c) => c.name).join(", ")}. 인솔자 동행·홈스테이·실시간 공유. 선착순 모집.`,
+    desc: `${a.label}이 참가할 수 있는 해외 겨울캠프 — ${fits.map((c) => c.name).join(", ")}. 인솔자 동행·홈스테이·실시간 공유.`,
     hero, body,
   });
 }
@@ -1441,7 +1462,7 @@ function buildSummerHub() {
   </div>
   <h2 class="sec-title-sm" style="margin-top:34px">사전 상담을 남겨두면</h2>
   <ul class="check-list">
-    <li>일정·비용 확정 즉시 가장 먼저 안내받습니다 (모집은 선착순입니다)</li>
+    <li>일정·비용 확정 즉시 가장 먼저 안내받습니다</li>
     <li>아이 학년·영어 수준에 맞는 국가와 기간을 미리 좁혀둘 수 있습니다</li>
     <li>겨울캠프와 여름캠프 중 어느 시즌이 맞는지도 함께 판단해 드립니다</li>
   </ul>
@@ -1450,7 +1471,7 @@ ${summerConsult()}`;
   return page({
     file: "summer.html",
     title: "여름 해외캠프 2027 | 초등·중등 여름방학 어학연수 사전 상담",
-    desc: "2027 여름방학 해외캠프 사전 상담 — 캐나다·뉴질랜드·일본 2~4주 과정 준비 중. 인솔자 동행, 홈스테이, 선착순 모집. 일정 확정 시 우선 안내.",
+    desc: "2027 여름방학 해외캠프 사전 상담 — 캐나다·뉴질랜드·일본 2~4주 과정 준비 중. 인솔자 동행, 홈스테이. 일정 확정 시 우선 안내.",
     hero, body,
   });
 }
@@ -1475,7 +1496,7 @@ ${summerConsult()}`;
   return page({
     file: `summer-${s.slug}.html`,
     title: `${s.name} 여름캠프 2027 | 여름방학 ${s.name} 어학연수·스쿨링 사전 상담`,
-    desc: `2027 여름방학 ${s.name} 캠프 사전 상담 — ${s.note} 일정 확정 시 우선 안내, 선착순 모집.`,
+    desc: `2027 여름방학 ${s.name} 캠프 사전 상담 — ${s.note} 일정 확정 시 우선 안내.`,
     hero, body,
   });
 }
@@ -3575,9 +3596,15 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .consult-form input:focus,.consult-form select:focus,.consult-form textarea:focus{outline:none;border-color:var(--sky);background:#fff}
 .consult-form textarea{resize:vertical}
 .consult-form .lab-plain{font-size:13.5px;font-weight:700;color:#3b4754;margin-bottom:-6px}
-.consult-form .radio-row{display:flex;gap:20px;flex-wrap:wrap}
-.consult-form label.radio,.consult-form label.agree{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer}
-.consult-form label.radio input,.consult-form label.agree input{width:18px;height:18px;padding:0;margin:0;flex:0 0 auto;accent-color:var(--coral)}
+.consult-form .lab-sub{font-style:normal;font-weight:500;color:#8a95a1;font-size:12px;margin-left:4px}
+.consult-form .chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.consult-form label.chip{display:inline-flex;position:relative;cursor:pointer;font-weight:600}
+.consult-form label.chip input{position:absolute;opacity:0;width:1px;height:1px;padding:0;margin:0;pointer-events:none}
+.consult-form label.chip span{border:1.5px solid var(--line);background:#fafbfc;border-radius:999px;padding:7px 13px;font-size:13.5px;color:#3b4754;transition:.12s}
+.consult-form label.chip input:checked+span{border-color:var(--coral);background:#fff3ee;color:var(--coral)}
+.consult-form label.chip input:focus-visible+span{outline:2px solid var(--sky);outline-offset:2px}
+.consult-form label.agree{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.consult-form label.agree input{width:18px;height:18px;padding:0;margin:0;flex:0 0 auto;accent-color:var(--coral)}
 .consult-form .agree-note{font-size:12px;color:#8a95a1;line-height:1.55;margin-top:-6px}
 .form-submit{width:100%;border:none;cursor:pointer;font-size:16px;padding:15px}
 .form-submit:disabled{opacity:.6;cursor:default}
@@ -3719,7 +3746,7 @@ fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="U
 fs.writeFileSync(path.join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\nSitemap: ${BASE_URL}/rss.xml`);
 
 const rssItems = [
-  { title: `${SEASON_LABEL} 해외캠프 4종 모집 안내 — 캐나다·뉴질랜드·일본`, link: `${BASE_URL}/`, date: "Tue, 21 Jul 2026 09:00:00 +0900", desc: "캐나다 스쿨링 3주·7주, 뉴질랜드 영어캠프, 일본 교토 어학연수 — 선착순 모집." },
+  { title: `${SEASON_LABEL} 해외캠프 4종 모집 안내 — 캐나다·뉴질랜드·일본`, link: `${BASE_URL}/`, date: "Tue, 21 Jul 2026 09:00:00 +0900", desc: "캐나다 스쿨링 3주·7주, 뉴질랜드 영어캠프, 일본 교토 어학연수 모집 안내." },
   ...ALL_GUIDES.map((g) => ({ title: `[${g.cat === "study" ? "유학 가이드" : "캠프 가이드"}] ${g.title}`, link: `${BASE_URL}/${g.slug}.html`, date: new Date(g.date + "T09:00:00+09:00").toUTCString(), desc: g.desc })),
 ].map((it) => `  <item>\n    <title>${esc(it.title)}</title>\n    <link>${it.link}</link>\n    <guid isPermaLink="false">${it.link}#${esc(it.title)}</guid>\n    <pubDate>${it.date}</pubDate>\n    <description>${esc(it.desc)}</description>\n  </item>`).join("\n");
 fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>러닝트래블 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>캐나다·뉴질랜드·일본 해외캠프 모집 소식과 캠프 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
