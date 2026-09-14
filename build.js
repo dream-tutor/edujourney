@@ -262,7 +262,7 @@ function footer() {
         <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n<a href="elc-partners.html">파트너 대학 9곳</a>\n<a href="elc-suny.html">SUNY 진학 가이드</a>\n<a href="elc-uc-transfer.html">UC 편입 경로</a>\n<a href="elc-texas.html">텍사스 주립대 5곳</a>\n<a href="elc-settlement.html">현지 정착 서비스</a>\n<a href="elc-scholarship.html">장학금·비용 절감</a>\n<a href="elc-glossary.html">용어 풀이</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
       </div>
     </div>
-    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료 출처: 쏠루트 유학</p>
+    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료와 사진 출처: 쏠루트 유학</p>
   </div>
 </footer>`;
 }
@@ -2138,16 +2138,17 @@ function elcOg(key) {
   return ph && ph[0] ? `img/elc/og/${ph[0].src}` : "img/elc/og/elc-building.jpg";
 }
 
-function photoGrid(ph, dir, label) {
+// 사진 출처는 사진마다 달지 않고 푸터의 자료 출처 한 줄로만 표기한다 (2026-09-14 사용자 지시)
+function photoGrid(ph, dir) {
   if (!ph || !ph.length) return "";
   const cls = ph.length === 1 ? " one" : ph.length === 2 || ph.length === 4 ? " two" : "";
-  return `<div class="photo-grid${cls}">${ph.map((p) => `<figure><img src="${dir}/${p.src}" alt="${esc(p.alt)}" loading="lazy" draggable="false"><figcaption>${p.cap}</figcaption></figure>`).join("")}</div><p class="photo-src">사진: ${label}</p>`;
+  return `<div class="photo-grid${cls}">${ph.map((p) => `<figure><img src="${dir}/${p.src}" alt="${esc(p.alt)}" loading="lazy" draggable="false"><figcaption>${p.cap}</figcaption></figure>`).join("")}</div>`;
 }
 function elcPhotos(key) {
-  return photoGrid(ELC_PHOTOS[key], "img/elc", "2027학년도 입학설명회 자료");
+  return photoGrid(ELC_PHOTOS[key], "img/elc");
 }
 function sitePhotos(key) {
-  return photoGrid(SITE_PHOTOS[key], "img/camp", "캠프·학교 안내 자료");
+  return photoGrid(SITE_PHOTOS[key], "img/camp");
 }
 function siteOg(key) {
   const ph = SITE_PHOTOS[key];
@@ -3340,7 +3341,6 @@ img{max-width:100%;display:block}
 .photo-grid figure{margin:0;border-radius:12px;overflow:hidden;background:#e9eef3;border:1px solid var(--line)}
 .photo-grid img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
 .photo-grid figcaption{font-size:12.5px;color:var(--muted);padding:7px 10px;background:#fff}
-.photo-src{font-size:12px;color:var(--muted);margin-top:8px}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
 .narrow{max-width:860px}
