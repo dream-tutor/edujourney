@@ -2,10 +2,16 @@
 // 러닝트래블(Learning Travel) 해외캠프 사이트 데이터
 // 시즌 갱신 시 CAMPS(일정·비용)만 수정하고 `node build.js` 실행
 // ⚠️ 브랜드 규칙: 쏠루트/솔루트/바인그룹/유학사업팀 전화번호 절대 노출 금지
+//    (아래 PHONE은 운영자가 직접 지정한 상담 번호라 예외 — 이 번호 말고 다른 번호는 넣지 말 것)
 // ============================================================
 
 const BASE_URL = "https://edujourney.co.kr";
 const SEASON_LABEL = "2027 겨울";
+
+// 전화 상담 번호 — 2026-09-17 운영자 요청으로 신설 (그 전까지는 전화번호 비노출, 상담 양식만 받았음)
+// 헤더·플로팅 버튼(PC)/하단 바(모바일)·홈 히어로·문의·신청 줄·CTA 상자·푸터가 전부 이 값 하나를 쓴다 (build.js TEL_HREF).
+// 공용 t.js가 <a href="tel:..."> 클릭을 전화 전환으로 집계하므로 tel: 링크 그대로 두고, 상담 팝업(모달) 안에는 넣지 말 것.
+const PHONE = "010-2635-5114";
 
 // 상담 접수 GAS 웹앱 URL — gas-form.gs 배포 후 /exec 주소 입력 (비면 데모 모드)
 const FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbwWEdDyQ6kDDqBpTpHKkfOfRyicCRYAj6wivIv3FK4ILzfO5eMWgMRAwZg05DO29dyZ/exec";
@@ -811,4 +817,4 @@ const CAMP_FAQ = {
   ],
 };
 
-module.exports = { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ };
+module.exports = { BASE_URL, SEASON_LABEL, FORM_ENDPOINT, PHONE, CAMPS, COMMON, GRADES, AGE_GROUPS, COUNTRIES, STUDY, STPAUL, ELC, ELC_AUDIENCES, SCHEDULES, CAMP_FAQ };
