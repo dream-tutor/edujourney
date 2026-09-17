@@ -31,14 +31,6 @@ a{color:inherit;text-decoration:none}
 .nav a:hover{color:var(--sky)}
 .nav-cta{background:var(--navy);color:#fff!important;padding:9px 16px;border-radius:999px;font-size:14px}
 .nav-cta:hover{background:var(--navy-2)}
-/* 전화 상담 (2026-09-17) — 헤더·메뉴·버튼 공용. 번호 글자는 복사할 수 있게 .tel-num만 선택 허용 */
-.ico-tel{flex:0 0 auto;display:block}
-.nav-tel{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--navy);color:var(--navy)!important;padding:7.5px 14px;border-radius:999px;font-size:14px;white-space:nowrap}
-.nav-tel:hover{background:var(--ice)}
-@media(min-width:821px) and (max-width:940px){.nav{gap:11px}.nav-tel{padding:8px 9px}.nav-tel span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}} /* 좁은 PC에선 아이콘만 — 메뉴 줄바꿈 방지 */
-.nav-cta{white-space:nowrap}
-.mnav-list a.mnav-tel{display:flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid var(--navy);color:var(--navy);margin-top:4px;white-space:nowrap}
-.tel-num{-webkit-user-select:text;-moz-user-select:text;user-select:text}
 .mnav{display:none;position:relative}
 .mnav summary{list-style:none;cursor:pointer;font-size:22px;line-height:1;padding:6px 4px;color:var(--navy);user-select:none}
 .mnav summary::-webkit-details-marker{display:none}
@@ -84,14 +76,6 @@ a{color:inherit;text-decoration:none}
 .btn-line:hover{border-color:#fff;background:rgba(255,255,255,.08)}
 .btn-navy{background:var(--navy);color:#fff}
 .btn-navy:hover{background:var(--navy-2)}
-/* 전화 상담 버튼 — 밝은 배경은 남색 테두리, 히어로(어두운 배경)는 .btn-line과 같이 흰 테두리. .btn보다 뒤에 둬야 inline-flex가 먹는다 */
-.btn-tel{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--navy);color:var(--navy);background:#fff}
-.btn-tel:hover{background:var(--ice)}
-.btn-line.btn-tel{background:transparent;border-color:rgba(255,255,255,.55);color:#fff}
-.btn-line.btn-tel:hover{border-color:#fff;background:rgba(255,255,255,.08)}
-/* 밝은 섹션 안의 .btn-line은 흰 글씨라 안 보였다(홈 토플면제·유학 섹션 등) — 전화 버튼 옆에 빈칸처럼 보여 남색 테두리로 (2026-09-17) */
-.section .btn-line{border-color:var(--navy);color:var(--navy)}
-.section .btn-line:hover{border-color:var(--navy);background:var(--ice)}
 
 /* stats */
 .stats{background:var(--navy-dark);color:#fff;border-top:1px solid rgba(255,255,255,.08)}
@@ -131,8 +115,6 @@ a{color:inherit;text-decoration:none}
 .crumbs a{color:var(--muted)}
 .crumbs a:hover{color:var(--sky);text-decoration:underline;text-underline-offset:3px}
 .crumbs [aria-current]{color:var(--ink);font-weight:600}
-.crumbs-date,.page-date{font-size:12.5px;color:#8a95a1;white-space:nowrap}
-.page-date{text-align:right;padding:0 22px 18px}
 
 /* camp cards */
 .camp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
@@ -258,12 +240,6 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .guide-body a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .guide-cta{margin-top:30px;background:var(--ice);border:1px solid var(--sky-soft);border-radius:14px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .guide-cta span{font-weight:800;font-size:16px}
-.cta-btns{display:flex;flex-wrap:wrap;gap:8px}
-.guide-cta .cta-btns .btn{text-decoration:none}
-.guide-cta .cta-btns .btn-navy{color:#fff}
-.guide-cta .cta-btns .btn-tel{color:var(--navy)}
-.guide-cta .btn span{font-size:inherit;font-weight:inherit}
-@media(max-width:560px){.cta-btns{width:100%}.cta-btns .btn{flex:1 1 100%;text-align:center}}
 
 /* consult */
 .consult{background:linear-gradient(140deg,var(--navy-dark),var(--navy));color:#fff;padding:72px 0}
@@ -311,20 +287,16 @@ img{-webkit-user-drag:none;user-drag:none}
 .form-done strong{display:block;font-size:19px;color:var(--navy);margin-bottom:8px}
 .form-done p{color:var(--muted);font-size:14.5px}
 
-/* floating cta — PC: 오른쪽 아래 알약 2개(전화 상담·상담 신청) / 모바일(≤640): 화면 하단 2버튼 바 (2026-09-17 전화 상담 추가) */
-.float-bar{position:fixed;right:16px;bottom:18px;z-index:60;display:flex;align-items:center;gap:10px;transition:opacity .2s,transform .2s}
-.float-bar.hide{opacity:0;pointer-events:none;transform:translateY(8px)}
-.float-cta,.float-tel{display:inline-flex;align-items:center;justify-content:center;gap:7px;color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:.2s;white-space:nowrap}
+/* floating cta */
+/* 우하단 [전화 상담][상담 신청] — 전화 버튼은 이 플로팅 하나만 (2026-09-17). 상담 신청만 #consult가 보이면 숨고(opacity) 자리는 유지 */
+.float-bar{position:fixed;right:16px;bottom:18px;z-index:60;display:flex;align-items:center;gap:8px}
+.float-cta,.float-tel{color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:.2s;white-space:nowrap}
 .float-cta{background:var(--coral)}
-.float-cta:hover{background:#d5623b}
 .float-tel{background:var(--navy)}
 .float-tel:hover{background:var(--navy-2)}
-@media(max-width:640px){
-  body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
-  .float-bar{left:0;right:0;bottom:0;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(22,50,79,.1)}
-  .float-bar.hide{transform:translateY(100%)}
-  .float-cta,.float-tel{flex:1 1 0;padding:13px 10px;border-radius:12px;box-shadow:none;font-size:15.5px}
-}
+@media(max-width:400px){.float-bar{right:12px;bottom:14px}.float-cta,.float-tel{font-size:14.5px;padding:12px 18px}}
+.float-cta:hover{background:#d5623b}
+.float-cta.hide{opacity:0;pointer-events:none;transform:translateY(8px)}
 
 /* footer */
 .site-footer{background:#0b1c2e;color:#aebccb;padding:56px 0 36px;font-size:14px}
@@ -336,8 +308,6 @@ img{-webkit-user-drag:none;user-drag:none}
 .footer-linkset{display:flex;flex-wrap:wrap;gap:8px 6px}
 .footer-linkset a{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 13px;font-size:12.5px;color:#aebccb;transition:.15s}
 .footer-linkset a:hover{border-color:var(--coral);color:var(--coral)}
-.footer-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-.footer-cta{font-size:14px;padding:11px 22px}
-.footer-tel{display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:11px 20px;border:1.5px solid rgba(255,255,255,.35);color:#fff}
-.footer-tel:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.footer-cta{margin-top:6px;font-size:14px;padding:11px 22px}
 .footer-fine{margin-top:34px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);color:#6b7d8f;font-size:12.5px}
+.footer-date{display:block;margin-top:6px}

@@ -19,19 +19,6 @@ const CSS_VER = Date.now().toString(36);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // ------------------------------------------------------------
-// 전화 상담 (2026-09-17 운영자 요청으로 신설 — 번호는 data.js PHONE 하나만 고친다)
-//   공용 t.js가 a[href^="tel:"] 클릭을 전화 전환으로 집계하고, PC에선 번호 안내 창을 띄운다(모바일은 바로 통화).
-//   그래서 전부 진짜 <a href="tel:..."> 링크여야 하고, 상담 팝업(.consult-ov) 같은 모달 안에는 넣지 않는다.
-//   사이트 자체 번호 팝업도 만들지 말 것(t.js가 #phoneModal·#pmNum 있는 페이지는 건너뛴다).
-// ------------------------------------------------------------
-const TEL_HREF = `tel:${PHONE.replace(/\D/g, "")}`;
-const TEL_ICON = `<svg class="ico-tel" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.6 21 3 13.4 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/></svg>`;
-// cls: 버튼 모양 클래스, label: 보이는 문구(기본은 번호까지)
-const telLink = (cls, label = `전화 상담 ${PHONE}`, attrs = "") => `<a class="${cls}" href="${TEL_HREF}"${attrs}>${TEL_ICON}<span>${label}</span></a>`;
-// 모집 안내 표의 '문의·신청' 줄 (캠프·유학·세인트폴·토플면제 상세)
-const infoTel = () => `<a class="tel-num" href="${TEL_HREF}">전화 ${PHONE}</a> 또는 <a href="#consult">상담 신청 양식</a>으로 문의해 주세요`;
-
-// ------------------------------------------------------------
 // 페이지 날짜 — 파일명 시드 기반, 월 단위로만 변동 (주간 랜덤 회전 없음)
 //   dateModified: 이번 달 안의 시드 고정 날짜(1~28일). 아직 오지 않은 날이면 지난달 같은 날.
 //   datePublished: 시드로 2026-07-01 ~ 2026-08-21 사이에 분산 고정.
@@ -113,11 +100,11 @@ function crumbsFor(file, title) {
   return t;
 }
 const absUrl = (href) => `${BASE_URL}/${href === "index.html" ? "" : href.replace(/^index\.html/, "")}`;
-function crumbsHtml(trail, dateLabel) {
+function crumbsHtml(trail) {
   const items = trail
     .map((c, i) => (i === trail.length - 1 ? `<li aria-current="page">${esc(c.label)}</li>` : `<li><a href="${c.href}">${esc(c.label)}</a></li>`))
     .join("");
-  return `<nav class="crumbs" aria-label="현재 위치"><div class="wrap"><ol>${items}</ol><span class="crumbs-date">정보 업데이트 ${dateLabel}</span></div></nav>`;
+  return `<nav class="crumbs" aria-label="현재 위치"><div class="wrap"><ol>${items}</ol></div></nav>`;
 }
 function crumbsJsonld(trail, pageUrl) {
   return {
@@ -156,8 +143,7 @@ function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null
   if (trail && trail.length > 1) ld.push(crumbsJsonld(trail, url));
   const ldScripts = ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
 
-  const crumbsBlock = trail && trail.length > 1 ? crumbsHtml(trail, dateLabel) : "";
-  const homeDate = isHome ? `<p class="page-date wrap">정보 업데이트 ${dateLabel}</p>` : "";
+  const crumbsBlock = trail && trail.length > 1 ? crumbsHtml(trail) : "";
 
   return {
     file,
@@ -200,7 +186,6 @@ ${ldScripts}
       <a href="about.html">운영·안전</a>
       <a href="guide.html">가이드</a>
       <a href="faq.html">자주 묻는 질문</a>
-      ${telLink("nav-tel", "전화 상담", ` title="전화 상담 ${PHONE}"`)}
       <a class="nav-cta" href="#consult">상담 신청</a>
       <details class="mnav">
         <summary aria-label="메뉴 열기">☰</summary>
@@ -214,7 +199,6 @@ ${ldScripts}
           <a href="guide.html">캠프 가이드</a>
           <a href="study-guide.html">유학 가이드</a>
           <a href="faq.html">자주 묻는 질문</a>
-          ${telLink("mnav-tel")}
           <a href="#consult">상담 신청</a>
         </div>
       </details>
@@ -225,26 +209,22 @@ ${hero}
 <main>
 ${crumbsBlock}
 ${body}
-${homeDate}
 </main>
-${footer()}
+${footer(dateLabel)}
 <div class="float-bar">
-  ${telLink("float-tel", "전화 상담")}
+  <a class="float-tel" href="tel:${PHONE.tel}" aria-label="전화 상담 ${PHONE.display}">전화 상담</a>
   <a class="float-cta" href="#consult">상담 신청</a>
 </div>
 <script defer src="https://xn--vb0by3y5wigqb.com/t.js" data-site="edujourney"></script>
 <script>
 (function(){
-  var fc = document.querySelector('.float-bar');
+  var fc = document.querySelector('.float-cta');
   var consult = document.getElementById('consult');
   if(!fc || !consult || !('IntersectionObserver' in window)) return;
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
 })();
 (function(){
-  function isFormEl(t){
-    if(t && t.nodeType === 3) t = t.parentNode;
-    return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || (t.closest && t.closest('.tel-num')));
-  }
+  function isFormEl(t){ return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'); }
   document.addEventListener('keydown', function(e){
     if(e.key === 'F12' ||
        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
@@ -261,7 +241,8 @@ ${footer()}
   };
 }
 
-function footer() {
+// 정보 업데이트 표기는 푸터 맨 아래 줄 (2026-09-17 사용자 지시 — 과외 사이트와 같이 브레드크럼·홈 본문 끝에서 내림)
+function footer(dateLabel = "") {
   const campLinks = Object.values(CAMPS).map((c) => `<a href="${c.slug}.html">${c.name}</a>`).join("\n");
   const ageLinks = AGE_GROUPS.map((a) => `<a href="${a.slug}.html">${a.label} 캠프</a>`).join("\n");
   return `<footer class="site-footer">
@@ -270,10 +251,7 @@ function footer() {
       <div class="footer-brand">
         <div class="footer-word">러닝<em>트래블</em></div>
         <p>캐나다·뉴질랜드·일본·말레이시아·필리핀 해외캠프와<br>중·고등 유학을 안내합니다. 지금까지 16,000명 넘는<br>학생들과 다녀온 경험이 저희의 전부이자 자랑입니다.</p>
-        <div class="footer-actions">
-          <a class="btn btn-coral footer-cta" href="#consult">상담 신청하기</a>
-          ${telLink("btn footer-tel tel-num")}
-        </div>
+        <a class="btn btn-coral footer-cta" href="#consult">상담 신청하기</a>
       </div>
       <div class="footer-links">
         <h3>캠프 안내</h3>
@@ -286,7 +264,7 @@ function footer() {
         <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n<a href="elc-partners.html">파트너 대학 9곳</a>\n<a href="elc-suny.html">SUNY 진학 가이드</a>\n<a href="elc-uc-transfer.html">UC 편입 경로</a>\n<a href="elc-texas.html">텍사스 주립대 5곳</a>\n<a href="elc-settlement.html">현지 정착 서비스</a>\n<a href="elc-scholarship.html">장학금·비용 절감</a>\n<a href="elc-glossary.html">용어 풀이</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
       </div>
     </div>
-    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 전화 상담 또는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료와 사진 출처: 쏠루트 유학</p>
+    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료와 사진 출처: 쏠루트 유학${dateLabel ? `<span class="footer-date">정보 업데이트 ${dateLabel}</span>` : ""}</p>
   </div>
 </footer>`;
 }
@@ -502,7 +480,6 @@ function buildIndex() {
         <div class="hero-actions">
           <a class="btn btn-coral" href="study.html">유학 과정 보기</a>
           <a class="btn btn-line" href="#consult">상담 신청</a>
-          ${telLink("btn btn-line btn-tel")}
         </div>
       </div>
     </div>
@@ -514,7 +491,6 @@ function buildIndex() {
         <div class="hero-actions">
           <a class="btn btn-coral" href="stpaul.html">학교 안내 보기</a>
           <a class="btn btn-line" href="#consult">상담 신청</a>
-          ${telLink("btn btn-line btn-tel")}
         </div>
       </div>
     </div>
@@ -526,7 +502,6 @@ function buildIndex() {
         <div class="hero-actions">
           <a class="btn btn-coral" href="elc.html">과정 안내 보기</a>
           <a class="btn btn-line" href="#consult">상담 신청</a>
-          ${telLink("btn btn-line btn-tel")}
         </div>
       </div>
     </div>
@@ -748,8 +723,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
       </div>
     </div>
     <div class="btn-row"><a class="btn btn-navy" href="elc.html">토플면제교육원 안내 →</a>
-    <a class="btn btn-line" href="#consult">상담 신청 →</a>
-    ${telLink("btn btn-tel")}</div>
+    <a class="btn btn-line" href="#consult">상담 신청 →</a></div>
   </div>
 </section>
 
@@ -771,7 +745,7 @@ ${consultSection()}`;
     desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원까지. 캠프 체험에서 유학·대학 진학까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 모집 중.`,
     hero,
     body,
-    jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL, telephone: `+82-${PHONE.replace(/^0/, "")}` },
+    jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
   });
 }
 
@@ -846,7 +820,7 @@ function buildCamp(key) {
         : `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`}</dd></div>
       <div><dt>숙소</dt><dd>${c.stay}</dd></div>
       <div><dt>모집 마감</dt><dd>${c.deadline}</dd></div>
-      <div><dt>문의·신청</dt><dd>${infoTel()}</dd></div>
+      <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
     </dl>
   </div>
 </section>
@@ -1555,7 +1529,7 @@ function buildInfoCountry(ic) {
   <ul class="check-list">${ic.points.map((p) => `<li>${p}</li>`).join("")}</ul>
   <div class="guide-cta" style="margin-top:30px">
     <span>${ic.name}을 포함해 아이에게 맞는 나라를 찾고 있다면</span>
-    <div class="cta-btns"><a class="btn btn-navy" href="#consult">맞춤 상담 남기기 →</a>${telLink("btn btn-tel")}</div>
+    <a class="btn btn-navy" href="#consult">맞춤 상담 남기기 →</a>
   </div>
   <p class="sec-sub" style="margin-top:24px">현재 정규 모집 중인 캠프는 <a href="country-canada.html">캐나다</a> · <a href="country-newzealand.html">뉴질랜드</a> · <a href="country-japan.html">일본</a>입니다.
   ${ic.name} 프로그램은 시즌·학년에 따라 맞춤 상담으로 안내해 드립니다.
@@ -1718,7 +1692,7 @@ function buildStudy(key) {
     <div><dt>학사 일정</dt><dd>${s.terms}</dd></div>
     <div><dt>비용</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
     <div><dt>비용에 포함</dt><dd>${s.includes}</dd></div>
-    <div><dt>문의·신청</dt><dd>${infoTel()}</dd></div>
+    <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
 <section class="section alt"><div class="wrap narrow">
@@ -1782,7 +1756,7 @@ function buildStPaul() {
     ${s.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
     <div><dt>모집</dt><dd>${s.target}</dd></div>
     <div><dt>학비</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
-    <div><dt>문의·신청</dt><dd>${infoTel()}</dd></div>
+    <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
 
@@ -1876,7 +1850,7 @@ function buildElc() {
     <div><dt>모집</dt><dd>2027학년도 신·편입생 수시모집(겨울학기) · 45명 선착순</dd></div>
     <div><dt>위치</dt><dd>${s.location}</dd></div>
     <div><dt>비용</dt><dd>${s.price} · 대학별 연간 유학 비용은 아래 표 참고</dd></div>
-    <div><dt>문의·신청</dt><dd>${infoTel()}</dd></div>
+    <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
 
@@ -2073,7 +2047,7 @@ function buildElcUniv(u) {
     <div><dt>연간 학비</dt><dd>${u.tuition}</dd></div>
     <div><dt>기숙사·식비</dt><dd>${u.room}</dd></div>
     <div><dt>연간 합계</dt><dd><strong>${u.total}</strong> <span class="dim">(생활비·보험·항공·비자 별도, 2026~2027학년도 기준)</span></dd></div>
-    <div><dt>문의·신청</dt><dd>${infoTel()}</dd></div>
+    <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
 
@@ -3334,7 +3308,7 @@ function buildGuideArticle(g) {
   ${g.body}
   <div class="guide-cta">
     <span>${isStudy ? "우리 아이에게 맞는 유학 과정이 궁금하다면" : "우리 아이에게 맞는 캠프가 궁금하다면"}</span>
-    <div class="cta-btns"><a class="btn btn-navy" href="${isStudy ? "study-compare.html" : "compare.html"}">${isStudy ? "유학 과정 비교해 보기 →" : "캠프 비교해 보기 →"}</a>${telLink("btn btn-tel")}</div>
+    <a class="btn btn-navy" href="${isStudy ? "study-compare.html" : "compare.html"}">${isStudy ? "유학 과정 비교해 보기 →" : "캠프 비교해 보기 →"}</a>
   </div>
   <p class="sec-sub" style="margin-top:26px">함께 읽으면 좋은 글: ${others.map((o) => `<a href="${o.slug}.html">${o.title}</a>`).join(" · ")} · <a href="${isStudy ? "study-guide.html" : "guide.html"}">전체 보기</a></p>
 </div></section>
@@ -3384,14 +3358,6 @@ a{color:inherit;text-decoration:none}
 .nav a:hover{color:var(--sky)}
 .nav-cta{background:var(--navy);color:#fff!important;padding:9px 16px;border-radius:999px;font-size:14px}
 .nav-cta:hover{background:var(--navy-2)}
-/* 전화 상담 (2026-09-17) — 헤더·메뉴·버튼 공용. 번호 글자는 복사할 수 있게 .tel-num만 선택 허용 */
-.ico-tel{flex:0 0 auto;display:block}
-.nav-tel{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--navy);color:var(--navy)!important;padding:7.5px 14px;border-radius:999px;font-size:14px;white-space:nowrap}
-.nav-tel:hover{background:var(--ice)}
-@media(min-width:821px) and (max-width:940px){.nav{gap:11px}.nav-tel{padding:8px 9px}.nav-tel span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}} /* 좁은 PC에선 아이콘만 — 메뉴 줄바꿈 방지 */
-.nav-cta{white-space:nowrap}
-.mnav-list a.mnav-tel{display:flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid var(--navy);color:var(--navy);margin-top:4px;white-space:nowrap}
-.tel-num{-webkit-user-select:text;-moz-user-select:text;user-select:text}
 .mnav{display:none;position:relative}
 .mnav summary{list-style:none;cursor:pointer;font-size:22px;line-height:1;padding:6px 4px;color:var(--navy);user-select:none}
 .mnav summary::-webkit-details-marker{display:none}
@@ -3437,14 +3403,6 @@ a{color:inherit;text-decoration:none}
 .btn-line:hover{border-color:#fff;background:rgba(255,255,255,.08)}
 .btn-navy{background:var(--navy);color:#fff}
 .btn-navy:hover{background:var(--navy-2)}
-/* 전화 상담 버튼 — 밝은 배경은 남색 테두리, 히어로(어두운 배경)는 .btn-line과 같이 흰 테두리. .btn보다 뒤에 둬야 inline-flex가 먹는다 */
-.btn-tel{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--navy);color:var(--navy);background:#fff}
-.btn-tel:hover{background:var(--ice)}
-.btn-line.btn-tel{background:transparent;border-color:rgba(255,255,255,.55);color:#fff}
-.btn-line.btn-tel:hover{border-color:#fff;background:rgba(255,255,255,.08)}
-/* 밝은 섹션 안의 .btn-line은 흰 글씨라 안 보였다(홈 토플면제·유학 섹션 등) — 전화 버튼 옆에 빈칸처럼 보여 남색 테두리로 (2026-09-17) */
-.section .btn-line{border-color:var(--navy);color:var(--navy)}
-.section .btn-line:hover{border-color:var(--navy);background:var(--ice)}
 
 /* stats */
 .stats{background:var(--navy-dark);color:#fff;border-top:1px solid rgba(255,255,255,.08)}
@@ -3484,8 +3442,6 @@ a{color:inherit;text-decoration:none}
 .crumbs a{color:var(--muted)}
 .crumbs a:hover{color:var(--sky);text-decoration:underline;text-underline-offset:3px}
 .crumbs [aria-current]{color:var(--ink);font-weight:600}
-.crumbs-date,.page-date{font-size:12.5px;color:#8a95a1;white-space:nowrap}
-.page-date{text-align:right;padding:0 22px 18px}
 
 /* camp cards */
 .camp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
@@ -3611,12 +3567,6 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .guide-body a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .guide-cta{margin-top:30px;background:var(--ice);border:1px solid var(--sky-soft);border-radius:14px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .guide-cta span{font-weight:800;font-size:16px}
-.cta-btns{display:flex;flex-wrap:wrap;gap:8px}
-.guide-cta .cta-btns .btn{text-decoration:none}
-.guide-cta .cta-btns .btn-navy{color:#fff}
-.guide-cta .cta-btns .btn-tel{color:var(--navy)}
-.guide-cta .btn span{font-size:inherit;font-weight:inherit}
-@media(max-width:560px){.cta-btns{width:100%}.cta-btns .btn{flex:1 1 100%;text-align:center}}
 
 /* consult */
 .consult{background:linear-gradient(140deg,var(--navy-dark),var(--navy));color:#fff;padding:72px 0}
@@ -3664,20 +3614,16 @@ img{-webkit-user-drag:none;user-drag:none}
 .form-done strong{display:block;font-size:19px;color:var(--navy);margin-bottom:8px}
 .form-done p{color:var(--muted);font-size:14.5px}
 
-/* floating cta — PC: 오른쪽 아래 알약 2개(전화 상담·상담 신청) / 모바일(≤640): 화면 하단 2버튼 바 (2026-09-17 전화 상담 추가) */
-.float-bar{position:fixed;right:16px;bottom:18px;z-index:60;display:flex;align-items:center;gap:10px;transition:opacity .2s,transform .2s}
-.float-bar.hide{opacity:0;pointer-events:none;transform:translateY(8px)}
-.float-cta,.float-tel{display:inline-flex;align-items:center;justify-content:center;gap:7px;color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:.2s;white-space:nowrap}
+/* floating cta */
+/* 우하단 [전화 상담][상담 신청] — 전화 버튼은 이 플로팅 하나만 (2026-09-17). 상담 신청만 #consult가 보이면 숨고(opacity) 자리는 유지 */
+.float-bar{position:fixed;right:16px;bottom:18px;z-index:60;display:flex;align-items:center;gap:8px}
+.float-cta,.float-tel{color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:.2s;white-space:nowrap}
 .float-cta{background:var(--coral)}
-.float-cta:hover{background:#d5623b}
 .float-tel{background:var(--navy)}
 .float-tel:hover{background:var(--navy-2)}
-@media(max-width:640px){
-  body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
-  .float-bar{left:0;right:0;bottom:0;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(22,50,79,.1)}
-  .float-bar.hide{transform:translateY(100%)}
-  .float-cta,.float-tel{flex:1 1 0;padding:13px 10px;border-radius:12px;box-shadow:none;font-size:15.5px}
-}
+@media(max-width:400px){.float-bar{right:12px;bottom:14px}.float-cta,.float-tel{font-size:14.5px;padding:12px 18px}}
+.float-cta:hover{background:#d5623b}
+.float-cta.hide{opacity:0;pointer-events:none;transform:translateY(8px)}
 
 /* footer */
 .site-footer{background:#0b1c2e;color:#aebccb;padding:56px 0 36px;font-size:14px}
@@ -3689,11 +3635,9 @@ img{-webkit-user-drag:none;user-drag:none}
 .footer-linkset{display:flex;flex-wrap:wrap;gap:8px 6px}
 .footer-linkset a{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 13px;font-size:12.5px;color:#aebccb;transition:.15s}
 .footer-linkset a:hover{border-color:var(--coral);color:var(--coral)}
-.footer-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-.footer-cta{font-size:14px;padding:11px 22px}
-.footer-tel{display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:11px 20px;border:1.5px solid rgba(255,255,255,.35);color:#fff}
-.footer-tel:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.footer-cta{margin-top:6px;font-size:14px;padding:11px 22px}
 .footer-fine{margin-top:34px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);color:#6b7d8f;font-size:12.5px}
+.footer-date{display:block;margin-top:6px}
 `;
 
 // ------------------------------------------------------------
