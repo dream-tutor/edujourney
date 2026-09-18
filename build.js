@@ -385,8 +385,18 @@ function consultSection(preset = {}) {
         <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <div class="form-row">
-        <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" required> <span>개인정보 수집·이용에 동의합니다 <b class="req">*</b></span></label>
-        <p class="agree-note">수집 항목: 학생 이름·연락처·학년·영어 수준·해외 경험·문의 내용 / 이용 목적: 캠프 상담 안내 / 보유 기간: 상담 목적을 달성하면 지체 없이 파기. 만 14세 미만 학생은 학부모(법정대리인)가 작성·동의해 주세요.</p>
+        <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" checked required onclick="if(!this.checked){alert('체크를 해제하시면 상담 신청이 어렵습니다.');this.checked=true;}"> <span>개인정보 수집·이용에 동의합니다 <em class="lab-sub">(필수)</em></span></label>
+        <details class="agree-more">
+          <summary>수집 항목·이용 목적·보유 기간 보기</summary>
+          <ul class="agree-note">
+            <li><b>수집 항목</b> 학생 이름, 연락처, 자녀 학년, 관심 캠프, 영어 수준, 해외 경험, 기대하는 점·상담 희망 내용, 문의 내용, 접수 시각과 접수한 페이지 주소</li>
+            <li><b>이용 목적</b> 캠프·유학 상담 안내와 연락</li>
+            <li><b>보유 기간</b> 상담 목적을 달성하면 지체 없이 파기</li>
+            <li><b>저장·전달</b> 접수 내용은 구글 스프레드시트에 저장되고 상담 담당자 메일로 전달됩니다. 전달되는 항목은 위 수집 항목과 같습니다.</li>
+            <li><b>동의를 거부하실 수 있습니다</b> 다만 연락처를 받을 수 없어 상담 안내가 어렵습니다.</li>
+            <li>만 14세 미만 학생은 학부모(법정대리인)가 작성·동의해 주세요.</li>
+          </ul>
+        </details>
       </div>
       <button type="submit" class="btn btn-coral form-submit">상담 신청하기</button>
       <p class="form-fine">남겨주신 정보는 상담 목적으로만 사용됩니다.</p>
@@ -3609,7 +3619,15 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .consult-form label.chip input:focus-visible+span{outline:2px solid var(--sky);outline-offset:2px}
 .consult-form label.agree{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--ink);cursor:pointer}
 .consult-form label.agree input{width:18px;height:18px;padding:0;margin:0;flex:0 0 auto;accent-color:var(--coral)}
-.consult-form .agree-note{font-size:12px;color:#8a95a1;line-height:1.55;margin-top:-6px}
+/* 동의 안내: 체크는 한 줄, 자세한 내용은 접었다 편다 (기본 접힘) */
+.consult-form .agree-more{margin-top:-4px}
+.consult-form .agree-more>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#6b7684;padding:2px 0}
+.consult-form .agree-more>summary::-webkit-details-marker{display:none}
+.consult-form .agree-more>summary::after{content:"";flex:0 0 auto;width:6px;height:6px;border-right:2px solid #a3aeb9;border-bottom:2px solid #a3aeb9;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.consult-form .agree-more[open]>summary::after{transform:rotate(225deg) translateY(1px)}
+.consult-form .agree-more>summary:hover{color:var(--ink)}
+.consult-form .agree-note{list-style:none;display:grid;gap:6px;font-size:12px;color:#8a95a1;line-height:1.55;margin-top:8px;padding:12px 13px;background:#fafbfc;border:1px solid var(--line);border-radius:10px}
+.consult-form .agree-note b{color:#6b7684;font-weight:700}
 .form-submit{width:100%;border:none;cursor:pointer;font-size:16px;padding:15px}
 .form-submit:disabled{opacity:.6;cursor:default}
 .form-fine{margin-top:12px;font-size:12.5px;color:#8a95a1;text-align:center}
