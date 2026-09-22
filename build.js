@@ -496,7 +496,7 @@ function buildIndex() {
     <div class="hs-slide">
       <div class="wrap hero-inner">
         <p class="hero-kicker">세인트폴 대치 아카데미</p>
-        <h1>유학 없이 대치동에서<br>미국 교과과정 그대로</h1>
+        <h1>유학 없이 대치동에서<br>전 과목 영어 수업</h1>
         <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스. 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 2월·8월 학기 모집.</p>
         <div class="hero-actions">
           <a class="btn btn-coral" href="stpaul.html">학교 안내 보기</a>
@@ -685,7 +685,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
 <section class="section alt" id="stpaul">
   <div class="wrap">
     <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
-    <p class="sec-sub">집에서 통학하면서 미국 교과과정 8~12학년을 그대로 밟는 길입니다. 전 과목 영어 수업, AP 15과목 이상. 서울 대치동에 있습니다.</p>
+    <p class="sec-sub">집에서 통학하면서 8~12학년 과정을 전 과목 영어로 공부하는 길입니다. AP 15과목 이상. 서울 대치동에 있습니다.</p>
     <div class="two-col">
       <div>
         <dl class="info-list">
@@ -1630,7 +1630,7 @@ function buildStudyHub() {
   <p class="sec-sub">두 곳은 저희 겨울캠프가 진행되는 바로 그 학교·교육청이고, 한 곳은 서울 대치동에 있습니다. 캠프를 다녀오지 않은 학생도 상담받으실 수 있습니다.</p>
   <div class="camp-grid">
     ${Object.values(STUDY).map(studyCard).join("\n")}
-    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 미국 교과과정" })}
+    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 · 전 과목 영어 수업" })}
   </div>
 </div></section>
 
@@ -1649,7 +1649,7 @@ function buildStudyHub() {
     <li>겨울캠프 3~7주로 현지 학교와 홈스테이 생활을 직접 겪어봅니다</li>
     <li>아이의 적응력·의지를 확인한 뒤 텀(학기) 단위로 짧게 시작합니다</li>
     <li>잘 맞으면 연장, 뉴질랜드는 NCEA, 캐나다는 온타리오 졸업장까지 이어집니다</li>
-    <li>해외 출국이 부담스럽다면 대치동에서 미국 교과과정을 밟는 길도 있습니다</li>
+    <li>해외 출국이 부담스럽다면 대치동에서 전 과목 영어로 공부하는 길도 있습니다</li>
   </ol>
   <p class="sec-sub" style="margin-top:16px">뉴질랜드 유학은 <a href="newzealand.html">뉴질랜드 겨울캠프</a>와 같은 학교, 캐나다 관리형은 <a href="canada-3week.html">캐나다 3주 캠프</a>와 같은 교육청에서 진행됩니다. 준비 일정은 <a href="study-process.html">유학 준비 절차</a>에 월 단위로 정리해 두었습니다.</p>
   <p class="sec-sub" style="margin-top:10px">고3 졸업(예정)생·재수생이라면 중·고등 유학 대신 <a href="elc.html">미국·캐나다 대학 토플면제교육원</a> — 국내 6개월 과정으로 TOEFL 없이 대학에 진학하는 길을 보세요.</p>
@@ -1681,7 +1681,7 @@ ${studyConsult("")}`;
   return page({
     file: "study.html",
     title: "중·고등 유학 안내 | 뉴질랜드 유학·캐나다 관리형 유학·세인트폴 대치 아카데미",
-    desc: "중·고등 조기유학 세 가지 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 세인트폴 대치 아카데미(미국 교과과정). 비용·절차·비자·관리 체계와 학년별 안내.",
+    desc: "중·고등 조기유학 세 가지 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 세인트폴 대치 아카데미(대치동·전 과목 영어 수업). 비용·절차·비자·관리 체계와 학년별 안내.",
     hero, body,
   });
 }
@@ -1736,7 +1736,7 @@ function buildStudy(key) {
   <p>${key === "study-newzealand"
     ? `같은 학교에서 진행하는 <a href="newzealand.html"><strong>뉴질랜드 겨울캠프</strong></a>(3~7주)로 먼저 겪어보세요. 캠프 후 현지에서 바로 텀 단위 연장도 가능합니다.`
     : `같은 교육청에서 진행하는 <a href="canada-3week.html"><strong>캐나다 3주 겨울캠프</strong></a>로 먼저 겪어보세요. 캠프는 유학 결정 전 아이의 적응력을 확인하는 가장 안전한 방법입니다.`}</p>
-  <p style="margin-top:14px">해외로 나가는 것 자체가 부담이라면 <a href="stpaul.html">세인트폴 대치 아카데미</a>처럼 국내에서 미국 교과과정을 밟는 길도 있습니다. <a href="stpaul-vs-abroad.html">항목별 비교</a></p>
+  <p style="margin-top:14px">해외로 나가는 것 자체가 부담이라면 <a href="stpaul.html">세인트폴 대치 아카데미</a>처럼 국내에서 전 과목 영어로 공부하는 길도 있습니다. <a href="stpaul-vs-abroad.html">항목별 비교</a></p>
   <p class="sec-sub" style="margin-top:16px">학년별 안내: ${STUDY_GRADES.map((g) => `<a href="${g.slug}.html">${g.key}</a>`).join(" · ")}</p>
   <p class="sec-sub" style="margin-top:10px">다른 과정: ${Object.values(STUDY).filter((x) => x.slug !== s.slug).map((x) => `<a href="${x.slug}.html">${x.name}</a>`).join(" · ")} · <a href="study-compare.html">두 나라 비교표</a> · <a href="study.html">유학 전체 안내</a></p>
 </div></section>
@@ -1755,7 +1755,7 @@ function buildStPaul() {
   const s = STPAUL;
   const d = STPAUL_DETAIL;
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
-    <p class="hero-kicker">🏫 서울 대치동 · 미국 교과과정</p>
+    <p class="hero-kicker">🏫 서울 대치동 · 전 과목 영어 수업</p>
     <h1>${s.name}</h1>
     <p class="hero-sub">${s.tag}</p>
   </div></section>`;
@@ -1773,9 +1773,9 @@ function buildStPaul() {
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">어떤 학교인가요</h2>
   <p class="lead">${s.name}는 미국 Saint Paul American School System(SPASS)이 운영하는 서울 캠퍼스입니다.
-  미네소타 본교를 비롯해 베이징·파리 등 8개 캠퍼스가 같은 학사 기준으로 운영되고, 서울에서도 미국 커리큘럼
-  그대로 전 과목을 영어로 수업합니다. Common Core(영어·수학)·NGSS(과학) 표준을 따릅니다.</p>
-  <p style="margin-top:14px">해외로 나가지 않고 미국 교과과정을 밟는다는 점이 핵심입니다. 아이는 집에서 통학하고, 부모는 매일 얼굴을 보면서
+  미네소타 본교를 비롯해 베이징·파리 등 8개 캠퍼스가 같은 학사 기준으로 운영되고, 서울 캠퍼스도 같은 기준으로
+  전 과목을 영어로 수업합니다. 학교 안내에 따르면 Common Core(영어·수학)·NGSS(과학) 표준을 따릅니다.</p>
+  <p style="margin-top:14px">해외로 나가지 않고 전 과목을 영어로 공부한다는 점이 핵심입니다. 아이는 집에서 통학하고, 부모는 매일 얼굴을 보면서
   진로만 미국 쪽으로 돌리는 구조입니다. 대신 <strong>국내 학력이 인정되지 않는 미인가 과정</strong>이라는 점은 입학 전에 반드시 짚고 가야 합니다.</p>
   <div class="two-col" style="margin-top:24px">
     <div>
@@ -1833,8 +1833,8 @@ function buildStPaul() {
 ${studyConsult(s.slug, { title: "세인트폴 대치 아카데미 상담", copy: "학년과 현재 영어 수준, 희망 진학 방향을 남겨 주세요.<br>입학 시기와 준비할 것을 정리해 안내해 드립니다.", points: ["학년 배정과 입학 테스트 안내", "학비 외 실제로 드는 비용 정리", "해외 유학과 비교해 함께 상담 가능"] })}`;
   return page({
     file: "stpaul.html",
-    title: `세인트폴 대치 아카데미 | 대치동 미국 교과과정 — 학비·모집·진학 실적`,
-    desc: `유학 없이 대치동에서 미국 교과과정, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 입학 절차와 상담 안내.`,
+    title: `세인트폴 대치 아카데미 | 대치동 전 과목 영어 수업 — 학비·모집·진학 실적`,
+    desc: `유학 없이 대치동에서 전 과목 영어 수업, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 입학 절차와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "School", name: s.name, address: { "@type": "PostalAddress", addressLocality: "서울 강남구 대치동" } },
   });
@@ -2660,10 +2660,10 @@ function buildStPaulCurriculum() {
   return stpaulPage({
     file: "stpaul-curriculum.html",
     kicker: "📚 커리큘럼",
-    h1: "미국 교과과정 8~12학년,<br>과목은 이렇게 짜입니다",
+    h1: "8~12학년 과목은<br>이렇게 짜입니다",
     sub: "Common Core·NGSS 기준 · AP 15과목 이상 · 제2외국어 · 연 3회 MAP 진단",
     body,
-    title: "세인트폴 대치 아카데미 커리큘럼 | 미국 교과과정·AP·MAP 진단",
+    title: "세인트폴 대치 아카데미 커리큘럼 | 과목 구성·AP·MAP 진단",
     desc: "세인트폴 대치 아카데미 수업 구성 — Common Core·NGSS 기준의 영어·수학·과학·사회, 중국어·스페인어 제2외국어, AP 15과목 이상, TOEFL·SAT 방과후, 연 3회 MAP 진단까지 정리했습니다.",
   });
 }
@@ -2692,7 +2692,7 @@ function buildStPaulTuition() {
     sub: "연간 학비 2,540만원 · 해외 유학과의 비용 비교까지",
     body,
     title: "세인트폴 대치 아카데미 학비 | 연간 학비·해외 유학 비용 비교",
-    desc: "세인트폴 대치 아카데미 학비 — 연간 학비 2,540만원. 집에서 통학하는 국내 미국 교과과정과 해외 유학의 연간 비용 비교까지 정리했습니다.",
+    desc: "세인트폴 대치 아카데미 학비 — 연간 학비 2,540만원. 집에서 통학하는 국내 과정과 해외 유학의 연간 비용 비교까지 정리했습니다.",
   });
 }
 
@@ -2791,7 +2791,7 @@ function buildStPaulVsAbroad() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">한 표로 보기</h2>
-  <p class="sec-sub">왼쪽은 국내에서 미국 교과과정을 밟는 길, 오른쪽은 해외로 나가는 길입니다.</p>
+  <p class="sec-sub">왼쪽은 국내에서 전 과목 영어로 공부하는 길, 오른쪽은 해외로 나가는 길입니다.</p>
   <div class="table-wrap" style="margin-top:18px"><table class="cmp">
     <thead><tr><th>비교 항목</th><th>세인트폴 대치 아카데미</th><th>뉴질랜드·캐나다 유학</th></tr></thead>
     <tbody>${STPAUL_DETAIL.vsAbroad.map(([k, a, b]) => `<tr><th>${k}</th><td>${a}</td><td>${b}</td></tr>`).join("")}</tbody>
@@ -2828,7 +2828,7 @@ function buildStPaulVsAbroad() {
     sub: "비용·생활·학력·되돌릴 여지까지, 두 길을 같은 기준으로 놓고 봅니다",
     body,
     title: "세인트폴 대치 아카데미 vs 조기유학 | 비용·생활·학력 비교",
-    desc: "국내 미국 교과과정과 해외 조기유학을 같은 기준으로 비교 — 보호자, 연간 비용, 국내 학력 인정, 영어 환경, 되돌릴 여지. 아이 성향별로 어느 쪽이 맞는지 정리했습니다.",
+    desc: "국내 영어 수업 과정과 해외 조기유학을 같은 기준으로 비교 — 보호자, 연간 비용, 국내 학력 인정, 영어 환경, 되돌릴 여지. 아이 성향별로 어느 쪽이 맞는지 정리했습니다.",
   });
 }
 
@@ -2994,7 +2994,7 @@ function buildStudyCost() {
     sub: "참가비에 포함된 것과 따로 나가는 것 — 항공·용돈·비자까지 펼쳐서 봅니다",
     body,
     title: "조기유학 비용 | 뉴질랜드·캐나다 1년 총비용과 별도 항목 정리",
-    desc: "중·고등 조기유학 비용 정리 — 뉴질랜드 연 3,200만원, 캐나다 연 4,250만원에 포함된 항목과 항공료·수속비·비자·용돈 등 별도 비용, 1년 현실 총액, 국내 미국 교과과정과의 비교까지.",
+    desc: "중·고등 조기유학 비용 정리 — 뉴질랜드 연 3,200만원, 캐나다 연 4,250만원에 포함된 항목과 항공료·수속비·비자·용돈 등 별도 비용, 1년 현실 총액, 국내 영어 수업 과정과의 비교까지.",
   });
 }
 
@@ -3229,7 +3229,7 @@ function buildStudyGrade(g) {
   <h2 class="sec-title">${g.label}에게 권하는 과정</h2>
   <div class="camp-grid">
     ${picks.map(studyCard).join("\n")}
-    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 미국 교과과정" })}
+    ${studyCard({ ...STPAUL, flag: "🏫", type: "대치동 · 전 과목 영어 수업" })}
   </div>
 </div></section>
 
