@@ -585,7 +585,7 @@ function buildIndex() {
 <section class="section" id="programs">
   <div class="wrap">
     <h2 class="sec-title">캠프 다음도 안내합니다</h2>
-    <p class="sec-sub">겨울캠프에서 시작해 교환학생, 유학, 국내에서 다니는 미국 학교, 대학 진학까지. 학생의 학년과 목적에 따라 맞는 길이 다릅니다.</p>
+    <p class="sec-sub">겨울캠프에서 시작해 교환학생, 유학, 국내에서 영어로 다니는 학교, 대학 진학까지. 학생의 학년과 목적에 따라 맞는 길이 다릅니다.</p>
     <div class="prog-grid">
       ${PROGRAMS.map((p) => `<a class="prog-card" href="${p.href}"><span class="prog-kicker">${p.kicker}</span><h3>${p.name}</h3><p>${p.blurb}</p><span class="camp-more">자세히 보기 →</span></a>`).join("\n")}
     </div>
@@ -1782,7 +1782,7 @@ function buildStPaul() {
       <h3 class="sec-title-sm">이런 학생에게 맞습니다</h3>
       <ul class="check-list">
         <li>해외 대학 진학을 목표로 두고 있는 학생</li>
-        <li>유학은 아직 이르지만 미국 과정을 밟고 싶은 학생</li>
+        <li>유학은 아직 이르지만 영어로 수업을 듣고 싶은 학생</li>
         <li>질문과 토론이 많은, 한국 교실이 답답한 학생</li>
         <li>부모가 곁에서 사춘기를 지켜보고 싶은 가정</li>
       </ul>
@@ -2809,7 +2809,7 @@ function buildStPaulVsAbroad() {
   <h2 class="sec-title">이렇게 갈리는 편입니다</h2>
   <div class="fit-grid">
     <div><strong>독립심이 있고 새 환경을 즐기는 아이</strong><p>해외 유학 쪽이 얻는 게 많습니다. 영어보다 생활력이 먼저 늘어서 옵니다.</p></div>
-    <div><strong>학업 의지는 있는데 혼자 살기는 이른 아이</strong><p>세인트폴처럼 집에서 다니는 미국 과정이 안전합니다.</p></div>
+    <div><strong>학업 의지는 있는데 혼자 살기는 이른 아이</strong><p>세인트폴처럼 집에서 다니는 영어 수업 과정이 안전합니다.</p></div>
     <div><strong>사춘기를 곁에서 보고 싶은 가정</strong><p>통학제의 장점이 큽니다. 매일 얼굴을 보면서 진로만 바꾸는 구조입니다.</p></div>
     <div><strong>영어를 생활 언어로 만들고 싶다면</strong><p>해외 유학입니다. 국내 과정은 학교 밖이 한국어 환경이라 한계가 있습니다.</p></div>
   </div>
@@ -2824,7 +2824,7 @@ function buildStPaulVsAbroad() {
   return stpaulPage({
     file: "stpaul-vs-abroad.html",
     kicker: "⚖️ 비교",
-    h1: "국내 미국 과정 vs 해외 유학",
+    h1: "국내 영어 수업 과정 vs 해외 유학",
     sub: "비용·생활·학력·되돌릴 여지까지, 두 길을 같은 기준으로 놓고 봅니다",
     body,
     title: "세인트폴 대치 아카데미 vs 조기유학 | 비용·생활·학력 비교",
@@ -2963,7 +2963,7 @@ function buildStudyCost() {
 </div></section>
 
 <section class="section"><div class="wrap narrow">
-  <h2 class="sec-title">국내 미국 과정과 비교하면</h2>
+  <h2 class="sec-title">국내 영어 수업 과정과 비교하면</h2>
   <div class="table-wrap"><table class="cmp">
     <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
     <tbody>
@@ -3175,7 +3175,7 @@ function buildStudyAfter() {
   <h2 class="sec-title-sm">진학 준비는 11학년부터</h2>
   <p>어느 경로든 SAT·에세이·활동 기록은 따로 준비해야 합니다. 마지막 1년에 몰아서 되는 일이 아니라,
   11학년이 되면 목표 대학군을 정하고 역산해 준비하시길 권합니다.
-  국내에서 미국 과정을 밟는 경우의 진학 경로는 <a href="stpaul-college.html">세인트폴 진학 안내</a>에 정리해 두었습니다.</p>
+  국내에서 영어로 수업을 듣는 경우의 진학 경로는 <a href="stpaul-college.html">세인트폴 진학 안내</a>에 정리해 두었습니다.</p>
 </div></section>`;
   return studyPage({
     file: "study-after.html",
@@ -3275,7 +3275,7 @@ ${studyConsult("")}`;
   return page({
     file: "study-guide.html",
     title: "유학 가이드 | 조기유학 시기·비용·관리형·귀국 학적 정리",
-    desc: "중·고등 조기유학을 준비하는 학부모를 위한 글 모음 — 유학 적기, 1년 실제 총비용, 관리형 유학의 의미, 뉴질랜드와 캐나다 비교, 출국 전 영어 준비, 귀국 시 학적 처리, 국내 미국 과정과의 비교까지.",
+    desc: "중·고등 조기유학을 준비하는 학부모를 위한 글 모음 — 유학 적기, 1년 실제 총비용, 관리형 유학의 의미, 뉴질랜드와 캐나다 비교, 출국 전 영어 준비, 귀국 시 학적 처리, 국내 영어 수업 과정과의 비교까지.",
     hero, body,
   });
 }
