@@ -172,6 +172,15 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .cmp{min-width:680px}
 .cmp thead th{background:var(--navy);color:#fff;padding:14px;text-align:center;font-weight:700}
 .cmp thead th a{text-decoration:underline;text-underline-offset:3px}
+/* 탭 영역 — 대학 비교표 머리 칸의 학교 이름 링크(껍데기 72~73px / 눌리는 곳 17px) (2026-09-23)
+   껍데기 안에 inline <a> 하나만 있으면 눌리는 곳이 글자줄뿐이라 손가락으로 놓치기 쉽다.
+   ::after 를 껍데기 전체에 깔아 어디를 눌러도 링크가 열리게 한다. 보이는 건 그대로다.
+   ⚠ :has() 를 쓰지 말 것 — 지원 안 되는 브라우저에서 껍데기에 position 이 안 걸려
+     ::after 가 훨씬 큰 조상 기준으로 퍼지고, 엉뚱한 자리의 클릭을 먹는다. */
+.cmp thead th,.cmp tbody th{position:relative}
+.cmp thead th>a::after,.cmp tbody th>a::after{content:"";position:absolute;inset:0}
+.cmp thead th>a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.cmp tbody th>a:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 .cmp tbody th{background:var(--ice);padding:12px 14px;text-align:left;white-space:nowrap;font-weight:800;color:var(--navy);border-top:1px solid var(--line)}
 .cmp tbody td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top}
 .table-hint{display:none;font-size:12px;color:var(--muted);margin:0 0 8px;text-align:right}
@@ -341,3 +350,58 @@ img{-webkit-user-drag:none;user-drag:none}
 .footer-cta{margin-top:6px;font-size:14px;padding:11px 22px}
 .footer-fine{margin-top:34px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);color:#6b7d8f;font-size:12.5px}
 .footer-date{display:block;margin-top:6px}
+/* ============================================================
+   모바일 여백 리듬 (2026-09-23)
+   ⚠ 이 블록은 CSS 문자열 맨 끝에 둔다 — 앞에 있는 더 좁은 미디어쿼리를
+     소스 순서로 이겨야 한다. 데스크톱(≥761px)은 이 블록 밖이라 그대로다.
+   ============================================================ */
+:root{--sec-y:72px;--head-y:28px;--grid-g:18px;--card-p:24px}
+
+@media(max-width:760px){
+  :root{
+    --sec-y:48px;    /* 섹션 상하 — 하한 40px */
+    --head-y:18px;   /* 섹션 머리 → 본문 */
+    --grid-g:12px;
+    --card-p:20px;
+  }
+
+  /* 히어로 — 헤더가 sticky 라 위 여백을 줄여도 가려지지 않는다 */
+  .hero-inner{padding:56px 22px 52px}
+  .hero-sub{margin-top:14px}
+
+  /* 섹션 껍데기 */
+  .section{padding:var(--sec-y) 0}
+  .consult{padding:var(--sec-y) 0}
+  .sec-title{margin-bottom:10px}
+  .sec-sub{margin-bottom:var(--head-y)}
+
+  /* 격자 사이 */
+  .camp-grid,.card-grid,.grid-2,.grid-3,.step-grid,.guide-grid,.teaser-grid{gap:var(--grid-g)}
+  .consult-grid{gap:26px}
+  .check-list{gap:8px}
+  .prose p{margin-bottom:12px}
+  .table-wrap{margin-top:14px}
+  .sec-title-sm{margin-bottom:10px}
+  .cmp th,.cmp td{padding:9px 11px}   /* 표 칸 — 가로도 같이 좁아져 넘침이 준다 */
+
+  /* 접이식 질문 — summary 는 눌러야 하므로 44px 밑으로 내리지 않는다 */
+  .faq-list{gap:8px}
+  .faq-item summary{padding:13px 28px 13px 0}
+  .faq-item p{padding-bottom:14px}
+
+  /* 푸터 — 227장 전부에 똑같이 들어가는 가장 큰 덩어리다(elc.html 기준 2,070px).
+     링크 80개는 그대로 두고 알약 사이와 높이만 좁힌다.
+     ⚠ 아래 여백은 플로팅 [전화 상담] 버튼을 피하는 값이라 76px 밑으로 내리지 말 것. */
+  .site-footer{padding:40px 0 76px}
+  .footer-grid{gap:24px}
+  .footer-word{margin-bottom:12px}
+  .footer-links h3{margin-bottom:10px;font-size:14.5px}
+  .footer-linkset{gap:6px 5px}
+  /* ⚠ 알약 자체는 줄이지 않는다 — 지금도 29px 이라 더 줄이면 손가락으로 누르기 힘들다.
+     좁히는 건 알약 사이 간격까지다. */
+  .footer-fine{margin-top:20px;padding-top:14px}
+}
+
+@media(max-width:560px){
+  :root{--sec-y:42px;--head-y:16px;--grid-g:10px;--card-p:18px}
+}
