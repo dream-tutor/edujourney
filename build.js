@@ -17,6 +17,14 @@ const OUT = path.join(__dirname, "docs");
 fs.mkdirSync(OUT, { recursive: true });
 const CSS_VER = Date.now().toString(36);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const escAttr = (s) => esc(s).replace(/"/g, "&quot;");
+
+// 한시 할인 — data.js promo.ends(YYYY-MM-DD, 한국 시각)가 지나면 빌드가 할인 문구를 아예 내보내지 않는다.
+// 이미 올라간 페이지는 공용 스크립트(page() 하단)가 data-promo-until 을 보고 지운다.
+// data-plain 이 있으면 그 내용(원래 금액)으로 갈아끼우고, 없으면(배지·안내 띠) 요소째 지운다.
+const todayKst = () => new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+const promoOf = (c) => (c.promo && (!c.promo.ends || c.promo.ends >= todayKst()) ? c.promo : null);
+const promoAttr = (p, plain) => (p && p.ends ? ` data-promo-until="${p.ends}"${plain != null ? ` data-plain="${escAttr(plain)}"` : ""}` : "");
 
 // ------------------------------------------------------------
 // 페이지 날짜 — 파일명 시드 기반, 월 단위로만 변동 (주간 랜덤 회전 없음)
@@ -224,16 +232,17 @@ ${footer(dateLabel)}
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
 })();
 (function(){
-  function isFormEl(t){ return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'); }
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'F12' ||
-       (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-       (e.ctrlKey && (e.key === 'u' || e.key === 'U'))){
-      e.preventDefault();
-    }
-  });
-  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
-  document.addEventListener('selectstart', function(e){ if(!isFormEl(e.target)) e.preventDefault(); });
+  // 한시 할인 — 마감일(data-promo-until, 한국 시각)이 지났는데 아직 다시 빌드하지 않은 페이지면
+  // data-plain(원래 금액)으로 갈아끼우고, 없으면(배지·안내 띠) 요소째 지운다.
+  var today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  var els = document.querySelectorAll('[data-promo-until]');
+  for(var i = 0; i < els.length; i++){
+    var el = els[i];
+    if(el.getAttribute('data-promo-until') >= today) continue;
+    var plain = el.getAttribute('data-plain');
+    if(plain !== null){ el.innerHTML = plain; el.removeAttribute('data-plain'); el.removeAttribute('data-promo-until'); }
+    else if(el.parentNode){ el.parentNode.removeChild(el); }
+  }
 })();
 </script>
 </body>
@@ -273,15 +282,16 @@ function footer(dateLabel = "") {
 // 공용 조각
 // ------------------------------------------------------------
 function campCard(c) {
+  const p = promoOf(c);
   return `<a class="camp-card" href="${c.slug}.html">
     <span class="camp-flag">${c.flag} ${c.countryName}</span>
-    ${c.promo ? `<span class="promo-badge">${c.promo.badge}</span>` : ""}
+    ${p ? `<span class="promo-badge"${promoAttr(p)}>${p.badge}</span>` : ""}
     <h3>${c.name}</h3>
     <p class="camp-tag">${c.tag}</p>
     <dl class="camp-meta">
       <div><dt>기간</dt><dd>${c.periodShort}</dd></div>
       <div><dt>대상</dt><dd>${c.target}</dd></div>
-      <div><dt>참가비</dt><dd>${c.promo ? `<s class="was">${c.price}</s> <strong class="now">${c.promo.priceAfter}</strong><br><span class="promo-mini">${c.promo.cond}</span>` : c.price}</dd></div>
+      <div><dt>참가비</dt>${p ? `<dd${promoAttr(p, c.price)}><s class="was">${c.price}</s> <strong class="now">${p.priceAfter}</strong><br><span class="promo-mini">${p.cond}</span></dd>` : `<dd>${c.price}</dd>`}</div>
     </dl>
     <span class="camp-more">자세히 보기 →</span>
   </a>`;
@@ -292,14 +302,14 @@ function compareTable() {
   const row = (label, fn) => `<tr><th>${label}</th>${cs.map((c) => `<td>${fn(c)}</td>`).join("")}</tr>`;
   // 뉴질랜드처럼 " · "로 이어진 값(3주·4주·7주)은 표에서 줄바꿈으로 표시 (2026-08-26 사용자 요청)
   const br = (s) => String(s).replace(/ · /g, "<br>");
-  return `<div class="table-wrap"><table class="cmp">
+  return `<div class="table-wrap" tabindex="0" role="region" aria-label="${CAMP_COUNT}개 캠프 비교표"><table class="cmp">
     <thead><tr><th></th>${cs.map((c) => `<th><a href="${c.slug}.html">${c.flag}<br>${c.name}</a></th>`).join("")}</tr></thead>
     <tbody>
       ${row("형태", (c) => c.type)}
       ${row("기간", (c) => c.periodShort)}
       ${row("대상", (c) => br(c.target))}
       ${row("정원", (c) => c.capacity)}
-      ${row("참가비", (c) => `<strong>${br(c.price)}</strong>${c.promo ? `<br><span class="promo-mini">${c.promo.until}까지 ${c.promo.limit} ${c.promo.badge} → ${c.promo.priceAfter}</span>` : ""}`)}
+      ${row("참가비", (c) => { const p = promoOf(c); return `<strong>${br(c.price)}</strong>${p ? `<span${promoAttr(p)}><br><span class="promo-mini">${p.until}까지 ${p.limit} ${p.badge} → ${p.priceAfter}</span></span>` : ""}`; })}
       ${row("숙소", (c) => c.stay)}
       ${row("모집 마감", (c) => c.deadline)}
     </tbody>
@@ -382,7 +392,7 @@ function consultSection(preset = {}) {
       </div>
 
       <div class="form-row">
-        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
+        <label>문의 내용<textarea name="문의내용" rows="5" maxlength="1000" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <div class="form-row">
         <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" checked required onclick="if(!this.checked){alert('체크를 해제하시면 상담 신청이 어렵습니다.');this.checked=true;}"> <span>개인정보 수집·이용에 동의합니다 <em class="lab-sub">(필수)</em></span></label>
@@ -416,6 +426,7 @@ function consultSection(preset = {}) {
       var f = new FormData(form);
       var name = (f.get('이름')||'').trim(), tel = (function(p,v){v=String(v||'').replace(/\\D/g,'');return v.length===11?v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7):v.length===10?v.slice(0,3)+'-'+v.slice(3,6)+'-'+v.slice(6):v.length===8?p+'-'+v.slice(0,4)+'-'+v.slice(4):v.length===7?p+'-'+v.slice(0,3)+'-'+v.slice(3):p+'-'+v;})((f.get('연락처앞')||'010'),(f.get('연락처')||'').trim());
       if(!name || !tel){ alert('성함과 연락처를 입력해 주세요.'); return; }
+      if(String(f.get('연락처')||'').replace(/\\D/g,'').length < 7){ alert('연락처를 끝까지 입력해 주세요.'); return; }
       if(!f.get('개인정보동의')){ alert('개인정보 수집·이용에 동의해 주세요.'); return; }
       var btn = form.querySelector('.form-submit');
       btn.disabled = true; btn.textContent = '접수 중...';
@@ -567,7 +578,7 @@ function buildIndex() {
   <div class="wrap">
     <h2 class="sec-title">${SEASON_LABEL} 캠프 라인업</h2>
     <p class="sec-sub">스쿨링·영어캠프·어학연수까지, 아이의 나이와 목적에 맞는 캠프를 고르세요. 인솔자와 현지 관리자가 함께합니다.</p>
-    ${Object.values(CAMPS).filter((c) => c.promo).map((c) => `<p class="promo-bar"><a href="${c.slug}.html"><span class="promo-bar-tag">${c.promo.badge}</span><span><strong>${c.name}</strong> — ${c.promo.short}</span><span class="promo-bar-go">자세히 보기 →</span></a></p>`).join("")}
+    ${Object.values(CAMPS).filter((c) => promoOf(c)).map((c) => `<p class="promo-bar"${promoAttr(c.promo)}><a href="${c.slug}.html"><span class="promo-bar-tag">${c.promo.badge}</span><span><strong>${c.name}</strong> — ${c.promo.short}</span><span class="promo-bar-go">자세히 보기 →</span></a></p>`).join("")}
     <div class="camp-grid">${Object.values(CAMPS).map(campCard).join("\n")}</div>
     <div class="btn-row"><a class="btn btn-navy" href="compare.html">${CAMP_COUNT}개 캠프 한눈에 비교하기 →</a>
     <a class="btn btn-coral" href="summer.html">2027 여름캠프 사전 상담 →</a></div>
@@ -804,12 +815,13 @@ function refundSection() {
 
 function buildCamp(key) {
   const c = CAMPS[key];
+  const p = promoOf(c);
   const hero = `<section class="hero hero-sm">
   <div class="wrap hero-inner">
     <p class="hero-kicker">${c.flag} ${c.countryName} · ${c.type}</p>
     <h1>${c.name}</h1>
     <p class="hero-sub">${c.tag}</p>
-    ${c.promo ? `<p class="hero-promo">${c.promo.short}</p>` : ""}
+    ${p ? `<p class="hero-promo"${promoAttr(p)}>${p.short}</p>` : ""}
   </div>
 </section>`;
 
@@ -817,17 +829,17 @@ function buildCamp(key) {
 <section class="section">
   <div class="wrap narrow">
     <h2 class="sec-title">모집 안내</h2>
-    ${c.promo ? `<div class="promo-box">
-      <span class="promo-box-tag">${c.promo.badge}</span>
-      <p>${c.promo.detail}</p>
+    ${p ? `<div class="promo-box"${promoAttr(p)}>
+      <span class="promo-box-tag">${p.badge}</span>
+      <p>${p.detail}</p>
     </div>` : ""}
     <dl class="info-list">
       <div><dt>기간</dt><dd>${c.period}</dd></div>
       <div><dt>대상</dt><dd>${c.target}</dd></div>
       <div><dt>정원</dt><dd>${c.capacity}</dd></div>
-      <div><dt>참가비</dt><dd>${c.promo
-        ? `<strong class="now">${c.promo.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${c.promo.until}까지 ${c.promo.limit}에게 적용되는 ${c.promo.badge} 금액입니다 · ${c.priceNote}</span>`
-        : `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`}</dd></div>
+      <div><dt>참가비</dt>${p
+        ? `<dd${promoAttr(p, `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`)}><strong class="now">${p.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${p.until}까지 ${p.limit}에게 적용되는 ${p.badge} 금액입니다 · ${c.priceNote}</span></dd>`
+        : `<dd><strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span></dd>`}</div>
       <div><dt>숙소</dt><dd>${c.stay}</dd></div>
       <div><dt>모집 마감</dt><dd>${c.deadline}</dd></div>
       <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
@@ -892,7 +904,7 @@ ${consultSection({ camp: c.slug })}`;
     file: `${c.slug}.html`,
     og: siteOg(c.slug),
     title: `${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`,
-    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}.${c.promo ? ` ${c.promo.short}.` : ""} ${c.school} · ${c.stay}. 모집 마감 ${c.deadline}.`,
+    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}.${p ? ` ${p.short}.` : ""} ${c.school} · ${c.stay}. 모집 마감 ${c.deadline}.`,
     hero,
     body,
     jsonld: {
@@ -1227,7 +1239,7 @@ function buildAbout() {
 ${safetySection()}
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">환불 규정</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="환불 규정 표"><table class="cmp"><tbody>
     ${COMMON.refund.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">천재지변·항공 지연 등 주관사가 통제할 수 없는 사유는 별도 기준이 적용됩니다. 말레이시아·필리핀 캠프는 운영 규정이 일부 다를 수 있어 상담 시 함께 안내해 드립니다. 계약 전 상담에서 전문을 안내해 드립니다.</p>
@@ -1254,7 +1266,7 @@ function buildFaq() {
 </div></section>
 <section class="section alt" id="refund"><div class="wrap narrow">
   <h2 class="sec-title">환불 규정</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="환불 규정 표"><table class="cmp"><tbody>
     ${COMMON.refund.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">말레이시아·필리핀 캠프는 운영 규정이 일부 다를 수 있어 상담 시 함께 안내해 드립니다.</p>
@@ -1726,7 +1738,7 @@ function buildStudy(key) {
 </div></section>
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">참가비 외에 따로 드는 비용</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="참가비 외에 따로 드는 비용 표"><table class="cmp"><tbody>
     ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">1년 총액 계산은 <a href="study-cost.html">유학 비용 정리</a>에서 보실 수 있습니다. 확정 견적은 상담 후 등록 시점 환율로 다시 잡아 드립니다.</p>
@@ -1903,7 +1915,7 @@ function buildElc() {
   </dl>
   <h3 class="sec-title-sm" style="margin-top:28px">전형은 연 4회 있습니다</h3>
   <p class="sec-sub">겨울학기를 놓쳐도 3월·7월·9월에 다시 시작할 수 있습니다. 어느 전형이든 6개월 과정 후 바로 다음 학기에 출발합니다.</p>
-  <div class="table-wrap"><table class="cmp" style="min-width:560px">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="전형별 개강·출발 시기 표"><table class="cmp" style="min-width:560px">
     <thead><tr><th>전형</th><th>입학식·개강</th><th>수강 기간</th><th>미국·캐나다 출발</th></tr></thead>
     <tbody>${s.intakes.map((r) => `<tr><th>${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</tbody>
   </table></div>
@@ -1943,7 +1955,7 @@ function buildElc() {
   <h2 class="sec-title">대학별 입학 요건 · 연간 예상 유학 비용</h2>
   <p class="sec-sub">대학명을 누르면 학교별 안내 페이지로 이동합니다.</p>
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="대학별 입학 요건·연간 예상 비용 표"><table class="cmp">
     <thead><tr><th>대학명</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
     <tbody>${s.universities.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
@@ -2175,7 +2187,7 @@ function elcRenderSection(sec) {
   if (sec.steps) html += `<ol class="step-list" style="margin-top:18px">${sec.steps.map((x) => `<li>${x}</li>`).join("")}</ol>`;
   if (sec.list) html += `<ul class="check-list" style="margin-top:18px">${sec.list.map((x) => `<li>${x}</li>`).join("")}</ul>`;
   if (sec.grid) html += `<div class="fit-grid" style="margin-top:18px">${sec.grid.map(([k, v]) => `<div><strong>${k}</strong><p>${v}</p></div>`).join("")}</div>`;
-  if (sec.table) html += `<div class="table-wrap" style="margin-top:18px"><table class="cmp" style="min-width:520px"><thead><tr>${sec.table.head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${sec.table.rows.map((r) => `<tr><th>${r[0]}</th>${r.slice(1).map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  if (sec.table) html += `<div class="table-wrap" tabindex="0" role="region" aria-label="${escAttr(String(sec.title).replace(/<[^>]*>/g, ""))} 표" style="margin-top:18px"><table class="cmp" style="min-width:520px"><thead><tr>${sec.table.head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${sec.table.rows.map((r) => `<tr><th>${r[0]}</th>${r.slice(1).map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   if (sec.note) html += `<p class="sec-sub" style="margin-top:14px">${sec.note}</p>`;
   return html;
 }
@@ -2281,7 +2293,7 @@ function buildElcSuny() {
   <h2 class="sec-title">한눈에 보는 SUNY 5개 캠퍼스</h2>
   <p class="sec-sub">2027학년도 겨울학기 수시전형 기준입니다. 캠퍼스명을 누르면 학교별 안내로 이동합니다.</p>
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
-  <div class="table-wrap"><table class="cmp" style="min-width:820px">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="SUNY 5개 캠퍼스 비교표"><table class="cmp" style="min-width:820px">
     <thead><tr><th>구분</th>${g.campuses.map((c) => `<th>${link(c)}<br><span style="font-weight:500;font-size:12px">${c.name}</span></th>`).join("")}</tr></thead>
     <tbody>
       ${row("2026 U.S. News", "rank")}
@@ -2407,7 +2419,7 @@ function buildElcScholarship() {
   <h2 class="sec-title">연간 비용이 낮은 순서로 본 20개 대학</h2>
   <p class="sec-sub">학비 + 기숙사·식비 기준(2026~2027학년도). 생활비·보험·항공·비자는 별도입니다.</p>
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="연간 비용이 낮은 순서로 본 20개 대학 표"><table class="cmp">
     <thead><tr><th>순위</th><th>대학명</th><th>공인영어</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
     <tbody>${sorted.map((u, i) => `<tr><th>${i + 1}</th><td><a href="${u.slug}.html">${u.name}</a></td><td>${u.english}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
@@ -2449,7 +2461,7 @@ function buildElcUcTransfer() {
     ${ccs.map((u) => `<div><strong><a href="${u.slug}.html">${u.name}</a></strong><p>${u.tag}<br>${u.city} · 학비 ${u.tuition} · 기숙사·식비 ${u.room} · 연간 ${u.total}</p></div>`).join("\n    ")}
   </div>
   <p class="table-hint" style="margin-top:20px">← 옆으로 밀어서 보세요 →</p>
-  <div class="table-wrap"><table class="cmp" style="min-width:600px">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="파트너 컬리지 세 곳 비교표"><table class="cmp" style="min-width:600px">
     <thead><tr><th>컬리지</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
     <tbody>${ccs.map((u) => `<tr><th><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("")}</tbody>
   </table></div>
@@ -2494,7 +2506,7 @@ function buildElcTexas() {
 <section class="section alt"><div class="wrap">
   <h2 class="sec-title">텍사스 5개 대학 비교</h2>
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="텍사스 5개 대학 비교표"><table class="cmp">
     <thead><tr><th>대학명</th><th>도시</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
     <tbody>${tx.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.city.replace("미국 텍사스 ", "")}</td><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
@@ -2627,7 +2639,7 @@ function buildStPaulCurriculum() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">수업은 이렇게 구성됩니다</h2>
   <p class="lead">${c.intro}</p>
-  <div class="table-wrap" style="margin-top:22px"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="과목별 수업 구성 표" style="margin-top:22px"><table class="cmp"><tbody>
     ${c.subjects.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
 </div></section>
@@ -2672,7 +2684,7 @@ function buildStPaulTuition() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">학비 안내</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="세인트폴 대치 아카데미 학비 표"><table class="cmp"><tbody>
     ${STPAUL.tuition.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">${STPAUL.priceNote}</p>
@@ -2792,7 +2804,7 @@ function buildStPaulVsAbroad() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">한 표로 보기</h2>
   <p class="sec-sub">왼쪽은 국내에서 전 과목 영어로 공부하는 길, 오른쪽은 해외로 나가는 길입니다.</p>
-  <div class="table-wrap" style="margin-top:18px"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="세인트폴 대치 아카데미와 해외 유학 비교표" style="margin-top:18px"><table class="cmp">
     <thead><tr><th>비교 항목</th><th>세인트폴 대치 아카데미</th><th>뉴질랜드·캐나다 유학</th></tr></thead>
     <tbody>${STPAUL_DETAIL.vsAbroad.map(([k, a, b]) => `<tr><th>${k}</th><td>${a}</td><td>${b}</td></tr>`).join("")}</tbody>
   </table></div>
@@ -2902,7 +2914,7 @@ function buildStudyCompare() {
 <section class="section"><div class="wrap">
   <h2 class="sec-title">뉴질랜드 · 캐나다 한눈에 비교</h2>
   <p class="table-hint">표를 옆으로 밀어서 보실 수 있습니다.</p>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="뉴질랜드·캐나다 유학 비교표"><table class="cmp">
     <thead><tr><th>비교 항목</th><th>뉴질랜드 중·고등 유학</th><th>캐나다 관리형 유학</th></tr></thead>
     <tbody>${rows.map(([k, a, b]) => `<tr><th>${k}</th><td>${a}</td><td>${b}</td></tr>`).join("")}</tbody>
   </table></div>
@@ -2944,7 +2956,7 @@ function buildStudyCost() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">참가비에 들어 있는 것</h2>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="유학 참가비에 들어 있는 것 표"><table class="cmp">
     <thead><tr><th>구분</th><th>뉴질랜드 유학</th><th>캐나다 관리형</th></tr></thead>
     <tbody>
       <tr><th>연간 참가비</th><td><strong>${STUDY["study-newzealand"].price}</strong></td><td><strong>${STUDY["study-canada"].price}</strong></td></tr>
@@ -2956,7 +2968,7 @@ function buildStudyCost() {
 
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">따로 나가는 비용</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="유학 중 따로 나가는 비용 표"><table class="cmp"><tbody>
     ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">다 더하면 뉴질랜드는 3,800만원 안팎, 캐나다는 4,700만원 안팎이 1년 현실적인 총액입니다. 환율이 움직이면 여기서 또 달라집니다.</p>
@@ -2964,7 +2976,7 @@ function buildStudyCost() {
 
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">국내 영어 수업 과정과 비교하면</h2>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="국내 영어 수업 과정과 해외 유학 비교표"><table class="cmp">
     <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
     <tbody>
       <tr><th>연간 학비·참가비</th><td>2,540만원</td><td>3,200만~4,250만원</td></tr>
@@ -3003,7 +3015,7 @@ function buildStudyProcess() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">준비 타임라인</h2>
   <p class="sec-sub">출국까지 보통 6~8개월을 봅니다. 학교 자리와 비자 심사 때문에 앞당기기 어려운 구간이 있습니다.</p>
-  <div class="table-wrap" style="margin-top:18px"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="유학 준비 타임라인 표" style="margin-top:18px"><table class="cmp">
     <thead><tr><th>시점</th><th>할 일</th><th>내용</th></tr></thead>
     <tbody>${STUDY_INFO.timeline.map(([t, w, d]) => `<tr><th>${t}</th><td><strong>${w}</strong></td><td>${d}</td></tr>`).join("")}</tbody>
   </table></div>
@@ -3052,7 +3064,7 @@ function buildStudyVisa() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">국가별 비자</h2>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="국가별 학생 비자 표"><table class="cmp">
     <thead><tr><th>국가</th><th>비자 종류</th><th>기본 요건</th></tr></thead>
     <tbody>${STUDY_INFO.visa.map(([c, v, r]) => `<tr><th>${c}</th><td>${v}</td><td>${r}</td></tr>`).join("")}</tbody>
   </table></div>
@@ -3146,7 +3158,7 @@ function buildStudyAfter() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">졸업하면 어디로 가나</h2>
-  <div class="table-wrap"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="졸업 후 진로 표"><table class="cmp"><tbody>
     ${STUDY_INFO.paths.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
 </div></section>
@@ -3656,9 +3668,6 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
 .form-submit{width:100%;border:none;cursor:pointer;font-size:16px;padding:15px}
 .form-submit:disabled{opacity:.6;cursor:default}
 .form-fine{margin-top:12px;font-size:12.5px;color:#8a95a1;text-align:center}
-body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
-input,textarea,select{-webkit-user-select:text;-moz-user-select:text;user-select:text}
-img{-webkit-user-drag:none;user-drag:none}
 .form-done{text-align:center;padding:34px 10px}
 .form-done strong{display:block;font-size:19px;color:var(--navy);margin-bottom:8px}
 .form-done p{color:var(--muted);font-size:14.5px}
@@ -3841,6 +3850,12 @@ for (const g of ALL_GUIDES) pages.push(buildGuideArticle(g));
 for (const p of PROGRAMS) if (p.detail) pages.push(buildProgram(p)); // 추천 프로그램 상세 4p (관련 링크 제목 조회를 위해 마지막에 생성)
 
 for (const p of pages) fs.writeFileSync(path.join(OUT, p.file), p.html);
+// 넓은 표 감싸개는 키보드·스크린리더로 닿을 수 있어야 한다(tabindex="0" role="region" aria-label="표 이름").
+// 새 표를 만들고 속성을 빠뜨리면 여기서 알려 준다.
+for (const p of pages) {
+  const miss = (p.html.match(/<div class="table-wrap"(?![^>]*tabindex)[^>]*>/g) || []).length;
+  if (miss) console.warn(`⚠ ${p.file}: table-wrap ${miss}개에 tabindex·role·aria-label 이 없습니다`);
+}
 fs.writeFileSync(path.join(OUT, "style.css"), CSS);
 fs.writeFileSync(path.join(OUT, "CNAME"), BASE_URL.replace(/^https?:\/\//, ""));
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");

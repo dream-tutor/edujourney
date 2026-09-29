@@ -20,7 +20,7 @@
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=mudo4j1a">
+<link rel="stylesheet" href="style.css?v=mum9cy6v">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"미국·캐나다 대학 토플면제교육원","provider":{"@type":"Organization","name":"러닝트래블"},"datePublished":"2026-07-28","dateModified":"2026-09-11"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://edujourney.co.kr/"},{"@type":"ListItem","position":2,"name":"토플 없이 미국 대학 진학","item":"https://edujourney.co.kr/elc.html"}]}</script>
 </head>
@@ -116,7 +116,7 @@
   </dl>
   <h3 class="sec-title-sm" style="margin-top:28px">전형은 연 4회 있습니다</h3>
   <p class="sec-sub">겨울학기를 놓쳐도 3월·7월·9월에 다시 시작할 수 있습니다. 어느 전형이든 6개월 과정 후 바로 다음 학기에 출발합니다.</p>
-  <div class="table-wrap"><table class="cmp" style="min-width:560px">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="전형별 개강·출발 시기 표"><table class="cmp" style="min-width:560px">
     <thead><tr><th>전형</th><th>입학식·개강</th><th>수강 기간</th><th>미국·캐나다 출발</th></tr></thead>
     <tbody><tr><th>겨울학기전형</th><td>매년 1월 첫째 주 월요일</td><td>1월 ~ 6월</td><td>당해년도 8월 말</td></tr><tr><th>봄학기전형</th><td>매년 3월 첫째 주 월요일</td><td>3월 ~ 8월</td><td>당해년도 8월 말</td></tr><tr><th>여름학기전형</th><td>매년 7월 첫째 주 월요일</td><td>7월 ~ 12월</td><td>당해년도 12월 말</td></tr><tr><th>가을학기전형</th><td>매년 9월 첫째 주 월요일</td><td>9월 ~ 2월</td><td>다음 해 4월 말</td></tr></tbody>
   </table></div>
@@ -158,7 +158,7 @@
   <h2 class="sec-title">대학별 입학 요건 · 연간 예상 유학 비용</h2>
   <p class="sec-sub">대학명을 누르면 학교별 안내 페이지로 이동합니다.</p>
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
-  <div class="table-wrap"><table class="cmp">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="대학별 입학 요건·연간 예상 비용 표"><table class="cmp">
     <thead><tr><th>대학명</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
     <tbody><tr><th><a href="elc-etamu.html">이스트 텍사스 A&M 대학교 (ETAMU)</a></th><td>면제</td><td>15학점 / 2.0 이상</td><td>면제</td><td>$18,216</td><td>$9,808</td><td><strong>$28,024</strong></td></tr>
     <tr><th><a href="elc-fresno.html">캘리포니아주립대 프레즈노 (CSU Fresno)</a></th><td>면제</td><td>15학점 / 2.0 이상</td><td>1.5/4.0</td><td>$19,921</td><td>$11,634</td><td><strong>$31,555</strong></td></tr>
@@ -272,7 +272,7 @@
       </div>
 
       <div class="form-row">
-        <label>문의 내용<textarea name="문의내용" rows="5" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
+        <label>문의 내용<textarea name="문의내용" rows="5" maxlength="1000" placeholder="아이 성격, 현재 복용하는 약, 알레르기(음식·동물), 형제·자매 동반 참가 여부, 걱정되는 점 등을 자유롭게 남겨 주세요"></textarea></label>
       </div>
       <div class="form-row">
         <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" checked required onclick="if(!this.checked){alert('체크를 해제하시면 상담 신청이 어렵습니다.');this.checked=true;}"> <span>개인정보 수집·이용에 동의합니다 <em class="lab-sub">(필수)</em></span></label>
@@ -306,6 +306,7 @@
       var f = new FormData(form);
       var name = (f.get('이름')||'').trim(), tel = (function(p,v){v=String(v||'').replace(/\D/g,'');return v.length===11?v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7):v.length===10?v.slice(0,3)+'-'+v.slice(3,6)+'-'+v.slice(6):v.length===8?p+'-'+v.slice(0,4)+'-'+v.slice(4):v.length===7?p+'-'+v.slice(0,3)+'-'+v.slice(3):p+'-'+v;})((f.get('연락처앞')||'010'),(f.get('연락처')||'').trim());
       if(!name || !tel){ alert('성함과 연락처를 입력해 주세요.'); return; }
+      if(String(f.get('연락처')||'').replace(/\D/g,'').length < 7){ alert('연락처를 끝까지 입력해 주세요.'); return; }
       if(!f.get('개인정보동의')){ alert('개인정보 수집·이용에 동의해 주세요.'); return; }
       var btn = form.querySelector('.form-submit');
       btn.disabled = true; btn.textContent = '접수 중...';
@@ -464,16 +465,17 @@
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
 })();
 (function(){
-  function isFormEl(t){ return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'); }
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'F12' ||
-       (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-       (e.ctrlKey && (e.key === 'u' || e.key === 'U'))){
-      e.preventDefault();
-    }
-  });
-  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
-  document.addEventListener('selectstart', function(e){ if(!isFormEl(e.target)) e.preventDefault(); });
+  // 한시 할인 — 마감일(data-promo-until, 한국 시각)이 지났는데 아직 다시 빌드하지 않은 페이지면
+  // data-plain(원래 금액)으로 갈아끼우고, 없으면(배지·안내 띠) 요소째 지운다.
+  var today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  var els = document.querySelectorAll('[data-promo-until]');
+  for(var i = 0; i < els.length; i++){
+    var el = els[i];
+    if(el.getAttribute('data-promo-until') >= today) continue;
+    var plain = el.getAttribute('data-plain');
+    if(plain !== null){ el.innerHTML = plain; el.removeAttribute('data-plain'); el.removeAttribute('data-promo-until'); }
+    else if(el.parentNode){ el.parentNode.removeChild(el); }
+  }
 })();
 </script>
 </body>
