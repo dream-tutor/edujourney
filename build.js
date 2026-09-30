@@ -24,6 +24,11 @@ const escAttr = (s) => esc(s).replace(/"/g, "&quot;");
 // data-plain 이 있으면 그 내용(원래 금액)으로 갈아끼우고, 없으면(배지·안내 띠) 요소째 지운다.
 const todayKst = () => new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
 const promoOf = (c) => (c.promo && (!c.promo.ends || c.promo.ends >= todayKst()) ? c.promo : null);
+// 유학·세인트폴·기숙학교의 한시 안내(등록 할인·장학금) — 안내 행 하나로만 보여 준다(배지·큰 버튼 없음).
+// ends 가 지나면 빌드가 내보내지 않고, 이미 올라간 페이지는 공용 스크립트가 data-promo-until 요소를 통째로 지운다.
+const livePromo = (p) => (p && (!p.ends || p.ends >= todayKst()) ? p : null);
+const promoRow = (p) => { p = livePromo(p); return p ? `<div data-promo-until="${p.ends}"><dt>${p.label}</dt><dd>${p.text} <span class="dim">(${p.until}까지)</span></dd></div>` : ""; };
+const promoNote = (p) => { p = livePromo(p); return p ? `<p class="sec-sub" style="margin-top:10px" data-promo-until="${p.ends}"><strong>${p.label}</strong> · ${p.text} (${p.until}까지)</p>` : ""; };
 const promoAttr = (p, plain) => (p && p.ends ? ` data-promo-until="${p.ends}"${plain != null ? ` data-plain="${escAttr(plain)}"` : ""}` : "");
 
 // ------------------------------------------------------------
@@ -508,7 +513,7 @@ function buildIndex() {
       <div class="wrap hero-inner">
         <p class="hero-kicker">세인트폴 대치 아카데미</p>
         <h1>유학 없이 대치동에서<br>전 과목 영어 수업</h1>
-        <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스. 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 2월·8월 학기 모집.</p>
+        <p class="hero-sub">미국 SPASS 글로벌 8개교의 서울 캠퍼스. 전교 95명 소수정예, AP 15과목 이상,<br>존스홉킨스·UC버클리 등 미국 명문대 진학 실적. 8월·1월 학기 모집.</p>
         <div class="hero-actions">
           <a class="btn btn-coral" href="stpaul.html">학교 안내 보기</a>
           <a class="btn btn-line" href="#consult">상담 신청</a>
@@ -696,14 +701,15 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
 <section class="section alt" id="stpaul">
   <div class="wrap">
     <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
-    <p class="sec-sub">집에서 통학하면서 8~12학년 과정을 전 과목 영어로 공부하는 길입니다. AP 15과목 이상. 서울 대치동에 있습니다.</p>
+    <p class="sec-sub">집에서 통학하면서 7~12학년 과정을 전 과목 영어로 공부하는 길입니다. AP 15과목 이상. 서울 대치동에 있습니다.</p>
     <div class="two-col">
       <div>
         <dl class="info-list">
-          <div><dt>대상</dt><dd>중2~고2 편입학 (고3은 상담 후 결정)</dd></div>
-          <div><dt>모집</dt><dd>매년 2월·8월 학기 · 학년당 12~22명</dd></div>
+          <div><dt>대상</dt><dd>7~12학년 나이(중1~고3) 편입학</dd></div>
+          <div><dt>모집</dt><dd>8월·1월 학기 (2학기 2027년 1월 25일 시작) · 학년당 12~22명</dd></div>
           <div><dt>규모</dt><dd>전교 95명 소수정예 · 전 과목 영어 수업</dd></div>
-          <div><dt>학비</dt><dd>연 2,540만원</dd></div>
+          <div><dt>학비</dt><dd>연 2,920만원 (첫해 관리비 480만원 별도)</dd></div>
+          ${promoRow(STPAUL.promo)}
         </dl>
       </div>
       <div>
@@ -1714,6 +1720,7 @@ function buildStudy(key) {
     <div><dt>학사 일정</dt><dd>${s.terms}</dd></div>
     <div><dt>비용</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
     <div><dt>비용에 포함</dt><dd>${s.includes}</dd></div>
+    ${promoRow(s.promo)}
     <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
@@ -1777,7 +1784,9 @@ function buildStPaul() {
   <dl class="info-list">
     ${s.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
     <div><dt>모집</dt><dd>${s.target}</dd></div>
+    <div><dt>학기 시작</dt><dd>${s.intake}</dd></div>
     <div><dt>학비</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
+    ${promoRow(s.promo)}
     <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
@@ -1814,7 +1823,7 @@ function buildStPaul() {
   <h2 class="sec-title">자세히 보기</h2>
   <div class="camp-grid">
     <a class="camp-card" href="stpaul-admission.html"><span class="camp-flag">📝 입학</span><h3>입학 안내</h3><p class="camp-tag">모집 일정, 입학 테스트, 제출 서류, 학년 배정까지</p><span class="camp-more">자세히 보기 →</span></a>
-    <a class="camp-card" href="stpaul-curriculum.html"><span class="camp-flag">📚 수업</span><h3>커리큘럼 · AP</h3><p class="camp-tag">8~12학년 과목 구성, AP, 제2외국어, MAP 진단</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-curriculum.html"><span class="camp-flag">📚 수업</span><h3>커리큘럼 · AP</h3><p class="camp-tag">7~12학년 과목 구성, AP, 제2외국어, MAP 진단</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-tuition.html"><span class="camp-flag">💳 비용</span><h3>학비 안내</h3><p class="camp-tag">연간 학비와 해외 유학과의 비용 비교</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-college.html"><span class="camp-flag">🎓 진학</span><h3>진학 실적 · 상담</h3><p class="camp-tag">합격 실적과 College Counselor 상담 체계</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-life.html"><span class="camp-flag">🏫 생활</span><h3>학교생활</h3><p class="camp-tag">하루 일과, 클럽, 통학과 학사, 학교 분위기</p><span class="camp-more">자세히 보기 →</span></a>
@@ -1846,7 +1855,7 @@ ${studyConsult(s.slug, { title: "세인트폴 대치 아카데미 상담", copy:
   return page({
     file: "stpaul.html",
     title: `세인트폴 대치 아카데미 | 대치동 전 과목 영어 수업 — 학비·모집·진학 실적`,
-    desc: `유학 없이 대치동에서 전 과목 영어 수업, SPASS 서울 캠퍼스, 8~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,540만원, 2월·8월 학기 모집. 입학 절차와 상담 안내.`,
+    desc: `유학 없이 대치동에서 전 과목 영어 수업, SPASS 서울 캠퍼스, 7~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,920만원, 8월·1월 학기 모집. 입학 절차와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "School", name: s.name, address: { "@type": "PostalAddress", addressLocality: "서울 강남구 대치동" } },
   });
@@ -2590,7 +2599,9 @@ function buildStPaulAdmission() {
   <p class="lead">${a.schedule}</p>
   <dl class="info-list" style="margin-top:20px">
     <div><dt>대상</dt><dd>${STPAUL.target}</dd></div>
+    <div><dt>학기 시작</dt><dd>${STPAUL.intake}</dd></div>
     <div><dt>정원</dt><dd>전교 95명 · 학년당 12~22명</dd></div>
+    ${promoRow(STPAUL.promo)}
   </dl>
 </div></section>
 
@@ -2626,10 +2637,10 @@ function buildStPaulAdmission() {
     file: "stpaul-admission.html",
     kicker: "📝 입학 안내",
     h1: "세인트폴 대치 아카데미<br>입학 안내",
-    sub: "2월·8월 학기 모집 · 중2~고2 편입학 · 입학 테스트와 학년 배정까지",
+    sub: "8월·1월 학기 모집 · 7~12학년 나이 편입학 · 영어·수학 시험과 영어 인터뷰, 학년 배정까지",
     body,
-    title: "세인트폴 대치 아카데미 입학 안내 | 모집 일정·입학 테스트·제출 서류",
-    desc: "세인트폴 대치 아카데미 입학 절차 — 2월·8월 학기 모집, 중2~고2 편입학, 입학 테스트와 학년 배정 기준, 제출 서류. 상담부터 입학까지 순서를 정리했습니다.",
+    title: "세인트폴 대치 아카데미 입학 안내 | 모집 일정·입학 시험·제출 서류",
+    desc: "세인트폴 대치 아카데미 입학 절차 — 8월·1월 학기 모집, 7~12학년 나이(중1~고3) 편입학, 영어·수학 시험과 영어 인터뷰, 학년 배정 기준, 제출 서류. 상담부터 입학까지의 순서.",
   });
 }
 
@@ -2672,7 +2683,7 @@ function buildStPaulCurriculum() {
   return stpaulPage({
     file: "stpaul-curriculum.html",
     kicker: "📚 커리큘럼",
-    h1: "8~12학년 과목은<br>이렇게 짜입니다",
+    h1: "7~12학년 과목은<br>이렇게 짜입니다",
     sub: "Common Core·NGSS 기준 · AP 15과목 이상 · 제2외국어 · 연 3회 MAP 진단",
     body,
     title: "세인트폴 대치 아카데미 커리큘럼 | 과목 구성·AP·MAP 진단",
@@ -2688,12 +2699,13 @@ function buildStPaulTuition() {
     ${STPAUL.tuition.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">${STPAUL.priceNote}</p>
+  ${promoNote(STPAUL.promo)}
 </div></section>
 
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">해외 유학과 비교하면</h2>
   <p>같은 1년을 두고 보면 <a href="study-newzealand.html">뉴질랜드 유학</a>은 연 3,200만원, <a href="study-canada.html">캐나다 관리형</a>은 연 4,250만원입니다.
-  여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 학비는 낮지만 집에서 통학하니 숙식비가 들지 않는다는 점이 가장 큰 차이입니다.</p>
+  여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 첫해에 학비와 관리비를 합쳐 3,400만원이지만 집에서 통학하니 숙식비가 들지 않고, 둘째 해부터는 학비만 냅니다.</p>
   <p style="margin-top:14px">대신 대치동까지의 통학이나, 지방에서 오는 경우 학교 근처 학사 비용을 따로 보셔야 합니다.
   항목별 비교는 <a href="stpaul-vs-abroad.html">세인트폴과 해외 유학 비교</a>, 유학 쪽 비용은 <a href="study-cost.html">유학 비용 정리</a>에 있습니다.</p>
 </div></section>`;
@@ -2701,10 +2713,10 @@ function buildStPaulTuition() {
     file: "stpaul-tuition.html",
     kicker: "💳 학비",
     h1: "세인트폴 대치 아카데미<br>학비 안내",
-    sub: "연간 학비 2,540만원 · 해외 유학과의 비용 비교까지",
+    sub: "연간 학비 2,920만원 · 첫해 관리비 480만원 · 해외 유학과의 비용 비교까지",
     body,
-    title: "세인트폴 대치 아카데미 학비 | 연간 학비·해외 유학 비용 비교",
-    desc: "세인트폴 대치 아카데미 학비 — 연간 학비 2,540만원. 집에서 통학하는 국내 과정과 해외 유학의 연간 비용 비교까지 정리했습니다.",
+    title: "세인트폴 대치 아카데미 학비 | 연간 학비·관리비·해외 유학 비용 비교",
+    desc: "세인트폴 대치 아카데미 학비 — 2026-2027학년도 연간 학비 2,920만원, 첫해 관리비 480만원, 교재비 55만~65만원. 집에서 통학하는 국내 과정과 해외 유학의 연간 비용 비교.",
   });
 }
 
@@ -2795,7 +2807,7 @@ function buildStPaulLife() {
     sub: "6교시 수업과 방과후, 20개 이상 클럽, 통학과 학사, 그리고 첫 학기의 현실",
     body,
     title: "세인트폴 대치 아카데미 학교생활 | 하루 일과·클럽·통학 안내",
-    desc: "세인트폴 대치 아카데미 학교생활 — 8:45 조회부터 6교시 수업, 방과후 Study Hall과 클럽 20개 이상, 통학제 학교의 등하교와 학사 이용, 급식·현장학습 실비, 첫 학기 적응까지.",
+    desc: "세인트폴 대치 아카데미 학교생활 — 9시부터 50분 수업, 방과후 Activities·Study Hall과 클럽 20개 이상, 통학제 학교의 등하교와 학사 이용, 급식·현장학습 실비, 첫 학기 적응까지.",
   });
 }
 
@@ -2979,7 +2991,7 @@ function buildStudyCost() {
   <div class="table-wrap" tabindex="0" role="region" aria-label="국내 영어 수업 과정과 해외 유학 비교표"><table class="cmp">
     <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
     <tbody>
-      <tr><th>연간 학비·참가비</th><td>2,540만원</td><td>3,200만~4,250만원</td></tr>
+      <tr><th>연간 학비·참가비</th><td>2,920만원 (첫해 관리비 480만원 별도)</td><td>3,200만~4,250만원</td></tr>
       <tr><th>숙식</th><td>집에서 통학 (숙식비 없음)</td><td>홈스테이비가 참가비에 포함</td></tr>
       <tr><th>항공·비자</th><td>없음</td><td>왕복 항공 + 비자 진행비</td></tr>
       <tr><th>그 외</th><td>통학·학사 비용 (해당 시)</td><td>용돈, UM 서비스, 방학 귀국 항공</td></tr>
@@ -3783,6 +3795,7 @@ function buildProgram(p) {
   <p class="lead">${d.lead}</p>
   ${sitePhotos(p.slug)}
   ${d.sections.map((s) => `<h2 class="sec-title-sm">${s.h}</h2>${s.p}`).join("\n")}
+  ${promoNote(p.promo)}
   ${d.faq && d.faq.length ? `<h2 class="sec-title-sm">자주 묻는 질문</h2><div class="faq-list">${d.faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><div class="faq-a"><p>${a}</p></div></details>`).join("")}</div>` : ""}
   ${reviewCards(REVIEWS.filter((r) => r.camp === p.slug), "다녀온 학생의 이야기")}
   ${related.length ? `<p class="sec-sub" style="margin-top:26px">같이 보시면 좋은 안내: ${related.join(" · ")}</p>` : ""}
