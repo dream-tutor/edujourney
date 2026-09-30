@@ -708,7 +708,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
           <div><dt>대상</dt><dd>7~12학년 나이(중1~고3) 편입학</dd></div>
           <div><dt>모집</dt><dd>8월·1월 학기 (2학기 2027년 1월 25일 시작) · 학년당 12~22명</dd></div>
           <div><dt>규모</dt><dd>전교 95명 소수정예 · 전 과목 영어 수업</dd></div>
-          <div><dt>학비</dt><dd>연 2,920만원 (첫해 관리비 480만원 별도)</dd></div>
+          <div><dt>학비</dt><dd>연 2,920만원</dd></div>
           ${promoRow(STPAUL.promo)}
         </dl>
       </div>
@@ -2705,7 +2705,7 @@ function buildStPaulTuition() {
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">해외 유학과 비교하면</h2>
   <p>같은 1년을 두고 보면 <a href="study-newzealand.html">뉴질랜드 유학</a>은 연 3,200만원, <a href="study-canada.html">캐나다 관리형</a>은 연 4,250만원입니다.
-  여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 첫해에 학비와 관리비를 합쳐 3,400만원이지만 집에서 통학하니 숙식비가 들지 않고, 둘째 해부터는 학비만 냅니다.</p>
+  여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 학비는 낮지만 집에서 통학하니 숙식비가 들지 않는다는 점이 가장 큰 차이입니다.</p>
   <p style="margin-top:14px">대신 대치동까지의 통학이나, 지방에서 오는 경우 학교 근처 학사 비용을 따로 보셔야 합니다.
   항목별 비교는 <a href="stpaul-vs-abroad.html">세인트폴과 해외 유학 비교</a>, 유학 쪽 비용은 <a href="study-cost.html">유학 비용 정리</a>에 있습니다.</p>
 </div></section>`;
@@ -2713,10 +2713,10 @@ function buildStPaulTuition() {
     file: "stpaul-tuition.html",
     kicker: "💳 학비",
     h1: "세인트폴 대치 아카데미<br>학비 안내",
-    sub: "연간 학비 2,920만원 · 첫해 관리비 480만원 · 해외 유학과의 비용 비교까지",
+    sub: "연간 학비 2,920만원 · 해외 유학과의 비용 비교까지",
     body,
-    title: "세인트폴 대치 아카데미 학비 | 연간 학비·관리비·해외 유학 비용 비교",
-    desc: "세인트폴 대치 아카데미 학비 — 2026-2027학년도 연간 학비 2,920만원, 첫해 관리비 480만원, 교재비 55만~65만원. 집에서 통학하는 국내 과정과 해외 유학의 연간 비용 비교.",
+    title: "세인트폴 대치 아카데미 학비 | 연간 학비·해외 유학 비용 비교",
+    desc: "세인트폴 대치 아카데미 학비 — 2026-2027학년도 연간 학비 2,920만원. 집에서 통학하는 국내 과정과 해외 유학의 연간 비용 비교.",
   });
 }
 
@@ -2991,7 +2991,7 @@ function buildStudyCost() {
   <div class="table-wrap" tabindex="0" role="region" aria-label="국내 영어 수업 과정과 해외 유학 비교표"><table class="cmp">
     <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
     <tbody>
-      <tr><th>연간 학비·참가비</th><td>2,920만원 (첫해 관리비 480만원 별도)</td><td>3,200만~4,250만원</td></tr>
+      <tr><th>연간 학비·참가비</th><td>2,920만원</td><td>3,200만~4,250만원</td></tr>
       <tr><th>숙식</th><td>집에서 통학 (숙식비 없음)</td><td>홈스테이비가 참가비에 포함</td></tr>
       <tr><th>항공·비자</th><td>없음</td><td>왕복 항공 + 비자 진행비</td></tr>
       <tr><th>그 외</th><td>통학·학사 비용 (해당 시)</td><td>용돈, UM 서비스, 방학 귀국 항공</td></tr>
