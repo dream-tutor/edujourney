@@ -20,7 +20,7 @@
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=munr0ob0">
+<link rel="stylesheet" href="style.css?v=munt5kl4">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"해외 겨울캠프 비교 | 캐나다·뉴질랜드·일본·말레이시아·필리핀 기간·비용·대상 총정리","description":"2027 겨울 해외캠프 6종 비교표. 캐나다 스쿨링 3주(890만원)·7주(1,290만원), 뉴질랜드 3~7주(690만원~), 일본 교토 2주(594만원·항공 포함), 말레이시아·필리핀 4주(각 599만원·항공 포함). 기간·대상·숙소·마감일 한눈에.","url":"https://edujourney.co.kr/compare.html","datePublished":"2026-08-10","dateModified":"2026-09-06","inLanguage":"ko-KR"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://edujourney.co.kr/"},{"@type":"ListItem","position":2,"name":"캠프 안내","item":"https://edujourney.co.kr/#camps"},{"@type":"ListItem","position":3,"name":"해외 겨울캠프 비교","item":"https://edujourney.co.kr/compare.html"}]}</script>
 </head>
@@ -172,7 +172,7 @@
       if(String(f.get('연락처')||'').replace(/\D/g,'').length < 7){ alert('연락처를 끝까지 입력해 주세요.'); return; }
       if(!f.get('개인정보동의')){ alert('개인정보 수집·이용에 동의해 주세요.'); return; }
       var btn = form.querySelector('.form-submit');
-      btn.disabled = true; btn.textContent = '접수 중...';
+      var origTxt = btn.textContent; btn.disabled = true; btn.textContent = '접수 중...';
       var data = {
         '이름': name, '연락처': tel,
         '학년': f.get('학년')||'', '관심캠프': f.get('관심캠프')||'',
@@ -192,12 +192,16 @@
         '유입경로': document.referrer || '직접입력'
       };
       var qs = Object.keys(data).map(function(k){ return encodeURIComponent(k)+'='+encodeURIComponent(data[k]); }).join('&');
-      if(EP){ var img = new Image(); img.src = EP + '?' + qs; }
-      else { console.warn('FORM_ENDPOINT 미설정 — 데모 모드'); }
-      setTimeout(function(){
-        form.querySelectorAll('.form-row, .form-submit, .form-fine').forEach(function(el){ el.style.display='none'; });
-        document.getElementById('consultDone').hidden = false;
-      }, 700);
+      var settled = false;
+      function showDone(){ form.querySelectorAll('.form-row, .form-submit, .form-fine').forEach(function(el){ el.style.display='none'; }); document.getElementById('consultDone').hidden = false; }
+      function showFail(){ btn.disabled = false; btn.textContent = origTxt; alert("접수가 전달되지 않았습니다. 인터넷 연결을 확인하고 다시 보내 주세요. 급하시면 화면의 전화 상담 버튼으로 연락 주셔도 됩니다."); }
+      function finish(ok){ if(settled) return; settled = true; if(ok) showDone(); else showFail(); }
+      if(!EP){ console.warn("FORM_ENDPOINT 미설정 — 데모 모드"); setTimeout(function(){ finish(true); }, 500); return; }
+      /* GAS 는 CORS 헤더가 없어 응답은 못 읽지만, no-cors fetch 는 서버에 닿으면 resolve·못 닿으면 reject 라 "전달됐는지"는 구분된다.
+         이미지 요청은 둘을 구분하지 못해 전송 실패도 접수 완료로 보였다 (카네기2와 같은 방식, 2026-09-30). t.js 는 fetch 도 후킹하므로 문의 집계는 그대로. */
+      var timer = setTimeout(function(){ finish(false); }, 10000);
+      if(window.fetch){ fetch(EP + "?" + qs, { mode: "no-cors", cache: "no-store" }).then(function(){ clearTimeout(timer); finish(true); }, function(){ clearTimeout(timer); finish(false); }); }
+      else { var img = new Image(); img.onload = img.onerror = function(){ clearTimeout(timer); finish(true); }; img.src = EP + "?" + qs; }
     });
   })();
   (function(){
