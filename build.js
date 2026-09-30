@@ -135,7 +135,7 @@ function crumbsJsonld(trail, pageUrl) {
 // ------------------------------------------------------------
 // 레이아웃
 // ------------------------------------------------------------
-function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null, og = null }) {
+function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null, og = null, noindex = false, baseHref = false }) {
   const url = `${BASE_URL}/${file === "index.html" ? "" : file}`;
   const isHome = file === "index.html";
 
@@ -151,12 +151,15 @@ function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null
   const ld = [];
   if (Array.isArray(jsonld)) ld.push({ ...jsonld[0], datePublished: published, dateModified: modified }, ...jsonld.slice(1));
   else if (jsonld) ld.push(datable ? { ...jsonld, datePublished: published, dateModified: modified } : jsonld);
-  if (!datable) ld.push({ "@context": "https://schema.org", "@type": "WebPage", name: title, description: desc, url, datePublished: published, dateModified: modified, inLanguage: "ko-KR" });
+  if (!datable && !noindex) ld.push({ "@context": "https://schema.org", "@type": "WebPage", name: title, description: desc, url, datePublished: published, dateModified: modified, inLanguage: "ko-KR" });
   const trail = isHome ? null : crumbs || crumbsFor(file, title);
   if (trail && trail.length > 1) ld.push(crumbsJsonld(trail, url));
   const ldScripts = ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
 
   const crumbsBlock = trail && trail.length > 1 ? crumbsHtml(trail) : "";
+
+  // 접이식 섹션(.sec-fold)이 든 섹션은 빌드 때부터 .sec-folded — 스크립트가 돌기 전에도 여백이 접힌 크기다. 펼치면 하단 스크립트가 뗀다(2026-09-30, :has() 대체).
+  const bodyHtml = body.replace(/<section class="section([^"]*)"([^>]*)>(?=\s*<div class="wrap[^"]*">\s*<details class="sec-fold">)/g, (m, cls, attrs) => `<section class="section${cls} sec-folded"${attrs}>`);
 
   return {
     file,
@@ -165,10 +168,11 @@ function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">${baseHref ? `
+<base href="${BASE_URL}/">` : ""}
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<link rel="canonical" href="${url}">
+${noindex ? `<meta name="robots" content="noindex,follow">` : `<link rel="canonical" href="${url}">`}
 <meta property="og:type" content="website">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
@@ -221,7 +225,7 @@ ${ldScripts}
 ${hero}
 <main>
 ${crumbsBlock}
-${body}
+${bodyHtml}
 </main>
 ${footer(dateLabel)}
 <div class="float-bar">
@@ -235,6 +239,21 @@ ${footer(dateLabel)}
   var consult = document.getElementById('consult');
   if(!fc || !consult || !('IntersectionObserver' in window)) return;
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
+})();
+(function(){
+  // 접이식 섹션(홈 .sec-fold): 접혀 있으면 섹션에 .sec-folded 를 붙여 여백을 줄인다.
+  // 예전엔 CSS :has() 한 줄이었는데 지원 안 되는 브라우저에선 여백이 안 줄어서 toggle 이벤트로 바꿨다(2026-09-30).
+  var folds = document.querySelectorAll('.sec-fold');
+  for(var i = 0; i < folds.length; i++){
+    (function(d){
+      var sec = d.parentNode;
+      while(sec && !(sec.classList && sec.classList.contains('section'))) sec = sec.parentNode;
+      if(!sec) return;
+      function sync(){ sec.classList.toggle('sec-folded', !d.open); }
+      sync();
+      d.addEventListener('toggle', sync);
+    })(folds[i]);
+  }
 })();
 (function(){
   // 한시 할인 — 마감일(data-promo-until, 한국 시각)이 지났는데 아직 다시 빌드하지 않은 페이지면
@@ -350,6 +369,33 @@ function foldSection(html) {
     /(<div class="wrap[^"]*">\s*)<h2 class="sec-title">([\s\S]*?)<\/h2>([\s\S]*?)(<\/div>\s*<\/section>)$/,
     (m, pre, t, rest, post) => `${pre}<details class="sec-fold"><summary><h2 class="sec-title">${t}</h2></summary>${rest}</details>${post}`
   );
+}
+
+// 브랜드 404 — GitHub Pages 는 공개 폴더 루트의 404.html 을 없는 주소마다 404 상태로 내준다.
+// 사이트맵·RSS 에는 넣지 않으므로 pages 배열에 push 하지 말고 따로 쓴다. <base> 를 둬서 /guide/없는글 처럼 깊은 주소에서도 style.css·링크가 루트를 가리킨다.
+function buildNotFound() {
+  const body = `
+<section class="section">
+  <div class="wrap narrow nf">
+    <p class="nf-code" aria-hidden="true">404</p>
+    <h1 class="sec-title">페이지를 찾을 수 없습니다</h1>
+    <p class="sec-sub">주소가 바뀌었거나 잘못 입력된 것 같습니다. 아래 메뉴에서 다시 찾아보시거나, 상담 신청을 남겨 주시면 연락드립니다.</p>
+    <div class="btn-row">
+      <a class="btn btn-navy" href="index.html">홈으로</a>
+      <a class="btn btn-line" href="index.html#consult">상담 신청</a>
+    </div>
+    <p class="nf-links">자주 찾는 페이지 — <a href="compare.html">캠프 비교</a> · <a href="study.html">유학 안내</a> · <a href="stpaul.html">세인트폴 대치 아카데미</a> · <a href="elc.html">대학 토플면제</a> · <a href="guide.html">캠프 가이드</a> · <a href="faq.html">자주 묻는 질문</a></p>
+  </div>
+</section>`;
+  return page({
+    file: "404.html",
+    title: "페이지를 찾을 수 없습니다 | 러닝트래블",
+    desc: "요청하신 페이지가 없습니다. 홈으로 돌아가거나 상담 신청을 남기실 수 있습니다.",
+    body,
+    crumbs: [],
+    noindex: true,
+    baseHref: true,
+  });
 }
 
 function consultSection(preset = {}) {
@@ -3467,10 +3513,18 @@ a{color:inherit;text-decoration:none}
 .sec-fold[open]>summary::after{transform:rotate(225deg) translate(-2px,-2px)}
 .sec-fold[open]>summary{margin-bottom:14px}
 .sec-fold>summary:hover::after{border-color:var(--coral)}
-.section:has(.sec-fold:not([open])){padding:24px 0}
+/* 접힌 섹션 여백 — 빌드가 .sec-folded 를 붙이고, 펼치면 하단 스크립트가 뗀다(:has() 미지원 브라우저 대비, 2026-09-30) */
+.section.sec-folded{padding:24px 0}
 /* 버튼 행: 모바일에선 전체 폭으로 정렬 (margin-left 들여쓰기 어긋남 방지) */
 .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 @media(max-width:560px){.btn-row .btn{flex:1 1 100%;text-align:center}}
+/* 404 */
+.nf{text-align:center}
+.nf-code{font-size:clamp(52px,9vw,84px);font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--coral);margin-bottom:14px}
+.nf .sec-sub{margin-left:auto;margin-right:auto}
+.nf .btn-row{justify-content:center}
+.nf-links{margin-top:30px;font-size:14px;color:var(--muted);line-height:1.9}
+.nf-links a{color:var(--sky);font-weight:700}
 .sec-sub a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .lead{font-size:17px;color:#33404d;margin-bottom:24px}
 .lead a,.fit-grid a{color:var(--sky);font-weight:700;text-decoration:underline;text-underline-offset:3px}
@@ -3867,6 +3921,8 @@ for (const g of ALL_GUIDES) pages.push(buildGuideArticle(g));
 for (const p of PROGRAMS) if (p.detail) pages.push(buildProgram(p)); // 추천 프로그램 상세 4p (관련 링크 제목 조회를 위해 마지막에 생성)
 
 for (const p of pages) fs.writeFileSync(path.join(OUT, p.file), p.html);
+const notFound = buildNotFound(); // 사이트맵·RSS 제외 — pages 에 넣지 않는다
+fs.writeFileSync(path.join(OUT, notFound.file), notFound.html);
 // 넓은 표 감싸개는 키보드·스크린리더로 닿을 수 있어야 한다(tabindex="0" role="region" aria-label="표 이름").
 // 새 표를 만들고 속성을 빠뜨리면 여기서 알려 준다.
 for (const p of pages) {
@@ -3892,5 +3948,5 @@ const rssItems = [
 ].map((it) => `  <item>\n    <title>${esc(it.title)}</title>\n    <link>${it.link}</link>\n    <guid isPermaLink="false">${it.link}#${esc(it.title)}</guid>\n    <pubDate>${it.date}</pubDate>\n    <description>${esc(it.desc)}</description>\n  </item>`).join("\n");
 fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>러닝트래블 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>캐나다·뉴질랜드·일본 해외캠프 모집 소식과 캠프 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
 
-console.log(`생성 완료: ${pages.length}개 페이지 + style.css + sitemap/robots/rss/CNAME → docs/`);
+console.log(`생성 완료: ${pages.length}개 페이지 + 404.html + style.css + sitemap/robots/rss/CNAME → docs/`);
 if (!FORM_ENDPOINT) console.warn("⚠ FORM_ENDPOINT 미설정 — 상담 양식 데모 모드 (gas-form.gs 배포 후 data.js에 입력)");

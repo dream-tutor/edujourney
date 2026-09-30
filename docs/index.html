@@ -20,7 +20,7 @@
 <meta name="naver-site-verification" content="38c50e5aa8a59faf08ed852ccf456adc9a5f00e8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316324f'/%3E%3Cpath d='M14 40 L32 18 L50 40' stroke='%23e8734a' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='46' r='4' fill='%232f7bd0'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=munv1ycy">
+<link rel="stylesheet" href="style.css?v=munyzas9">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"러닝트래블","url":"https://edujourney.co.kr"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"러닝트래블 | 2027 겨울 해외캠프 · 중고등 유학 · 미국·캐나다 대학 토플면제","description":"해외 겨울캠프 6종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원까지. 캠프 체험에서 유학·대학 진학까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, 2027 겨울 시즌 모집 중.","url":"https://edujourney.co.kr/","datePublished":"2026-07-16","dateModified":"2026-09-09","inLanguage":"ko-KR"}</script>
 </head>
@@ -259,7 +259,7 @@
   </div>
 </section>
 
-<section class="section alt">
+<section class="section alt sec-folded">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">안전 관리는 이렇게 하고 있습니다</h2></summary>
     <p class="sec-sub">16,000명 넘는 학생들과 캠프를 다니며 하나씩 자리잡은 규칙들입니다.</p>
@@ -274,7 +274,7 @@
   </details></div>
 </section>
 
-<section class="section">
+<section class="section sec-folded">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">어떤 캠프를 골라야 할지 모르겠다면</h2></summary>
     <div class="fit-grid">
@@ -289,7 +289,7 @@
   </div>
 </section>
 
-<section class="section alt">
+<section class="section alt sec-folded">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">참가 신청 절차</h2></summary>
     <ol class="step-list"><li>온라인 상담 신청 (아래 양식)</li><li>상담 후 온라인 신청서·동의서 작성 + 여권 사본 제출</li><li>신청비 50만원 입금 (신청서 작성 후 3일 내)</li><li>잔금 입금 (2026년 11월 15일까지)</li><li>항공료 결제 안내</li><li>출국 전 온라인 오리엔테이션 참석 → 인천공항 집합 후 출국</li></ol>
@@ -297,7 +297,7 @@
   </details></div>
 </section>
 
-<section class="section">
+<section class="section sec-folded">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">학부모님들이 가장 많이 묻는 질문</h2></summary>
     <div class="faq-list">
@@ -311,7 +311,7 @@
   </div>
 </section>
 
-<section class="section alt">
+<section class="section alt sec-folded">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">캠프 가이드</h2></summary>
     <p class="sec-sub">첫 캠프 나이부터 홈스테이 적응, 준비물까지. 보내기 전에 읽어두면 좋은 글들.</p>
@@ -432,7 +432,7 @@
   </div>
 </section>
 
-<section class="section alt">
+<section class="section alt sec-folded">
   <div class="wrap">
     <details class="sec-fold"><summary><h2 class="sec-title">유학 가이드</h2></summary>
     <p class="sec-sub">조기유학은 언제가 적기인지, 1년에 실제로 얼마가 드는지, 귀국하면 학적은 어떻게 되는지 — 자주 받는 질문부터 하나씩 짚었습니다.</p>
@@ -679,6 +679,21 @@
   var consult = document.getElementById('consult');
   if(!fc || !consult || !('IntersectionObserver' in window)) return;
   new IntersectionObserver(function(en){ fc.classList.toggle('hide', en[0].isIntersecting); }).observe(consult);
+})();
+(function(){
+  // 접이식 섹션(홈 .sec-fold): 접혀 있으면 섹션에 .sec-folded 를 붙여 여백을 줄인다.
+  // 예전엔 CSS :has() 한 줄이었는데 지원 안 되는 브라우저에선 여백이 안 줄어서 toggle 이벤트로 바꿨다(2026-09-30).
+  var folds = document.querySelectorAll('.sec-fold');
+  for(var i = 0; i < folds.length; i++){
+    (function(d){
+      var sec = d.parentNode;
+      while(sec && !(sec.classList && sec.classList.contains('section'))) sec = sec.parentNode;
+      if(!sec) return;
+      function sync(){ sec.classList.toggle('sec-folded', !d.open); }
+      sync();
+      d.addEventListener('toggle', sync);
+    })(folds[i]);
+  }
 })();
 (function(){
   // 한시 할인 — 마감일(data-promo-until, 한국 시각)이 지났는데 아직 다시 빌드하지 않은 페이지면
