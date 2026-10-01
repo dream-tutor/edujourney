@@ -313,7 +313,7 @@ function footer(dateLabel = "") {
         <div class="footer-linkset"><a href="elc.html">토플면제교육원 안내</a>\n<a href="elc-partners.html">파트너 대학 9곳</a>\n<a href="elc-suny.html">SUNY 진학 가이드</a>\n<a href="elc-uc-transfer.html">UC 편입 경로</a>\n<a href="elc-texas.html">텍사스 주립대 5곳</a>\n<a href="elc-settlement.html">현지 정착 서비스</a>\n<a href="elc-scholarship.html">장학금·비용 절감</a>\n<a href="elc-glossary.html">용어 풀이</a>\n${ELC_AUDIENCES.map((a) => `<a href="${a.slug}.html">${a.label} 안내</a>`).join("\n")}\n${ELC.universities.map((u) => `<a href="${u.slug}.html">${u.name.split(" (")[0]}</a>`).join("\n")}</div>
       </div>
     </div>
-    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료와 사진 출처: 쏠루트 유학${dateLabel ? `<span class="footer-date">정보 업데이트 ${dateLabel}</span>` : ""}</p>
+    <p class="footer-fine">러닝트래블 해외캠프 안내 페이지 · 일정과 비용은 항공·현지 사정에 따라 변경될 수 있습니다. 문의는 상담 신청 양식을 이용해 주세요.<br>본 페이지의 캠프·유학 자료와 사진 출처: 쏠루트 유학<br>광고전화는 정중히 사절합니다.${dateLabel ? `<span class="footer-date">정보 업데이트 ${dateLabel}</span>` : ""}</p>
   </div>
 </footer>`;
 }
