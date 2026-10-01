@@ -28,9 +28,9 @@ const STPAUL_DETAIL = {
     intro: "한국 교과과정을 병행하지 않습니다. 7~12학년을 하나의 과정으로 운영하고, 체육·예술을 포함한 전 과목이 영어로 진행됩니다.",
     subjects: [
       ["영어 (Language Arts)", "Common Core 기준 · 읽기·에세이·문학 중심으로 학년별 단계가 나뉩니다"],
-      ["수학", "Algebra I·II, Geometry, Pre-Calculus, Calculus로 이어지는 미국식 계열 이수"],
+      ["수학", "Algebra I·II, Geometry, Pre-Calculus, Calculus 순서로 이수"],
       ["과학", "NGSS 기준 · Biology, Chemistry, Physics를 학년에 따라 이수"],
-      ["사회", "World History, US History, Government·Economics 등 미국 고교 사회 과목"],
+      ["사회", "World History, US History, Government·Economics 등 사회 과목"],
       ["제2외국어", "중국어 · 스페인어 중 선택"],
       ["AP", "15과목 이상 개설 (개설 과목은 학기·수요에 따라 달라져 상담 시 최신 목록을 안내합니다)"],
       ["방과후", "Activities(15:10~16:00) · Study Hall(16:05~16:55) · College Counseling(월~목 15:10~17:00) · TOEFL·SAT I 시험 대비반(16:10~18:10, 선택)"],
