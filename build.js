@@ -24,11 +24,25 @@ const escAttr = (s) => esc(s).replace(/"/g, "&quot;");
 // data-plain 이 있으면 그 내용(원래 금액)으로 갈아끼우고, 없으면(배지·안내 띠) 요소째 지운다.
 const todayKst = () => new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
 const promoOf = (c) => (c.promo && (!c.promo.ends || c.promo.ends >= todayKst()) ? c.promo : null);
-// 유학·세인트폴·기숙학교의 한시 안내(등록 할인·장학금) — 안내 행 하나로만 보여 준다(배지·큰 버튼 없음).
-// ends 가 지나면 빌드가 내보내지 않고, 이미 올라간 페이지는 공용 스크립트가 data-promo-until 요소를 통째로 지운다.
+// 유학·세인트폴·기숙학교의 한시 안내(등록 할인·장학금) — **그 과정의 페이지에서만** 강조한다 (2026-10-01 사장님 지시).
+//   promoHero: 히어로 안 알약(promo.badge) 1개 / promoBox: 비용·모집 안내 위의 안내 상자 1개. 한 페이지에 이 둘까지만.
+//   홈·허브·다른 과정 페이지·푸터에는 넣지 않는다. 금액 숫자는 그대로 두고(취소선·data-plain 안 씀) 위에 안내만 얹는다.
+// ends 가 지나면 빌드가 내보내지 않고(livePromo), 이미 올라간 페이지는 공용 스크립트가 data-promo-until 요소를 통째로 지운다.
 const livePromo = (p) => (p && (!p.ends || p.ends >= todayKst()) ? p : null);
-const promoRow = (p) => { p = livePromo(p); return p ? `<div data-promo-until="${p.ends}"><dt>${p.label}</dt><dd>${p.text} <span class="dim">(${p.until}까지)</span></dd></div>` : ""; };
-const promoNote = (p) => { p = livePromo(p); return p ? `<p class="sec-sub" style="margin-top:10px" data-promo-until="${p.ends}"><strong>${p.label}</strong> · ${p.text} (${p.until}까지)</p>` : ""; };
+// 본문에 이미 같은 해가 적혀 있으면 마감일의 연도는 뺀다("2026년 10월에 등록하면 … (10월 31일까지)")
+const promoUntil = (p) => (p.text.includes(p.until.slice(0, 5)) ? p.until.replace(/^\d{4}년\s*/, "") : p.until);
+const promoHero = (p) => { p = livePromo(p); return p && p.badge ? `<p class="hero-promo" data-promo-until="${p.ends}">${p.badge}</p>` : ""; };
+const promoBox = (p) => {
+  p = livePromo(p);
+  if (!p) return "";
+  const cut = p.text.indexOf(". ");
+  const head = cut < 0 ? p.text : p.text.slice(0, cut + 1);
+  const rest = cut < 0 ? "" : p.text.slice(cut + 1);
+  return `<div class="promo-box" data-promo-until="${p.ends}">
+    <span class="promo-box-tag">${p.label}</span>
+    <p><strong>${head}</strong>${rest} <span class="dim">(${promoUntil(p)}까지)</span></p>
+  </div>`;
+};
 const promoAttr = (p, plain) => (p && p.ends ? ` data-promo-until="${p.ends}"${plain != null ? ` data-plain="${escAttr(plain)}"` : ""}` : "");
 
 // ------------------------------------------------------------
@@ -759,7 +773,6 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
           <div><dt>모집</dt><dd>8월·1월 학기 (2학기 2027년 1월 25일 시작) · 학년당 12~22명</dd></div>
           <div><dt>규모</dt><dd>전교 95명 소수정예 · 전 과목 영어 수업</dd></div>
           <div><dt>학비</dt><dd>연 2,920만원</dd></div>
-          ${promoRow(STPAUL.promo)}
         </dl>
       </div>
       <div>
@@ -1760,17 +1773,18 @@ function buildStudy(key) {
     <p class="hero-kicker">${s.flag} ${s.type}</p>
     <h1>${s.name}</h1>
     <p class="hero-sub">${s.tag}</p>
+    ${promoHero(s.promo)}
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">모집 안내</h2>
+  ${promoBox(s.promo)}
   <dl class="info-list">
     <div><dt>대상</dt><dd>${s.target}</dd></div>
     <div><dt>기간</dt><dd>${s.period}</dd></div>
     <div><dt>학사 일정</dt><dd>${s.terms}</dd></div>
     <div><dt>비용</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
     <div><dt>비용에 포함</dt><dd>${s.includes}</dd></div>
-    ${promoRow(s.promo)}
     <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
@@ -1827,16 +1841,17 @@ function buildStPaul() {
     <p class="hero-kicker">🏫 서울 대치동 · 전 과목 영어 수업</p>
     <h1>${s.name}</h1>
     <p class="hero-sub">${s.tag}</p>
+    ${promoHero(s.promo)}
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">한눈에 보기</h2>
+  ${promoBox(s.promo)}
   <dl class="info-list">
     ${s.facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
     <div><dt>모집</dt><dd>${s.target}</dd></div>
     <div><dt>학기 시작</dt><dd>${s.intake}</dd></div>
     <div><dt>학비</dt><dd><strong>${s.price}</strong><br><span class="dim">${s.priceNote}</span></dd></div>
-    ${promoRow(s.promo)}
     <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
   </dl>
 </div></section>
@@ -2646,12 +2661,12 @@ function buildStPaulAdmission() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">모집 일정</h2>
+  ${promoBox(STPAUL.promo)}
   <p class="lead">${a.schedule}</p>
   <dl class="info-list" style="margin-top:20px">
     <div><dt>대상</dt><dd>${STPAUL.target}</dd></div>
     <div><dt>학기 시작</dt><dd>${STPAUL.intake}</dd></div>
     <div><dt>정원</dt><dd>전교 95명 · 학년당 12~22명</dd></div>
-    ${promoRow(STPAUL.promo)}
   </dl>
 </div></section>
 
@@ -2745,11 +2760,11 @@ function buildStPaulTuition() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">학비 안내</h2>
+  ${promoBox(STPAUL.promo)}
   <div class="table-wrap" tabindex="0" role="region" aria-label="세인트폴 대치 아카데미 학비 표"><table class="cmp"><tbody>
     ${STPAUL.tuition.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">${STPAUL.priceNote}</p>
-  ${promoNote(STPAUL.promo)}
 </div></section>
 
 <section class="section alt"><div class="wrap narrow">
@@ -3561,6 +3576,7 @@ a{color:inherit;text-decoration:none}
 .promo-box{border:1px solid var(--coral-soft);background:#fff6f2;border-radius:14px;padding:18px 20px;margin-bottom:20px}
 .promo-box-tag{display:inline-block;background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 11px;margin-bottom:9px}
 .promo-box p{font-size:15px}
+.promo-box p:last-child{margin-bottom:0}
 .hero-promo{display:inline-block;margin-top:18px;background:var(--coral);color:#fff;font-size:14.5px;font-weight:800;border-radius:999px;padding:8px 17px}
 .promo-bar{margin:0 0 18px}
 .promo-bar a{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--coral-soft);background:#fff6f2;border-radius:14px;padding:13px 17px;font-size:15px}
@@ -3847,13 +3863,14 @@ function buildProgram(p) {
     <p class="hero-kicker">${p.kicker}</p>
     <h1>${p.name}</h1>
     <p class="hero-sub">${p.blurb}</p>
+    ${promoHero(p.promo)}
   </div></section>`;
   const body = `
 <section class="section"><div class="wrap narrow guide-body">
   <p class="lead">${d.lead}</p>
+  ${promoBox(p.promo)}
   ${sitePhotos(p.slug)}
   ${d.sections.map((s) => `<h2 class="sec-title-sm">${s.h}</h2>${s.p}`).join("\n")}
-  ${promoNote(p.promo)}
   ${d.faq && d.faq.length ? `<h2 class="sec-title-sm">자주 묻는 질문</h2><div class="faq-list">${d.faq.map(([q, a]) => `<details class="faq-item"><summary>${q}</summary><div class="faq-a"><p>${a}</p></div></details>`).join("")}</div>` : ""}
   ${reviewCards(REVIEWS.filter((r) => r.camp === p.slug), "다녀온 학생의 이야기")}
   ${related.length ? `<p class="sec-sub" style="margin-top:26px">같이 보시면 좋은 안내: ${related.join(" · ")}</p>` : ""}
