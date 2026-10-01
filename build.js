@@ -657,7 +657,7 @@ function buildIndex() {
 <section class="section alt" id="reviews">
   <div class="wrap">
     <h2 class="sec-title">다녀온 학생들의 이야기</h2>
-    <p class="sec-sub">캠프와 유학을 다녀온 학생들이 직접 남긴 글입니다. 이름은 일부 가렸습니다.</p>
+    <p class="sec-sub">캠프와 유학을 다녀온 학생들이 남긴 글을 간추렸습니다. 이름은 일부 가렸습니다.</p>
     ${reviewCards(REVIEWS)}
   </div>
 </section>
