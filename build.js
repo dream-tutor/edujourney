@@ -1308,7 +1308,7 @@ function buildAbout() {
 ${safetySection()}
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">환불 규정</h2>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="환불 규정 표"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="환불 규정 표"><table class="cmp kv"><tbody>
     ${COMMON.refund.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">천재지변·항공 지연 등 주관사가 통제할 수 없는 사유는 별도 기준이 적용됩니다. 말레이시아·필리핀 캠프는 운영 규정이 일부 다를 수 있어 상담 시 함께 안내해 드립니다. 계약 전 상담에서 전문을 안내해 드립니다.</p>
@@ -1335,7 +1335,7 @@ function buildFaq() {
 </div></section>
 <section class="section alt" id="refund"><div class="wrap narrow">
   <h2 class="sec-title">환불 규정</h2>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="환불 규정 표"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="환불 규정 표"><table class="cmp kv"><tbody>
     ${COMMON.refund.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">말레이시아·필리핀 캠프는 운영 규정이 일부 다를 수 있어 상담 시 함께 안내해 드립니다.</p>
@@ -1809,7 +1809,7 @@ function buildStudy(key) {
 </div></section>
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">참가비 외에 따로 드는 비용</h2>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="참가비 외에 따로 드는 비용 표"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="참가비 외에 따로 드는 비용 표"><table class="cmp kv"><tbody>
     ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">1년 총액 계산은 <a href="study-cost.html">유학 비용 정리</a>에서 보실 수 있습니다. 확정 견적은 상담 후 등록 시점 환율로 다시 잡아 드립니다.</p>
@@ -2715,7 +2715,7 @@ function buildStPaulCurriculum() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">수업은 이렇게 구성됩니다</h2>
   <p class="lead">${c.intro}</p>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="과목별 수업 구성 표" style="margin-top:22px"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="과목별 수업 구성 표" style="margin-top:22px"><table class="cmp kv"><tbody>
     ${c.subjects.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
 </div></section>
@@ -2761,7 +2761,7 @@ function buildStPaulTuition() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">학비 안내</h2>
   ${promoBox(STPAUL.promo)}
-  <div class="table-wrap" tabindex="0" role="region" aria-label="세인트폴 대치 아카데미 학비 표"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="세인트폴 대치 아카데미 학비 표"><table class="cmp kv"><tbody>
     ${STPAUL.tuition.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">${STPAUL.priceNote}</p>
@@ -3045,7 +3045,7 @@ function buildStudyCost() {
 
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">따로 나가는 비용</h2>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="유학 중 따로 나가는 비용 표"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="유학 중 따로 나가는 비용 표"><table class="cmp kv"><tbody>
     ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
   <p class="sec-sub" style="margin-top:14px">다 더하면 뉴질랜드는 3,800만원 안팎, 캐나다는 4,700만원 안팎이 1년 현실적인 총액입니다. 환율이 움직이면 여기서 또 달라집니다.</p>
@@ -3235,7 +3235,7 @@ function buildStudyAfter() {
   const body = `
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">졸업하면 어디로 가나</h2>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="졸업 후 진로 표"><table class="cmp"><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="졸업 후 진로 표"><table class="cmp kv"><tbody>
     ${STUDY_INFO.paths.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
 </div></section>
@@ -3605,6 +3605,13 @@ a{color:inherit;text-decoration:none}
 .table-wrap:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 table{width:100%;border-collapse:collapse;font-size:14.5px}
 .cmp{min-width:680px}
+/* 항목·값 두 칸 표(.cmp.kv) — 옆으로 밀지 않는다 (2026-10-01)
+   위 min-width:680px 는 세 칸 이상 비교표를 위한 값이다. thead 없이 th+td 한 쌍뿐인 표에도
+   똑같이 걸려, 375px 에서 "연간 학비 | 2,920만원" 의 금액 칸이 화면 밖으로 밀려 있었다.
+   두 칸 표에는 빌드가 kv 를 붙이고, 여기서 최소 폭을 풀어 화면 안에 넣는다.
+   좁은 화면의 항목 칸 줄바꿈은 맨 아래 모바일 블록(max-width:760px)에 있다.
+   세 칸 이상 표는 kv 를 붙이지 말 것 — 그쪽은 가로 스크롤 + 가장자리 신호가 맞다. */
+.cmp.kv{min-width:0}
 .cmp thead th{background:var(--navy);color:#fff;padding:14px;text-align:center;font-weight:700}
 .cmp thead th a{text-decoration:underline;text-underline-offset:3px}
 /* 탭 영역 — 대학 비교표 머리 칸의 학교 이름 링크(껍데기 72~73px / 눌리는 곳 17px) (2026-09-23)
@@ -3815,6 +3822,8 @@ table{width:100%;border-collapse:collapse;font-size:14.5px}
   .table-wrap{margin-top:14px}
   .sec-title-sm{margin-bottom:10px}
   .cmp th,.cmp td{padding:9px 11px}   /* 표 칸 — 가로도 같이 좁아져 넘침이 준다 */
+  .cmp.kv tbody th{white-space:normal}   /* 두 칸 표 — 긴 항목 이름이 값 칸을 밀어내지 않게 줄바꿈 허용(낱말 단위, body keep-all) */
+  .cmp.kv tbody td{overflow-wrap:anywhere}   /* 값 칸 — 띄어쓰기 없는 긴 영문·시간 표기 하나가 표를 화면 밖으로 밀지 않게(320px 실측 10px 넘침) */
 
   /* 접이식 질문 — summary 는 눌러야 하므로 44px 밑으로 내리지 않는다 */
   .faq-list{gap:8px}
