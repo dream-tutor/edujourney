@@ -765,11 +765,11 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
 <section class="section alt" id="stpaul">
   <div class="wrap">
     <h2 class="sec-title">해외로 나가기 어렵다면 — 세인트폴 대치 아카데미</h2>
-    <p class="sec-sub">집에서 통학하면서 7~12학년 과정을 전 과목 영어로 공부하는 길입니다. AP 15과목 이상. 서울 대치동에 있습니다.</p>
+    <p class="sec-sub">집에서 통학하면서 8~12학년 과정을 전 과목 영어로 공부하는 길입니다. AP 15과목 이상. 서울 대치동에 있습니다.</p>
     <div class="two-col">
       <div>
         <dl class="info-list">
-          <div><dt>대상</dt><dd>7~12학년 나이(중1~고3) 편입학</dd></div>
+          <div><dt>대상</dt><dd>8~12학년 나이(중2~고3) 편입학</dd></div>
           <div><dt>모집</dt><dd>8월·1월 학기 (2학기 2027년 1월 25일 시작) · 학년당 12~22명</dd></div>
           <div><dt>규모</dt><dd>전교 95명 소수정예 · 전 과목 영어 수업</dd></div>
           <div><dt>학비</dt><dd>연 2,920만원</dd></div>
@@ -1888,7 +1888,7 @@ function buildStPaul() {
   <h2 class="sec-title">자세히 보기</h2>
   <div class="camp-grid">
     <a class="camp-card" href="stpaul-admission.html"><span class="camp-flag">📝 입학</span><h3>입학 안내</h3><p class="camp-tag">모집 일정, 입학 테스트, 제출 서류, 학년 배정까지</p><span class="camp-more">자세히 보기 →</span></a>
-    <a class="camp-card" href="stpaul-curriculum.html"><span class="camp-flag">📚 수업</span><h3>커리큘럼 · AP</h3><p class="camp-tag">7~12학년 과목 구성, AP, 제2외국어, MAP 진단</p><span class="camp-more">자세히 보기 →</span></a>
+    <a class="camp-card" href="stpaul-curriculum.html"><span class="camp-flag">📚 수업</span><h3>커리큘럼 · AP</h3><p class="camp-tag">8~12학년 과목 구성, AP, 제2외국어, MAP 진단</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-tuition.html"><span class="camp-flag">💳 비용</span><h3>학비 안내</h3><p class="camp-tag">연간 학비와 해외 유학과의 비용 비교</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-college.html"><span class="camp-flag">🎓 진학</span><h3>진학 실적 · 상담</h3><p class="camp-tag">합격 실적과 College Counselor 상담 체계</p><span class="camp-more">자세히 보기 →</span></a>
     <a class="camp-card" href="stpaul-life.html"><span class="camp-flag">🏫 생활</span><h3>학교생활</h3><p class="camp-tag">하루 일과, 클럽, 통학과 학사, 학교 분위기</p><span class="camp-more">자세히 보기 →</span></a>
@@ -1920,7 +1920,7 @@ ${studyConsult(s.slug, { title: "세인트폴 대치 아카데미 상담", copy:
   return page({
     file: "stpaul.html",
     title: `세인트폴 대치 아카데미 | 대치동 전 과목 영어 수업 — 학비·모집·진학 실적`,
-    desc: `유학 없이 대치동에서 전 과목 영어 수업, SPASS 서울 캠퍼스, 7~12학년 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,920만원, 8월·1월 학기 모집. 입학 절차와 상담 안내.`,
+    desc: `유학 없이 대치동에서 전 과목 영어 수업, SPASS 서울 캠퍼스, 8~12학년 과정, 전교 95명 소수정예, AP 15과목 이상, 존스홉킨스·UC버클리 등 진학 실적. 학비 연 2,920만원, 8월·1월 학기 모집. 입학 절차와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "School", name: s.name, address: { "@type": "PostalAddress", addressLocality: "서울 강남구 대치동" } },
   });
@@ -2702,10 +2702,10 @@ function buildStPaulAdmission() {
     file: "stpaul-admission.html",
     kicker: "📝 입학 안내",
     h1: "세인트폴 대치 아카데미<br>입학 안내",
-    sub: "8월·1월 학기 모집 · 7~12학년 나이 편입학 · 영어·수학 시험과 영어 인터뷰, 학년 배정까지",
+    sub: "8월·1월 학기 모집 · 8~12학년 나이 편입학 · 영어·수학 시험과 영어 인터뷰, 학년 배정까지",
     body,
     title: "세인트폴 대치 아카데미 입학 안내 | 모집 일정·입학 시험·제출 서류",
-    desc: "세인트폴 대치 아카데미 입학 절차 — 8월·1월 학기 모집, 7~12학년 나이(중1~고3) 편입학, 영어·수학 시험과 영어 인터뷰, 학년 배정 기준, 제출 서류. 상담부터 입학까지의 순서.",
+    desc: "세인트폴 대치 아카데미 입학 절차 — 8월·1월 학기 모집, 8~12학년 나이(중2~고3) 편입학, 영어·수학 시험과 영어 인터뷰, 학년 배정 기준, 제출 서류. 상담부터 입학까지의 순서.",
   });
 }
 
@@ -2748,7 +2748,7 @@ function buildStPaulCurriculum() {
   return stpaulPage({
     file: "stpaul-curriculum.html",
     kicker: "📚 커리큘럼",
-    h1: "7~12학년 과목은<br>이렇게 짜입니다",
+    h1: "8~12학년 과목은<br>이렇게 짜입니다",
     sub: "Common Core·NGSS 기준 · AP 15과목 이상 · 제2외국어 · 연 3회 MAP 진단",
     body,
     title: "세인트폴 대치 아카데미 커리큘럼 | 과목 구성·AP·MAP 진단",
