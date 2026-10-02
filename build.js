@@ -4015,6 +4015,8 @@ function fitDesc(raw, max = 85) {
   cl = cl.replace(/[\s,·—(]+$/, "");
   // 괄호가 열린 채 끊겼으면 그 괄호 앞까지 물린다
   while ((cl.match(/\(/g) || []).length > (cl.match(/\)/g) || []).length) cl = cl.slice(0, cl.lastIndexOf("(")).replace(/[\s,·—]+$/, "");
+  // 조사로 끝나 말이 끊기거나 너무 짧은 구절은 붙이지 않는다
+  if (out.length >= 30 && (cl.length < 15 || /(과|와|의|을|를|이|가|에|는|은|도|로|고|며)$/.test(cl))) return out;
   if (cl.length < 15) return out || s.slice(0, max).replace(/\s+\S*$/, "");
   if (!/[.?!]$/.test(cl)) cl += ".";
   return out ? out + " " + cl : cl;
