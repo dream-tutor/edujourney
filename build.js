@@ -150,6 +150,8 @@ function crumbsJsonld(trail, pageUrl) {
 // 레이아웃
 // ------------------------------------------------------------
 function page({ file, title, desc, body, hero = "", jsonld = null, crumbs = null, og = null, noindex = false, baseHref = false }) {
+  desc = fitDesc(desc);
+  title = fitTitle(title);
   const url = `${BASE_URL}/${file === "index.html" ? "" : file}`;
   const isHome = file === "index.html";
 
@@ -974,8 +976,14 @@ ${consultSection({ camp: c.slug })}`;
   return page({
     file: `${c.slug}.html`,
     og: siteOg(c.slug),
-    title: `${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`,
-    desc: `${c.tag}. ${c.period}, ${c.target}, 참가비 ${c.price}. ${c.school} · ${c.stay}. 모집 마감 ${c.deadline}.`,
+    // 제목·설명문이 검색 결과에서 잘리지 않게 긴 것부터 시도해 길이 안에 드는 첫 후보를 쓴다 (2026-10-02)
+    title: [`${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`, `${c.name} | ${c.periodShort} · ${c.price}`, `${c.name} | ${c.periodShort}`, `${c.name} | 일정·대상·참가비`].find((t) => t.length <= 46) || c.name,
+    desc: [
+      `${c.periodShort}, ${c.target}, 참가비 ${c.price}. ${c.tag}. 모집 마감 ${c.deadline}.`,
+      `${c.periodShort}, ${c.target}, 참가비 ${c.price}. 모집 마감 ${c.deadline}.`,
+      `${c.name} ${c.periodShort}. 참가비 ${c.price}. 모집 마감 ${c.deadline}.`,
+      `${c.tag}. 일정·대상·참가비와 모집 마감 ${c.deadline}.`,
+    ].find((d) => d.length <= 85) || `${c.tag}.`,
     hero,
     body,
     jsonld: {
@@ -3980,3 +3988,42 @@ fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8
 
 console.log(`생성 완료: ${pages.length}개 페이지 + 404.html + style.css + sitemap/robots/rss/CNAME → docs/`);
 if (!FORM_ENDPOINT) console.warn("⚠ FORM_ENDPOINT 미설정 — 상담 양식 데모 모드 (gas-form.gs 배포 후 data.js에 입력)");
+
+// 검색 결과 설명문 길이 맞춤 (2026-10-02 사장님 지시 "너무 긴 설명이라 잘리는 것 수정").
+// 네이버는 80자 안팎에서 자른다. 글 중간에서 끊기지 않게 문장 단위로 줄이고,
+// 첫 문장부터 길면 쉼표·가운뎃점·줄표 자리에서 끊는다. 85자 이하는 그대로 둔다.
+function fitDesc(raw, max = 85) {
+  const s = String(raw || "").replace(/\s+/g, " ").trim();
+  if (s.length <= max) return s;
+  const sents = s.split(/(?<=[.?!])\s+/);
+  let out = "", k = 0;
+  for (; k < sents.length; k++) {
+    const next = out ? out + " " + sents[k] : sents[k];
+    if (next.length > max) break;
+    out = next;
+  }
+  if (out.length >= 45) return out;
+  // 남은 첫 문장을 구절 단위로 덧붙인다
+  const room = max - (out ? out.length + 1 : 0);
+  const parts = sents[k].split(/(?<=[,·—])\s+|\s+(?=[—(])/);
+  let cl = "";
+  for (const p of parts) {
+    const next = cl ? cl + " " + p : p;
+    if (next.length > room) break;
+    cl = next;
+  }
+  cl = cl.replace(/[\s,·—(]+$/, "");
+  // 괄호가 열린 채 끊겼으면 그 괄호 앞까지 물린다
+  while ((cl.match(/\(/g) || []).length > (cl.match(/\)/g) || []).length) cl = cl.slice(0, cl.lastIndexOf("(")).replace(/[\s,·—]+$/, "");
+  if (cl.length < 15) return out || s.slice(0, max).replace(/\s+\S*$/, "");
+  if (!/[.?!]$/.test(cl)) cl += ".";
+  return out ? out + " " + cl : cl;
+}
+
+// 제목이 검색 결과에서 잘리지 않게: 48자를 넘으면 뒤쪽 ' · ' 조각부터, 그다음 ' — ' 뒤를 덜어 낸다. 앞쪽 검색어는 그대로.
+function fitTitle(raw, max = 48) {
+  let t = String(raw || "").trim();
+  while (t.length > max && t.includes(" · ")) t = t.slice(0, t.lastIndexOf(" · "));
+  if (t.length > max && t.includes(" — ")) t = t.slice(0, t.lastIndexOf(" — "));
+  return t;
+}
