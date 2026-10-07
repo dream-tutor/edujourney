@@ -418,11 +418,14 @@ function buildNotFound() {
 
 function consultSection(preset = {}) {
   const campOpts = Object.values(CAMPS)
-    .map((c) => `<option value="${c.name}"${preset.camp === c.slug ? " selected" : ""}>${c.name}</option>`)
+    .map((c) => `<option value="${c.name}"${c.country === "japan" ? ' data-lang="일본어"' : ""}${preset.camp === c.slug ? " selected" : ""}>${c.name}</option>`)
     .join("");
   const studyOpts = [...Object.values(STUDY), STPAUL, ELC]
     .map((s) => `<option value="${s.name}"${preset.camp === s.slug ? " selected" : ""}>${s.name}</option>`)
     .join("");
+  // 언어 수준 칸 이름 — 일본 캠프는 일본어, 다른 과정은 영어, 과정을 아직 안 골랐으면 외국어 (2026-10-07 사장님 지시)
+  const presetItem = preset.camp && (CAMPS[preset.camp] || Object.values(STUDY).find((x) => x.slug === preset.camp) || [STPAUL, ELC].find((x) => x.slug === preset.camp));
+  const langLabel = preset.lang ? preset.lang : !presetItem ? "외국어" : presetItem.country === "japan" ? "일본어" : "영어";
   const gradeOpts = GRADES.map((g) => `<option value="${g.label}"${preset.grade === g.key ? " selected" : ""}>${g.label}</option>`).join("");
   const summerOpt = `<option value="2027 여름캠프 사전 상담"${preset.camp === "summer" ? " selected" : ""}>2027 여름캠프 사전 상담</option>`;
   // 상담 폼은 페이지 하단 고정 섹션이 아니라 팝업(모달)로 뜬다 — 상담 CTA(a[href$="#consult"]) 클릭 시 열림 (2026-08-24)
@@ -435,7 +438,7 @@ function consultSection(preset = {}) {
       <h2>${preset.title || "캠프 상담 신청"}</h2>
       <p>${preset.copy || "아이 학년과 궁금한 점을 남겨 주세요.<br>확인 후 맞는 캠프와 일정을 안내해 드립니다."}</p>
       <ul class="consult-points">
-        ${(preset.points || ["일정·비용부터 출국 준비까지 한 번에 안내", "영어 실력·성향에 맞는 캠프 추천", "유학 연계, 형제 동반 참가 문의 환영"]).map((p) => `<li>${p}</li>`).join("\n        ")}
+        ${(preset.points || ["일정·비용부터 출국 준비까지 한 번에 안내", "아이 실력·성향에 맞는 캠프 추천", "유학 연계, 형제 동반 참가 문의 환영"]).map((p) => `<li>${p}</li>`).join("\n        ")}
       </ul>
     </div>
     <form class="consult-form" id="consultForm" autocomplete="off">
@@ -448,12 +451,12 @@ function consultSection(preset = {}) {
         <label>관심 캠프<select name="관심캠프"><option value="">선택해 주세요</option><optgroup label="겨울캠프">${campOpts}</optgroup><optgroup label="여름캠프">${summerOpt}</optgroup><optgroup label="유학·진학 과정">${studyOpts}</optgroup><option value="추천 받고 싶어요">추천 받고 싶어요</option></select></label>
       </div>
       <div class="form-row two">
-        <label>영어 수준<select name="영어수준"><option value="">선택해 주세요</option><option>이제 막 배우는 단계</option><option>짧은 문장으로 대화 가능</option><option>일상 대화 가능</option><option>자유롭게 대화 가능</option></select></label>
+        <label><span id="langLab">${langLabel} 수준</span><select name="영어수준"><option value="">선택해 주세요</option><option>이제 막 배우는 단계</option><option>짧은 문장으로 대화 가능</option><option>일상 대화 가능</option><option>자유롭게 대화 가능</option></select></label>
         <label>해외 경험<select name="해외경험"><option value="">선택해 주세요</option><option>없음</option><option>가족 여행만</option><option>캠프·어학연수 경험 있음</option><option>해외 거주·유학 경험 있음</option></select></label>
       </div>
       <div class="form-row">
         <span class="lab-plain">캠프에서 가장 기대하는 점 <em class="lab-sub">여러 개 선택 가능</em></span>
-        <div class="chip-row">${["영어 자신감", "의사소통 능력", "해외 학교생활 경험", "현지 친구 사귀기", "진로·유학 탐색", "장기 유학 전 사전 경험"].map((v) => `<label class="chip"><input type="checkbox" name="기대" value="${v}"><span>${v}</span></label>`).join("")}</div>
+        <div class="chip-row">${["외국어 자신감", "의사소통 능력", "해외 학교생활 경험", "현지 친구 사귀기", "진로·유학 탐색", "장기 유학 전 사전 경험"].map((v) => `<label class="chip"><input type="checkbox" name="기대" value="${v}"><span>${v}</span></label>`).join("")}</div>
       </div>
       <div class="form-row">
         <span class="lab-plain">상담 받고 싶은 내용 <em class="lab-sub">여러 개 선택 가능</em></span>
@@ -468,7 +471,7 @@ function consultSection(preset = {}) {
         <details class="agree-more">
           <summary>수집 항목·이용 목적·보유 기간 보기</summary>
           <ul class="agree-note">
-            <li><b>수집 항목</b> 학생 이름, 연락처, 자녀 학년, 관심 캠프, 영어 수준, 해외 경험, 기대하는 점·상담 희망 내용, 문의 내용, 접수 시각과 접수한 페이지 주소</li>
+            <li><b>수집 항목</b> 학생 이름, 연락처, 자녀 학년, 관심 캠프, 외국어 수준, 해외 경험, 기대하는 점·상담 희망 내용, 문의 내용, 접수 시각과 접수한 페이지 주소</li>
             <li><b>이용 목적</b> 캠프·유학 상담 안내와 연락</li>
             <li><b>보유 기간</b> 상담이 끝난 뒤 6개월 이내에 파기</li>
             <li><b>저장·전달</b> 접수 내용은 구글 스프레드시트에 저장되고 상담 담당자 메일로 전달됩니다. 전달되는 항목은 위 수집 항목과 같습니다.</li>
@@ -490,6 +493,13 @@ function consultSection(preset = {}) {
     var EP = ${JSON.stringify(FORM_ENDPOINT)};
     var form = document.getElementById('consultForm');
     if(!form) return;
+    // 관심 캠프를 고르면 언어 수준 칸 이름을 맞춘다 — 일본 캠프는 일본어, 다른 과정은 영어, 미선택·추천은 외국어
+    var campSel = form.querySelector('select[name="관심캠프"]'), langLab = document.getElementById('langLab');
+    if(campSel && langLab) campSel.addEventListener('change', function(){
+      var o = campSel.options[campSel.selectedIndex];
+      var lang = o && o.getAttribute('data-lang') ? o.getAttribute('data-lang') : (!campSel.value || campSel.value === '추천 받고 싶어요' ? '외국어' : '영어');
+      langLab.textContent = lang + ' 수준';
+    });
     form.addEventListener('submit', function(ev){
       ev.preventDefault();
       var f = new FormData(form);
@@ -504,7 +514,7 @@ function consultSection(preset = {}) {
         '학년': f.get('학년')||'', '관심캠프': f.get('관심캠프')||'',
         '문의내용': (function(){
           var NL = String.fromCharCode(10), rows = [];
-          if(f.get('영어수준')) rows.push('영어 수준: ' + f.get('영어수준'));
+          if(f.get('영어수준')) rows.push(((document.getElementById('langLab')||{}).textContent||'외국어 수준') + ': ' + f.get('영어수준'));
           if(f.get('해외경험')) rows.push('해외 경험: ' + f.get('해외경험'));
           if(f.getAll('기대').length) rows.push('기대하는 점: ' + f.getAll('기대').join(', '));
           if(f.getAll('궁금한점').length) rows.push('상담 희망 내용: ' + f.getAll('궁금한점').join(', '));
@@ -1263,7 +1273,7 @@ function buildCompare() {
   const body = `
 <section class="section"><div class="wrap">
   ${compareTable()}
-  <p class="sec-sub" style="margin-top:18px">캐나다·뉴질랜드 캠프의 항공료는 별도이며 단체 예약으로 진행합니다 (개별 발권 가능). 일본·말레이시아·필리핀 캠프는 왕복 항공권이 참가비에 포함되어 있습니다. 어떤 캠프가 맞을지 고민되시면 아이 학년·영어 수준을 적어 상담을 남겨 주세요.</p>
+  <p class="sec-sub" style="margin-top:18px">캐나다·뉴질랜드 캠프의 항공료는 별도이며 단체 예약으로 진행합니다 (개별 발권 가능). 일본·말레이시아·필리핀 캠프는 왕복 항공권이 참가비에 포함되어 있습니다. 어떤 캠프가 맞을지 고민되시면 아이 학년·외국어 수준을 적어 상담을 남겨 주세요.</p>
 </div></section>
 <section class="section alt"><div class="wrap">
   <h2 class="sec-title">고르기 어려울 때 참고하세요</h2>
@@ -1527,14 +1537,15 @@ ${consultSection({ grade: g.key, camp: camps.length ? camps[0].slug : undefined 
 // ------------------------------------------------------------
 // 여름캠프 페이지 (2027 여름 사전 상담)
 // ------------------------------------------------------------
-function summerConsult() {
+function summerConsult(lang) {
   return consultSection({
     camp: "summer",
+    lang,
     title: "여름캠프 사전 상담",
     copy: "아이 학년과 희망 국가를 남겨 주세요.<br>일정·비용이 확정되는 대로 가장 먼저 안내드립니다.",
     points: [
       "모집 시작 전 우선 안내 — 여름 시즌은 자리가 빨리 찹니다",
-      "학년·영어 수준에 맞는 국가와 기간 추천",
+      "학년·외국어 수준에 맞는 국가와 기간 추천",
       "겨울캠프와 여름캠프 중 어느 시즌이 맞는지도 함께 상담",
     ],
   });
@@ -1593,7 +1604,7 @@ function buildSummerCountry(s) {
   <div class="camp-grid">${winterCamps.map(campCard).join("\n")}</div>` : ""}
   <p class="sec-sub" style="margin-top:20px">다른 나라 여름캠프: ${SUMMER_COUNTRIES.filter((x) => x.slug !== s.slug).map((x) => `<a href="summer-${x.slug}.html">${x.name}</a>`).join(" · ")} · <a href="summer.html">여름캠프 전체 안내</a></p>
 </div></section>
-${summerConsult()}`;
+${summerConsult(s.slug === "japan" ? "일본어" : "영어")}`;
   return page({
     file: `summer-${s.slug}.html`,
     title: `${s.name} 여름캠프 2027 | 여름방학 ${s.name} 어학연수·스쿨링 사전 상담`,
