@@ -845,8 +845,8 @@ ${consultSection()}`;
 
   return page({
     file: "index.html",
-    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프 · 중고등 유학 · 미국·캐나다 대학 토플면제`,
-    desc: `해외 겨울캠프 ${CAMP_COUNT}종(캐나다·뉴질랜드·일본·말레이시아·필리핀)부터 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원까지. 캠프 체험에서 유학·대학 진학까지 한 곳에서. 인솔자 동행, 학부모 실시간 공유, ${SEASON_LABEL} 시즌 모집 중.`,
+    title: `러닝트래블 | ${SEASON_LABEL} 해외캠프·중고등 유학·토플면제`,
+    desc: `해외 겨울캠프 ${CAMP_COUNT}종, 뉴질랜드·캐나다 관리형 유학, 세인트폴 대치 아카데미, 미국·캐나다 대학 토플면제교육원, 인솔자 동행, 무료 상담`,
     hero,
     body,
     jsonld: { "@context": "https://schema.org", "@type": "Organization", name: "러닝트래블", url: BASE_URL },
@@ -4002,8 +4002,8 @@ if (!FORM_ENDPOINT) console.warn("⚠ FORM_ENDPOINT 미설정 — 상담 양식 
 
 // 검색 결과 설명문 길이 맞춤 (2026-10-02 사장님 지시 "너무 긴 설명이라 잘리는 것 수정").
 // 네이버는 80자 안팎에서 자른다. 글 중간에서 끊기지 않게 문장 단위로 줄이고,
-// 첫 문장부터 길면 쉼표·가운뎃점·줄표 자리에서 끊는다. 85자 이하는 그대로 둔다.
-function fitDesc(raw, max = 85) {
+// 첫 문장부터 길면 쉼표·가운뎃점·줄표 자리에서 끊는다. 80자 이하는 그대로 둔다(2026-10-08 네이버 사이트 진단 권고 — 전엔 85).
+function fitDesc(raw, max = 80) {
   const s = String(raw || "").replace(/\s+/g, " ").trim();
   if (s.length <= max) return s;
   const sents = s.split(/(?<=[.?!])\s+/);
@@ -4033,10 +4033,21 @@ function fitDesc(raw, max = 85) {
   return out ? out + " " + cl : cl;
 }
 
-// 제목이 검색 결과에서 잘리지 않게: 48자를 넘으면 뒤쪽 ' · ' 조각부터, 그다음 ' — ' 뒤를 덜어 낸다. 앞쪽 검색어는 그대로.
-function fitTitle(raw, max = 48) {
+// 제목이 검색 결과에서 잘리지 않게(2026-10-08 네이버 사이트 진단 권고 40자 — 전엔 48). 앞쪽 검색어는 그대로 두고 뒤에서부터 덜어 낸다:
+// ' · ' 조각 → ' — ' 뒤 → 끝 괄호 → ' | ' 뒤 부제의 '·' 항목(남는 마지막 항목이 6자 미만이면 부제 통째) → 앞부분의 '·' 항목.
+function fitTitle(raw, max = 40) {
   let t = String(raw || "").trim();
-  while (t.length > max && t.includes(" · ")) t = t.slice(0, t.lastIndexOf(" · "));
-  if (t.length > max && t.includes(" — ")) t = t.slice(0, t.lastIndexOf(" — "));
+  const len = (s) => [...s.replace(/&amp;/g, "&")].length;
+  while (len(t) > max && t.includes(" · ")) t = t.slice(0, t.lastIndexOf(" · "));
+  if (len(t) > max && t.includes(" — ")) t = t.slice(0, t.lastIndexOf(" — "));
+  if (len(t) > max) t = t.replace(/\s*\([^()]*\)$/, "");
+  if (len(t) > max && t.includes(" | ")) {
+    const head = t.slice(0, t.indexOf(" | "));
+    const items = t.slice(t.indexOf(" | ") + 3).split("·");
+    while (items.length > 1 && len(`${head} | ${items.join("·")}`) > max) items.pop();
+    const sub = items.join("·");
+    t = len(`${head} | ${sub}`) <= max && len(items[items.length - 1]) >= 6 ? `${head} | ${sub}` : head;
+  }
+  while (len(t) > max && t.includes("·")) t = t.slice(0, t.lastIndexOf("·"));
   return t;
 }
