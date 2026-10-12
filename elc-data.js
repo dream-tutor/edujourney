@@ -263,7 +263,7 @@ const ELC_UNIV_DETAIL = {
     facts: [
       ["설립·규모", "1929년 · 재학생 30,830명 · 180여 개 학과 (설명회 자료 기준)"],
       ["편입 실적", "UCLA 편입률 1위 · UC버클리·UC어바인·UC데이비스 편입 상위권 (최근 UC버클리 3명 편입)"],
-      ["비용", "설명회 기준 연간 $22,227 (학비 $10,656) — 요강 표의 기숙사·식비 포함 금액과는 산정 기준이 다릅니다"],
+      ["비용", "요강 기준 연 학비 $11,789, 기숙사·식비 $18,839"],
       ["위치", "로스앤젤레스 중심에 있어 UCLA와 가까운 환경"],
     ],
     sections: [
@@ -409,15 +409,15 @@ const ELC_SUNY = {
   intro: "토플면제교육원 학생들은 국내에서 6개월 동안 미국대학 준비 ESL 과정과 국내대학 교양 24학점을 이수한 뒤, 성적과 영어 능력에 따라 5개 SUNY 캠퍼스로 진학할 수 있습니다. SUNY(The State University of New York)는 뉴욕주를 대표하는 공립대학 시스템으로 64개 캠퍼스를 두고 있습니다.",
   highlights: ["No 고교 내신 (입학평가 기준)", "국내대학 교양 24학점 인정", "토플면제 및 DET 준비", "OSWEGO 입학보장", "상위 SUNY로 편입 기회"],
   campuses: [
-    { name: "SUNY Oswego", ko: "뉴욕주립대 오스위고", slug: "elc-oswego", rank: "#28 Regional", tuition: "$19,019", scholarship: "3년간 $12,000 보장 및 편입 장학금", admission: "입학보장", credits: "24학점 / GPA 2.3 이상", english: "ELC Level 3", rec: "요구 안 함", essay: "요구 안 함",
+    { name: "SUNY Oswego", ko: "뉴욕주립대 오스위고", slug: "elc-oswego", rank: "#28 Regional", tuition: "$19,255", scholarship: "3년간 $12,000 보장 및 편입 장학금", admission: "입학보장", credits: "24학점 / GPA 2.3 이상", english: "ELC Level 3", rec: "요구 안 함", essay: "요구 안 함",
       founded: "1861년", city: "Oswego, New York", students: "약 7,600명", feature: "온타리오 호숫가 캠퍼스, 안전한 환경, 합리적인 학비", airport: "Syracuse 공항 (차로 약 40분)" },
-    { name: "Stony Brook University", ko: "뉴욕주립대 스토니브룩", slug: "elc-stonybrook", rank: "#59 National", tuition: "$34,911", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.5 이상", english: "Level 3 + DET 105", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
+    { name: "Stony Brook University", ko: "뉴욕주립대 스토니브룩", slug: "elc-stonybrook", rank: "#59 National", tuition: "$31,050", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.5 이상", english: "Level 3 + DET 105", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
       founded: "1957년", city: "Stony Brook, New York (Long Island)", students: "약 26,000명", feature: "연구 중심 대학, STEM·Health Science 강점", airport: "Long Island MacArthur 공항 (차로 약 30분)" },
-    { name: "Binghamton University", ko: "뉴욕주립대 빙엄턴", slug: null, rank: "#73 National", tuition: "$30,447", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.8 이상", english: "Level 3 + DET 110", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
+    { name: "Binghamton University", ko: "뉴욕주립대 빙엄턴", slug: null, rank: "#73 National", tuition: "상담 시 안내", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.8 이상", english: "Level 3 + DET 110", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
       founded: "1946년", city: "Binghamton, New York", students: "약 18,000명", feature: "뉴욕주 공립대 Best Value 1위", airport: "Binghamton 공항 (차로 약 25분)" },
-    { name: "University at Buffalo", ko: "뉴욕주립대 버팔로", slug: "elc-buffalo", rank: "#75 National", tuition: "$32,366", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.5 이상", english: "Level 3 + DET 105", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
+    { name: "University at Buffalo", ko: "뉴욕주립대 버팔로", slug: "elc-buffalo", rank: "#75 National", tuition: "$28,500", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.5 이상", english: "Level 3 + DET 105", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
       founded: "1846년", city: "Buffalo, New York", students: "약 31,000명", feature: "대규모 연구대학, 공학·경영·보건계열 우수", airport: "Buffalo Niagara 국제공항 (차로 약 20분)" },
-    { name: "University at Albany", ko: "뉴욕주립대 올버니", slug: "elc-albany", rank: "#127 National", tuition: "$31,826", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.5 이상", english: "Level 3 + DET 95", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
+    { name: "University at Albany", ko: "뉴욕주립대 올버니", slug: "elc-albany", rank: "#127 National", tuition: "$29,814", scholarship: "편입 장학금", admission: "종합적 평가", credits: "24학점 / GPA 2.5 이상", english: "Level 3 + DET 95", rec: "ELC 교수진 추천서", essay: "ELC 컨설팅 후 완성",
       founded: "1844년", city: "Albany, New York", students: "약 17,000명", feature: "뉴욕주 수도 올버니, 사회과학·비즈니스 강점", airport: "Albany 국제공항 (차로 약 15분)" },
   ],
   common: [
@@ -502,7 +502,7 @@ const ELC_GLOSSARY = [
 const ELC_PARTNERS = [
   { slug: "elc-etamu", region: "텍사스", line: "1889년 설립 · 재학생 13,086명 · $1,000 장학금으로 In-State 학비 적용(연 $34,000 → $23,000) · 2011년부터 현지 교수진 정착 프로그램" },
   { slug: "elc-fresno", region: "캘리포니아", line: "1911년 · 24,585명 · CSU 중 가장 저렴한 학비 · 실리콘밸리 2시간 반" },
-  { slug: "elc-smc", region: "캘리포니아", line: "1929년 · 30,830명 · UCLA 편입률 1위 · 연 $22,227(학비 $10,656)" },
+  { slug: "elc-smc", region: "캘리포니아", line: "1929년 · 30,830명 · UCLA 편입률 1위 · 연 학비 $11,789" },
   { slug: "elc-dvc", region: "캘리포니아", line: "1926년 · 약 18,000명 · UC버클리 편입 명문 · 연 약 $31,000" },
   { slug: "elc-dac", region: "캘리포니아", line: "1967년 · 약 20,000명 · UC버클리 편입 1위 · 실리콘밸리 중심" },
   { slug: "elc-oswego", region: "뉴욕", line: "1861년 · 약 7,000명 · 매년 $4,000 장학금 · 입학보장 · 상위 SUNY 편입 패스웨이" },
