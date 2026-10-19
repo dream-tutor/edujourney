@@ -332,7 +332,7 @@ function campCard(c) {
     <p class="camp-tag">${c.tag}</p>
     <dl class="camp-meta">
       <div><dt>기간</dt><dd>${c.periodShort}</dd></div>
-      <div><dt>대상</dt><dd>${c.target}</dd></div>
+      <div><dt>대상</dt><dd>${c.target}${c.seats ? `<br><span class="promo-mini">남은 자리 ${c.seats.short} (${c.seats.asOf} 기준)</span>` : ""}</dd></div>
       <div><dt>참가비</dt>${p ? `<dd${promoAttr(p, c.price)}><s class="was">${c.price}</s> <strong class="now">${p.priceAfter}</strong><br><span class="promo-mini">${p.cond}</span></dd>` : `<dd>${c.price}</dd>`}</div>
     </dl>
     <span class="camp-more">자세히 보기 →</span>
@@ -350,8 +350,8 @@ function compareTable() {
       ${row("형태", (c) => c.type)}
       ${row("기간", (c) => c.periodShort)}
       ${row("대상", (c) => br(c.target))}
-      ${row("정원", (c) => c.capacity)}
-      ${row("참가비", (c) => { const p = promoOf(c); return `<strong>${br(c.price)}</strong>${p ? `<span${promoAttr(p)}><br><span class="promo-mini">${p.until}까지 ${p.limit} ${p.badge} → ${p.priceAfter}</span></span>` : ""}`; })}
+      ${row("정원", (c) => c.capacity + (c.seats ? `<br><span class="promo-mini">남은 자리 ${c.seats.short} (${c.seats.asOf} 기준)</span>` : ""))}
+      ${row("참가비", (c) => { const p = promoOf(c); return `<strong>${br(c.price)}</strong>${p ? `<span${promoAttr(p)}><br><span class="promo-mini">${p.cond} ${p.badge} → ${br(p.priceAfter)}</span></span>` : ""}`; })}
       ${row("숙소", (c) => c.stay)}
       ${row("모집 마감", (c) => c.deadline)}
     </tbody>
@@ -919,9 +919,9 @@ function buildCamp(key) {
     <dl class="info-list">
       <div><dt>기간</dt><dd>${c.period}</dd></div>
       <div><dt>대상</dt><dd>${c.target}</dd></div>
-      <div><dt>정원</dt><dd>${c.capacity}</dd></div>
+      <div><dt>정원</dt><dd>${c.capacity}${c.seats ? `<br><strong>남은 자리 (${c.seats.asOf} 기준): ${c.seats.text}</strong><br><span class="dim">${c.seats.note}</span>` : ""}</dd></div>
       <div><dt>참가비</dt>${p
-        ? `<dd${promoAttr(p, `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`)}><strong class="now">${p.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${p.until}까지 ${p.limit}에게 적용되는 ${p.badge} 금액입니다 · ${c.priceNote}</span></dd>`
+        ? `<dd${promoAttr(p, `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`)}><strong class="now">${p.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${p.cond} 적용되는 ${p.badge} 금액입니다 · ${c.priceNote}</span></dd>`
         : `<dd><strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span></dd>`}</div>
       <div><dt>숙소</dt><dd>${c.stay}</dd></div>
       <div><dt>모집 마감</dt><dd>${c.deadline}</dd></div>
@@ -1021,7 +1021,7 @@ const PRICE_ROWS = [
   { camp: "newzealand",   label: "뉴질랜드 3주",    won: 690,  weeks: 3 },
   { camp: "newzealand",   label: "뉴질랜드 4주",    won: 810,  weeks: 4 },
   { camp: "canada-3week", label: "캐나다 3주",      won: 890,  weeks: 3 },
-  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1330, weeks: 7 },
+  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1190, weeks: 7 },
   { camp: "canada-7week", label: "캐나다 7주",      won: 1290, weeks: 7 },
 ];
 const DURATIONS = [
