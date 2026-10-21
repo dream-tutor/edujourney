@@ -43,6 +43,10 @@ const promoBox = (p) => {
     <p><strong>${head}</strong>${rest} <span class="dim">(${promoUntil(p)}까지)</span></p>
   </div>`;
 };
+// 모집 마감한 과정(data closed)은 날짜 대신 '모집 마감'
+const deadlineLine = (c) => (c.closed ? "모집 마감" : `모집 마감 ${c.deadline}`);
+// 학년별 설명문: 모집 중인 과정은 "참가 가능", 마감한 과정은 "모집 마감"으로 나눠 적는다
+const campsDesc = (cs) => [cs.filter((c) => !c.closed), cs.filter((c) => c.closed)].map((g, i) => (g.length ? g.map((c) => (i ? c.name : `${c.name}(${c.price})`)).join(", ") + (i ? " 모집 마감." : " 참가 가능.") : "")).filter(Boolean).join(" ");
 const promoAttr = (p, plain) => (p && p.ends ? ` data-promo-until="${p.ends}"${plain != null ? ` data-plain="${escAttr(plain)}"` : ""}` : "");
 
 // ------------------------------------------------------------
@@ -327,7 +331,7 @@ function campCard(c) {
   const p = promoOf(c);
   return `<a class="camp-card" href="${c.slug}.html">
     <span class="camp-flag">${c.flag} ${c.countryName}</span>
-    ${p ? `<span class="promo-badge"${promoAttr(p)}>${p.badge}</span>` : ""}
+    ${p ? `<span class="promo-badge"${promoAttr(p)}>${p.badge}</span>` : ""}${c.closed ? `<span class="promo-badge closed">모집 마감</span>` : ""}
     <h3>${c.name}</h3>
     <p class="camp-tag">${c.tag}</p>
     <dl class="camp-meta">
@@ -353,7 +357,7 @@ function compareTable() {
       ${row("정원", (c) => c.capacity + (c.seats ? `<br><span class="promo-mini">남은 자리 ${c.seats.short} (${c.seats.asOf} 기준)</span>` : ""))}
       ${row("참가비", (c) => { const p = promoOf(c); return `<strong>${br(c.price)}</strong>${p ? `<span${promoAttr(p)}><br><span class="promo-mini">${p.cond} ${p.badge} → ${br(p.priceAfter)}</span></span>` : ""}`; })}
       ${row("숙소", (c) => c.stay)}
-      ${row("모집 마감", (c) => c.deadline)}
+      ${row("모집 마감", (c) => (c.closed ? "<strong>마감</strong>" : c.deadline))}
     </tbody>
   </table></div>`;
 }
@@ -904,7 +908,7 @@ function buildCamp(key) {
     <p class="hero-kicker">${c.flag} ${c.countryName} · ${c.type}</p>
     <h1>${c.name}</h1>
     <p class="hero-sub">${c.tag}</p>
-    ${p ? `<p class="hero-promo"${promoAttr(p)}>${p.short}</p>` : ""}
+    ${p ? `<p class="hero-promo"${promoAttr(p)}>${p.short}</p>` : ""}${c.closed ? `<p class="hero-promo closed">모집 마감</p>` : ""}
   </div>
 </section>`;
 
@@ -912,6 +916,7 @@ function buildCamp(key) {
 <section class="section">
   <div class="wrap narrow">
     <h2 class="sec-title">모집 안내</h2>
+    ${c.closed ? `<div class="promo-box closed"><span class="promo-box-tag closed">모집 마감</span><p>${c.closed}${c.closedLink ? ` <a href="${c.closedLink.href}">${c.closedLink.label}</a>` : ""}</p></div>` : ""}
     ${p ? `<div class="promo-box"${promoAttr(p)}>
       <span class="promo-box-tag">${p.badge}</span>
       <p>${p.detail}</p>
@@ -924,8 +929,8 @@ function buildCamp(key) {
         ? `<dd${promoAttr(p, `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`)}><strong class="now">${p.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${p.cond} 적용되는 ${p.badge} 금액입니다 · ${c.priceNote}</span></dd>`
         : `<dd><strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span></dd>`}</div>
       <div><dt>숙소</dt><dd>${c.stay}</dd></div>
-      <div><dt>모집 마감</dt><dd>${c.deadline}</dd></div>
-      <div><dt>문의·신청</dt><dd><a href="#consult">하단 상담 신청 양식으로 문의해 주세요 →</a></dd></div>
+      <div><dt>모집 마감</dt><dd>${c.closed ? `<strong>마감</strong> <span class="dim">(${SEASON_LABEL} 모집 종료)</span>` : c.deadline}</dd></div>
+      <div><dt>문의·신청</dt><dd><a href="#consult">${c.closed ? "다음 시즌 안내를 상담으로 남겨 주세요 →" : "하단 상담 신청 양식으로 문의해 주세요 →"}</a></dd></div>
     </dl>
   </div>
 </section>
@@ -966,7 +971,7 @@ function buildCamp(key) {
 ${scheduleSection(c.slug)}
 ${SCHEDULES[c.slug] ? `<section class="section alt" style="padding-top:0"><div class="wrap narrow"><p class="sec-sub"><a href="schedule-${c.slug}.html"><strong>${c.name} 일정표만 따로 보기</strong></a></p></div></section>` : ""}
 ${safetySection(c.safety)}
-${applySection(c.applySteps)}
+${c.closed ? "" : applySection(c.applySteps)}
 ${refundSection()}
 ${campFaqSection(c.slug)}
 
@@ -989,10 +994,10 @@ ${consultSection({ camp: c.slug })}`;
     // 제목·설명문이 검색 결과에서 잘리지 않게 긴 것부터 시도해 길이 안에 드는 첫 후보를 쓴다 (2026-10-02)
     title: [`${c.name} | ${c.periodShort} · ${c.target} · ${c.price}`, `${c.name} | ${c.periodShort} · ${c.price}`, `${c.name} | ${c.periodShort}`, `${c.name} | 일정·대상·참가비`].find((t) => t.length <= 46) || c.name,
     desc: [
-      `${c.periodShort}, ${c.target}, 참가비 ${c.price}. ${c.tag}. 모집 마감 ${c.deadline}.`,
-      `${c.periodShort}, ${c.target}, 참가비 ${c.price}. 모집 마감 ${c.deadline}.`,
-      `${c.name} ${c.periodShort}. 참가비 ${c.price}. 모집 마감 ${c.deadline}.`,
-      `${c.tag}. 일정·대상·참가비와 모집 마감 ${c.deadline}.`,
+      `${c.periodShort}, ${c.target}, 참가비 ${c.price}. ${c.tag}. ${deadlineLine(c)}.`,
+      `${c.periodShort}, ${c.target}, 참가비 ${c.price}. ${deadlineLine(c)}.`,
+      `${c.name} ${c.periodShort}. 참가비 ${c.price}. ${deadlineLine(c)}.`,
+      `${c.tag}. 일정·대상·참가비, ${deadlineLine(c)}.`,
     ].find((d) => d.length <= 85) || `${c.tag}.`,
     hero,
     body,
@@ -1013,15 +1018,17 @@ ${consultSection({ camp: c.slug })}`;
 // ------------------------------------------------------------
 // 과정 단가표 — 기간·비용 축 페이지의 기준 데이터
 // (뉴질랜드처럼 한 캠프에 기간이 여러 개면 행을 나눠 둡니다)
+// grades: 기간마다 대상 학년이 다르면 그 기간의 학년(없으면 캠프 targetGrades). ask·askNote: 상담으로 참가 여부를 보는 학년과 안내 문장.
+const NZ_LONG = { grades: ["초6","중1","중2","중3","고1","고2"], ask: ["초5"] };
 // ------------------------------------------------------------
 const PRICE_ROWS = [
   { camp: "japan",        label: "일본 교토 2주",   won: 594,  weeks: 2, air: true },
   { camp: "malaysia",     label: "말레이시아 4주",  won: 599,  weeks: 4, air: true },
   { camp: "philippines",  label: "필리핀 클락 4주", won: 599,  weeks: 4, air: true },
   { camp: "newzealand",   label: "뉴질랜드 3주",    won: 690,  weeks: 3 },
-  { camp: "newzealand",   label: "뉴질랜드 4주",    won: 810,  weeks: 4 },
+  { camp: "newzealand",   label: "뉴질랜드 4주",    won: 810,  weeks: 4, ...NZ_LONG, askNote: "뉴질랜드 4주는 초등 6학년부터 받지만, 5학년도 상담으로 참가 여부를 확인할 수 있습니다." },
   { camp: "canada-3week", label: "캐나다 3주",      won: 890,  weeks: 3 },
-  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1190, weeks: 7 },
+  { camp: "newzealand",   label: "뉴질랜드 7주",    won: 1190, weeks: 7, ...NZ_LONG, askNote: "뉴질랜드 7주는 초등 6학년부터 받지만, 5학년도 상담으로 참가 여부를 확인할 수 있습니다." },
   { camp: "canada-7week", label: "캐나다 7주",      won: 1290, weeks: 7 },
 ];
 const DURATIONS = [
@@ -1046,6 +1053,12 @@ function campsByWeeks(w) {
   const slugs = [...new Set(PRICE_ROWS.filter((r) => r.weeks === w).map((r) => r.camp))];
   return slugs.map((s) => CAMPS[s]).filter(Boolean);
 }
+// 학년×기간 — 캠프 전체 학년이 아니라 그 기간 과정의 학년으로 거른다(초4 7주에 뉴질랜드 7주가 끼던 문제, 2026-10-21)
+function campsByWeeksGrade(w, gkey) {
+  const slugs = [...new Set(PRICE_ROWS.filter((r) => r.weeks === w && (r.grades || CAMPS[r.camp].targetGrades).includes(gkey)).map((r) => r.camp))];
+  return slugs.map((s) => CAMPS[s]).filter(Boolean);
+}
+const askNotes = (w, gkey) => PRICE_ROWS.filter((r) => r.weeks === w && (r.ask || []).includes(gkey)).map((r) => r.askNote);
 function campsByBudget(bd) {
   const slugs = [...new Set(PRICE_ROWS.filter((r) => r.won >= bd.min && r.won <= bd.max).map((r) => r.camp))];
   return slugs.map((s) => CAMPS[s]).filter(Boolean);
@@ -1072,6 +1085,7 @@ function buildSchedulePage(slug) {
     <p class="hero-kicker">${c.flag} ${c.countryName} · ${c.periodShort}</p>
     <h1>${c.name} 일정표</h1>
     <p class="hero-sub">출국일부터 귀국일까지 날짜별로 무엇을 하는지 정리했습니다.</p>
+    ${c.closed ? `<p class="hero-promo closed">모집 마감</p>` : ""}
   </div></section>`;
   const body = `
 ${scheduleSection(slug)}
@@ -1131,9 +1145,10 @@ ${consultSection({})}`;
 
 // ── 3) 학년 × 기간 ────────────────────────────────────────
 function buildGradeDuration(g, d) {
-  const camps = campsByWeeks(d.weeks).filter((c) => c.targetGrades.includes(g.key));
+  const camps = campsByWeeksGrade(d.weeks, g.key);
+  const asks = askNotes(d.weeks, g.key);
   const alt = DURATIONS.filter((x) => x.slug !== d.slug)
-    .map((x) => ({ d: x, camps: campsByWeeks(x.weeks).filter((c) => c.targetGrades.includes(g.key)) }))
+    .map((x) => ({ d: x, camps: campsByWeeksGrade(x.weeks, g.key) }))
     .filter((x) => x.camps.length);
   const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
     <p class="hero-kicker">${g.label} · ${d.label}</p>
@@ -1147,6 +1162,7 @@ function buildGradeDuration(g, d) {
     : `<h2 class="sec-title">${g.label} ${d.label} 과정 안내</h2>
   <p class="lead" style="max-width:760px">${SEASON_LABEL} 시즌에는 ${g.label}이 참가할 수 있는 ${d.label} 과정이 없습니다.
   아래 다른 기간의 과정을 보시거나 상담을 남겨 주시면 다음 시즌 개설 소식과 함께 안내해 드립니다.</p>`}
+  ${asks.map((t) => `<p class="sec-sub" style="margin-top:18px">${t} <a href="newzealand.html">뉴질랜드 겨울캠프 보기 →</a></p>`).join("")}
   ${alt.length ? `<h2 class="sec-title-sm" style="margin-top:34px">${g.label}이 갈 수 있는 다른 기간</h2>
   <p class="sec-sub">${alt.map((x) => `<a href="${g.slug}-${x.d.slug}.html">${x.d.label} (${x.camps.length}개)</a>`).join(" · ")}</p>` : ""}
 </div></section>
@@ -1160,7 +1176,7 @@ ${consultSection({ grade: g.key })}`;
   return page({
     file: `${g.slug}-${d.slug}.html`,
     title: `${g.label} ${d.label} 캠프 | ${g.label} ${d.label} 해외 겨울캠프`,
-    desc: `${g.label} 학생의 ${d.label} 해외캠프. ${camps.length ? camps.map((c) => `${c.name}(${c.price})`).join(", ") + " 참가 가능." : "이번 시즌 대상 과정과 대안 기간 안내."}`,
+    desc: `${g.label} 학생의 ${d.label} 해외캠프. ${camps.length ? campsDesc(camps) : "이번 시즌 대상 과정과 대안 기간 안내."}`,
     hero, body,
   });
 }
@@ -1177,7 +1193,7 @@ function buildDeparture(dp) {
 <section class="section"><div class="wrap">
   <h2 class="sec-title">${dp.label} 과정 ${camps.length}개</h2>
   <dl class="info-list" style="max-width:760px;margin:0 auto 26px">
-    ${camps.map((c) => `<div><dt>${c.countryName}</dt><dd>${c.period}<br><span class="dim">${c.target} · ${c.price}</span></dd></div>`).join("")}
+    ${camps.map((c) => `<div><dt>${c.countryName}</dt><dd>${c.period}<br><span class="dim">${c.target} · ${c.price}${c.closed ? " · 모집 마감" : ""}</span></dd></div>`).join("")}
   </dl>
   <div class="camp-grid">${camps.map(campCard).join("\n")}</div>
 </div></section>
@@ -1212,7 +1228,7 @@ function buildCalendar() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">${SEASON_LABEL} 전체 일정</h2>
   <dl class="info-list">
-    ${rows.map((c) => `<div><dt>${c.flag} ${c.countryName}</dt><dd><strong>${c.period}</strong><br><span class="dim">${c.target} · ${c.price} · 마감 ${c.deadline}</span></dd></div>`).join("")}
+    ${rows.map((c) => `<div><dt>${c.flag} ${c.countryName}</dt><dd><strong>${c.period}</strong><br><span class="dim">${c.target} · ${c.price} · ${c.closed ? "모집 마감" : `마감 ${c.deadline}`}</span></dd></div>`).join("")}
   </dl>
   <p class="sec-sub" style="margin-top:18px">날짜별 상세 일정은 각 캠프 일정표에서 보실 수 있습니다:
     ${Object.keys(SCHEDULES).map((k) => `<a href="schedule-${k}.html">${CAMPS[k].name}</a>`).join(" · ")}</p>
@@ -1529,7 +1545,7 @@ ${consultSection({ grade: g.key, camp: camps.length ? camps[0].slug : undefined 
   return page({
     file: `${g.slug}-${ct.slug}.html`,
     title: `${g.label} ${ct.name} 캠프 | ${g.label} ${ct.name} 겨울 어학연수·스쿨링`,
-    desc: `${g.label} 학생의 ${ct.name} 해외캠프 — ${camps.length ? camps.map((c) => `${c.name}(${c.price})`).join(", ") + " 참가 가능." : "이번 시즌 대상 과정과 대안 캠프 안내."} 상담 신청 가능.`,
+    desc: `${g.label} 학생의 ${ct.name} 해외캠프 — ${camps.length ? campsDesc(camps) : "이번 시즌 대상 과정과 대안 캠프 안내."} 상담 신청 가능.`,
     hero, body,
   });
 }
@@ -1643,7 +1659,7 @@ function buildInfoCountry(ic) {
     <span>${ic.name}을 포함해 아이에게 맞는 나라를 찾고 있다면</span>
     <a class="btn btn-navy" href="#consult">맞춤 상담 남기기 →</a>
   </div>
-  <p class="sec-sub" style="margin-top:24px">현재 정규 모집 중인 캠프는 <a href="country-canada.html">캐나다</a> · <a href="country-newzealand.html">뉴질랜드</a> · <a href="country-japan.html">일본</a>입니다.
+  <p class="sec-sub" style="margin-top:24px">현재 정규 모집 중인 캠프는 ${COUNTRIES.filter((ct) => ["canada", "newzealand", "japan"].includes(ct.slug) && ct.camps.some((k) => !CAMPS[k].closed)).map((ct) => `<a href="country-${ct.slug}.html">${ct.name}</a>`).join(" · ")}입니다.
   ${ic.name} 프로그램은 시즌·학년에 따라 맞춤 상담으로 안내해 드립니다.
   다른 나라 가이드: ${INFO_COUNTRIES.filter((x) => x.slug !== ic.slug).map((x) => `<a href="info-${x.slug}.html">${x.name}</a>`).join(" · ")}</p>
 </div></section>
@@ -3599,6 +3615,9 @@ a{color:inherit;text-decoration:none}
 .promo-box p{font-size:15px}
 .promo-box p:last-child{margin-bottom:0}
 .hero-promo{display:inline-block;margin-top:18px;background:var(--coral);color:#fff;font-size:14.5px;font-weight:800;border-radius:999px;padding:8px 17px}
+/* 모집 마감 (data closed) — 할인과 같은 자리, 회색 */
+.promo-badge.closed,.promo-box-tag.closed,.hero-promo.closed{background:#6b7280}
+.promo-box.closed{border-color:#d6d9df;background:#f4f5f7}
 .promo-bar{margin:0 0 18px}
 .promo-bar a{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--coral-soft);background:#fff6f2;border-radius:14px;padding:13px 17px;font-size:15px}
 .promo-bar-tag{background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 11px;white-space:nowrap}

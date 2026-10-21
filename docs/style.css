@@ -152,6 +152,9 @@ a{color:inherit;text-decoration:none}
 .promo-box p{font-size:15px}
 .promo-box p:last-child{margin-bottom:0}
 .hero-promo{display:inline-block;margin-top:18px;background:var(--coral);color:#fff;font-size:14.5px;font-weight:800;border-radius:999px;padding:8px 17px}
+/* 모집 마감 (data closed) — 할인과 같은 자리, 회색 */
+.promo-badge.closed,.promo-box-tag.closed,.hero-promo.closed{background:#6b7280}
+.promo-box.closed{border-color:#d6d9df;background:#f4f5f7}
 .promo-bar{margin:0 0 18px}
 .promo-bar a{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--coral-soft);background:#fff6f2;border-radius:14px;padding:13px 17px;font-size:15px}
 .promo-bar-tag{background:var(--coral);color:#fff;font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 11px;white-space:nowrap}
