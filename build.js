@@ -753,7 +753,7 @@ ${foldSection(applySection()).replace(`class="section"`, `class="section alt"`).
         <dl class="camp-meta">
           <div><dt>대상</dt><dd>중1~고2</dd></div>
           <div><dt>기간</dt><dd>학기~학년 단위</dd></div>
-          <div><dt>비용</dt><dd>연 4,250만원</dd></div>
+          <div><dt>비용</dt><dd>연 3,700만원</dd></div>
         </dl>
         <span class="camp-more">자세히 보기 →</span>
       </a>
@@ -1799,7 +1799,7 @@ ${studyConsult("")}`;
   return page({
     file: "study.html",
     title: "중·고등 유학 안내 | 뉴질랜드 유학·캐나다 관리형 유학·세인트폴 대치 아카데미",
-    desc: "중·고등 조기유학 세 가지 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 4,250만원), 세인트폴 대치 아카데미(대치동·전 과목 영어 수업). 비용·절차·비자·관리 체계와 학년별 안내.",
+    desc: "중·고등 조기유학 세 가지 길 — 뉴질랜드 Waiuku College 유학(연 3,200만원), 캐나다 나이아가라 관리형 유학(연 3,700만원), 세인트폴 대치 아카데미(대치동·전 과목 영어 수업). 비용·절차·비자·관리 체계와 학년별 안내.",
     hero, body,
   });
 }
@@ -2806,7 +2806,7 @@ function buildStPaulTuition() {
 
 <section class="section alt"><div class="wrap narrow">
   <h2 class="sec-title">해외 유학과 비교하면</h2>
-  <p>같은 1년을 두고 보면 <a href="study-newzealand.html">뉴질랜드 유학</a>은 연 3,200만원, <a href="study-canada.html">캐나다 관리형</a>은 연 4,250만원입니다.
+  <p>같은 1년을 두고 보면 <a href="study-newzealand.html">뉴질랜드 유학</a>은 연 3,200만원, <a href="study-canada.html">캐나다 관리형</a>은 연 3,700만원입니다.
   여기에 항공료·용돈·비자 진행비가 별도로 붙습니다. 세인트폴은 학비는 낮지만 집에서 통학하니 숙식비가 들지 않는다는 점이 가장 큰 차이입니다.</p>
   <p style="margin-top:14px">대신 대치동까지의 통학이나, 지방에서 오는 경우 학교 근처 학사 비용을 따로 보셔야 합니다.
   항목별 비교는 <a href="stpaul-vs-abroad.html">세인트폴과 해외 유학 비교</a>, 유학 쪽 비용은 <a href="study-cost.html">유학 비용 정리</a>에 있습니다.</p>
@@ -3062,7 +3062,7 @@ function buildStudyCompare() {
     sub: "학제·시작 단위·졸업장·비용·환경을 같은 기준으로 놓고 비교합니다",
     body,
     title: "뉴질랜드 유학 vs 캐나다 유학 비교 | 비용·학제·졸업장 한눈에",
-    desc: "중·고등 조기유학 두 나라 비교 — 뉴질랜드 Waiuku College(연 3,200만원·10주 텀 시작·NCEA)와 캐나다 나이아가라 관리형(연 4,250만원·학기 시작·온타리오 졸업장)의 차이를 표로 정리했습니다.",
+    desc: "중·고등 조기유학 두 나라 비교 — 뉴질랜드 Waiuku College(연 3,200만원·10주 텀 시작·NCEA)와 캐나다 나이아가라 관리형(연 3,700만원·학기 시작·온타리오 졸업장)의 차이를 표로 정리했습니다.",
   });
 }
 
@@ -3093,7 +3093,7 @@ function buildStudyCost() {
   <div class="table-wrap" tabindex="0" role="region" aria-label="국내 영어 수업 과정과 해외 유학 비교표"><table class="cmp">
     <thead><tr><th>구분</th><th>세인트폴 대치 아카데미</th><th>해외 유학</th></tr></thead>
     <tbody>
-      <tr><th>연간 학비·참가비</th><td>2,920만원</td><td>3,200만~4,250만원</td></tr>
+      <tr><th>연간 학비·참가비</th><td>2,920만원</td><td>3,200만~3,700만원</td></tr>
       <tr><th>숙식</th><td>집에서 통학 (숙식비 없음)</td><td>홈스테이비가 참가비에 포함</td></tr>
       <tr><th>항공·비자</th><td>없음</td><td>왕복 항공 + 비자 진행비</td></tr>
       <tr><th>그 외</th><td>통학·학사 비용 (해당 시)</td><td>용돈, UM 서비스, 방학 귀국 항공</td></tr>
@@ -3120,7 +3120,7 @@ function buildStudyCost() {
     sub: "참가비에 포함된 것과 따로 나가는 것 — 항공·용돈·비자까지 펼쳐서 봅니다",
     body,
     title: "조기유학 비용 | 뉴질랜드·캐나다 1년 총비용과 별도 항목 정리",
-    desc: "중·고등 조기유학 비용 정리 — 뉴질랜드 연 3,200만원, 캐나다 연 4,250만원에 포함된 항목과 항공료·수속비·비자·용돈 등 별도 비용, 1년 현실 총액, 국내 영어 수업 과정과의 비교까지.",
+    desc: "중·고등 조기유학 비용 정리 — 뉴질랜드 연 3,200만원, 캐나다 연 3,700만원에 포함된 항목과 항공료·수속비·비자·용돈 등 별도 비용, 1년 현실 총액, 국내 영어 수업 과정과의 비교까지.",
   });
 }
 
