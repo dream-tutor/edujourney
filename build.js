@@ -49,20 +49,22 @@ const deadlineLine = (c) => (c.closed ? "모집 마감" : `모집 마감 ${c.dea
 const campsDesc = (cs) => [cs.filter((c) => !c.closed), cs.filter((c) => c.closed)].map((g, i) => (g.length ? g.map((c) => (i ? c.name : `${c.name}(${c.price})`)).join(", ") + (i ? " 모집 마감." : " 참가 가능.") : "")).filter(Boolean).join(" ");
 const promoAttr = (p, plain) => (p && p.ends ? ` data-promo-until="${p.ends}"${plain != null ? ` data-plain="${escAttr(plain)}"` : ""}` : "");
 
-// 뉴질랜드·캐나다 유학 연간 비용 차이(만원) — STUDY 의 price·priceNote 에서 읽는다.
+// 뉴질랜드·캐나다 유학 연간 참가비(만원)와 그 차이 — STUDY 의 price·priceNote 에서 읽는다.
 //   홈 비교 카드·study-compare 의 차액이 손으로 적은 옛 값(캐나다 4,250만원 시절 1,050만원)으로 남았던 문제(2026-11-10).
-//   low: 캐나다 중3 미만 금액이 priceNote 에 있으면 그 기준 차이, 없으면 null. 금액 꼴이 바뀌어 못 읽으면 빌드를 멈춘다.
+//   STUDY_FEE.caLow: 캐나다 중3 미만 금액이 priceNote 에 있으면 그 값, 없으면 null. 금액 꼴이 바뀌어 못 읽으면 빌드를 멈춘다.
+//   STUDY_GAP.low: 그 기준 차이(없으면 null). study-cost 의 캐나다 문장도 STUDY_FEE 를 쓴다 — 자료에 없는 1년 총액은 적지 않는다.
 const manwonOf = (s, re) => {
   const m = String(s || "").match(re);
   return m ? Number(m[1].replace(/,/g, "")) : null;
 };
-const STUDY_GAP = (() => {
+const STUDY_FEE = (() => {
   const nz = manwonOf(STUDY["study-newzealand"].price, /연\s*([\d,]+)만원/);
   const ca = manwonOf(STUDY["study-canada"].price, /연\s*([\d,]+)만원/);
   if (nz == null || ca == null) throw new Error(`유학 연간 비용을 읽지 못했습니다: ${STUDY["study-newzealand"].price} / ${STUDY["study-canada"].price}`);
   const caLow = manwonOf(STUDY["study-canada"].priceNote, /중3 미만은 연\s*([\d,]+)만원/);
-  return { main: Math.abs(ca - nz), low: caLow == null ? null : Math.abs(caLow - nz) };
+  return { nz, ca, caLow };
 })();
+const STUDY_GAP = { main: Math.abs(STUDY_FEE.ca - STUDY_FEE.nz), low: STUDY_FEE.caLow == null ? null : Math.abs(STUDY_FEE.caLow - STUDY_FEE.nz) };
 
 // ------------------------------------------------------------
 // 페이지 날짜 — 파일명 시드 기반, 월 단위로만 변동 (주간 랜덤 회전 없음)
@@ -3068,7 +3070,7 @@ function buildStudyCompare() {
     <div><strong>한국말 쓸 일을 줄이고 싶다면</strong><p>와이우쿠는 유학생 비율을 5% 미만으로 유지합니다. 소도시라 자극은 적지만 영어 환경은 확실합니다.</p></div>
     <div><strong>학업 심화 과목이 필요하다면</strong><p>나이아가라 교육청은 AP·SHSM 프로그램을 갖춘 고교가 있어 선택지가 넓습니다.</p></div>
     <div><strong>1월 출국을 원한다면</strong><p>남반구인 뉴질랜드는 1월 말이 새 학년 시작이라 일정이 맞아떨어집니다.</p></div>
-    <div><strong>예산 차이</strong><p>연 ${STUDY_GAP.main.toLocaleString()}만원 차이입니다${STUDY_GAP.low != null ? `(캐나다 중3 미만은 ${STUDY_GAP.low.toLocaleString()}만원)` : ""}. 다만 항공료는 캐나다가 더 들 수 있어 총액으로 보셔야 합니다.</p></div>
+    <div><strong>예산 차이</strong><p>연 ${STUDY_GAP.main.toLocaleString()}만원${STUDY_GAP.low != null ? `(캐나다 중3 미만은 ${STUDY_GAP.low.toLocaleString()}만원)` : ""} 차이입니다. 다만 항공료는 캐나다가 더 들 수 있어 총액으로 보셔야 합니다.</p></div>
   </div>
   <p class="sec-sub" style="margin-top:18px">항목별 총비용은 <a href="study-cost.html">유학 비용 정리</a>에서 확인하세요.</p>
 </div></section>
@@ -3109,7 +3111,7 @@ function buildStudyCost() {
   <div class="table-wrap" tabindex="0" role="region" aria-label="유학 중 따로 나가는 비용 표"><table class="cmp kv"><tbody>
     ${STUDY_INFO.extraCosts.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}
   </tbody></table></div>
-  <p class="sec-sub" style="margin-top:14px">다 더하면 뉴질랜드는 3,800만원 안팎, 캐나다는 4,150만원 안팎(중3 이상 기준)이 1년 현실적인 총액입니다. 환율이 움직이면 여기서 또 달라집니다.</p>
+  <p class="sec-sub" style="margin-top:14px">다 더하면 뉴질랜드는 3,800만원 안팎이 1년 현실적인 총액입니다. 캐나다는 참가비 연 ${STUDY_FEE.ca.toLocaleString()}만원${STUDY_FEE.caLow != null ? `(중3 미만은 ${STUDY_FEE.caLow.toLocaleString()}만원)` : ""}에 수속대행비를 뺀 나머지 항목이 붙습니다. 환율이 움직이면 여기서 또 달라집니다.</p>
 </div></section>
 
 <section class="section"><div class="wrap narrow">
