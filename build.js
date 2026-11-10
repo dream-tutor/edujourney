@@ -1123,7 +1123,7 @@ function buildDuration(d) {
 <section class="section"><div class="wrap">
   <h2 class="sec-title">${d.label}짜리 과정 ${rows.length}개</h2>
   <dl class="info-list" style="max-width:760px;margin:0 auto 26px">
-    ${rows.map((r) => `<div><dt>${r.label}</dt><dd>${r.won.toLocaleString()}만원 <span class="dim">(항공료 별도)</span></dd></div>`).join("")}
+    ${rows.map((r) => `<div><dt>${r.label}</dt><dd>${r.won.toLocaleString()}만원 <span class="dim">(${r.air ? "항공권 포함" : "항공료 별도"})</span></dd></div>`).join("")}
   </dl>
   <div class="camp-grid">${camps.map(campCard).join("\n")}</div>
 </div></section>
