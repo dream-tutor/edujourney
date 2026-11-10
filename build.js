@@ -1631,6 +1631,8 @@ ${summerConsult(s.slug === "japan" ? "일본어" : "영어")}`;
 
 // ------------------------------------------------------------
 // 확장 국가 정보 가이드 (정규 모집 외 국가 — 맞춤 상담 안내)
+//   '현재 정규 모집 중인 캠프' 목록은 COUNTRIES 전체에서 마감(closed) 안 된 캠프가 있는 나라로 고른다
+//   (고정 목록이 말레이시아·필리핀을 빼고 있었다, 2026-11-10). 필리핀처럼 모집 중인 캠프가 있는 나라의 가이드는 그 캠프로 잇는다.
 // ------------------------------------------------------------
 const INFO_COUNTRIES = [
   { slug: "usa", name: "미국", flag: "🇺🇸", intro: "미국은 서머캠프의 본고장입니다. 대학 기숙사 캠프, 스포츠·STEM 특화 캠프까지 폭이 가장 넓지만, 그만큼 비용대도 높고 프로그램 편차가 큽니다.",
@@ -1646,7 +1648,14 @@ const INFO_COUNTRIES = [
 ];
 
 function buildInfoCountry(ic) {
-  const hero = `<section class="hero hero-sm"><div class="wrap hero-inner">
+  const openCountries = COUNTRIES.filter((ct) => ct.camps.some((k) => !CAMPS[k].closed));
+  const ownCountry = COUNTRIES.find((ct) => ct.slug === ic.slug);
+  const ownOpen = ownCountry ? ownCountry.camps.filter((k) => !CAMPS[k].closed) : [];
+  const ownLine = ownOpen.length
+    ? `${ic.name}에서 진행하는 저희 캠프는 ${ownOpen.map((k) => `<a href="${k}.html">${CAMPS[k].name}</a>`).join(" · ")}입니다.
+  그 밖의 ${ic.name} 프로그램은 시즌·학년에 따라 맞춤 상담으로 안내해 드립니다.`
+    : `${ic.name} 프로그램은 시즌·학년에 따라 맞춤 상담으로 안내해 드립니다.`;
+  const hero =`<section class="hero hero-sm"><div class="wrap hero-inner">
     <p class="hero-kicker">${ic.flag} Country Guide</p>
     <h1>${ic.name} 캠프·어학연수 가이드</h1>
   </div></section>`;
@@ -1659,8 +1668,8 @@ function buildInfoCountry(ic) {
     <span>${ic.name}을 포함해 아이에게 맞는 나라를 찾고 있다면</span>
     <a class="btn btn-navy" href="#consult">맞춤 상담 남기기 →</a>
   </div>
-  <p class="sec-sub" style="margin-top:24px">현재 정규 모집 중인 캠프는 ${COUNTRIES.filter((ct) => ["canada", "newzealand", "japan"].includes(ct.slug) && ct.camps.some((k) => !CAMPS[k].closed)).map((ct) => `<a href="country-${ct.slug}.html">${ct.name}</a>`).join(" · ")}입니다.
-  ${ic.name} 프로그램은 시즌·학년에 따라 맞춤 상담으로 안내해 드립니다.
+  <p class="sec-sub" style="margin-top:24px">현재 정규 모집 중인 캠프는 ${openCountries.map((ct) => `<a href="country-${ct.slug}.html">${ct.name}</a>`).join(" · ")}입니다.
+  ${ownLine}
   다른 나라 가이드: ${INFO_COUNTRIES.filter((x) => x.slug !== ic.slug).map((x) => `<a href="info-${x.slug}.html">${x.name}</a>`).join(" · ")}</p>
 </div></section>
 ${consultSection()}`;
