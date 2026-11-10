@@ -425,7 +425,10 @@ function buildNotFound() {
     </div>
     <p class="nf-links">자주 찾는 페이지 — <a href="compare.html">캠프 비교</a> · <a href="study.html">유학 안내</a> · <a href="stpaul.html">세인트폴 대치 아카데미</a> · <a href="elc.html">대학 토플면제</a> · <a href="guide.html">캠프 가이드</a> · <a href="faq.html">자주 묻는 질문</a></p>
   </div>
-</section>`;
+</section>
+${consultSection()}`;
+  // 상담 팝업은 consultSection 안의 클릭 가로채기로만 열린다. 404 는 <base> 때문에 #consult 링크가 홈으로 튀므로
+  // 팝업을 이 페이지에도 넣어 '상담 신청'이 이동 없이 바로 열리게 한다(2026-11-10 점검).
   return page({
     file: "404.html",
     title: "페이지를 찾을 수 없습니다 | 러닝트래블",
@@ -447,7 +450,10 @@ function consultSection(preset = {}) {
   // 언어 수준 칸 이름 — 일본 캠프는 일본어, 다른 과정은 영어, 과정을 아직 안 골랐으면 외국어 (2026-10-07 사장님 지시)
   const presetItem = preset.camp && (CAMPS[preset.camp] || Object.values(STUDY).find((x) => x.slug === preset.camp) || [STPAUL, ELC].find((x) => x.slug === preset.camp));
   const langLabel = preset.lang ? preset.lang : !presetItem ? "외국어" : presetItem.country === "japan" ? "일본어" : "영어";
-  const gradeOpts = GRADES.map((g) => `<option value="${g.label}"${preset.grade === g.key ? " selected" : ""}>${g.label}</option>`).join("");
+  // 상담 폼 학년은 학년 페이지용 GRADES(초4~고2)보다 넓다 — 말레이시아·필리핀은 초3부터, 세인트폴은 고3까지,
+  // 토플면제는 졸업생·재수생·대학생도 받는다(data.js 대상 표기). GRADES 를 늘리면 학년 페이지가 새로 생기므로 폼에서만 더한다.
+  const FORM_GRADES = [{ label: "초등 3학년", key: "초3" }, ...GRADES, { label: "고등학교 3학년", key: "고3" }, { label: "졸업생·재수생", key: "졸업" }, { label: "대학생", key: "대학" }];
+  const gradeOpts = FORM_GRADES.map((g) => `<option value="${g.label}"${preset.grade === g.key ? " selected" : ""}>${g.label}</option>`).join("");
   const summerOpt = `<option value="2027 여름캠프 사전 상담"${preset.camp === "summer" ? " selected" : ""}>2027 여름캠프 사전 상담</option>`;
   // 상담 폼은 페이지 하단 고정 섹션이 아니라 팝업(모달)로 뜬다 — 상담 CTA(a[href$="#consult"]) 클릭 시 열림 (2026-08-24)
   return `<div class="consult-ov" id="consultOv" hidden>
@@ -4036,11 +4042,16 @@ fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="U
 for (const f of fs.readdirSync(path.join(__dirname, "favicon"))) fs.copyFileSync(path.join(__dirname, "favicon", f), path.join(OUT, f));
 fs.writeFileSync(path.join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\nSitemap: ${BASE_URL}/rss.xml`);
 
+// RSS 홈 항목 — 캠프 수·모집 중인 나라는 data.js 에서 만든다(고정 문구로 두면 캠프가 늘거나 마감돼도 옛 안내가 나간다)
+const rssOpen = Object.values(CAMPS).filter((c) => !c.closed);
+const rssClosed = Object.values(CAMPS).filter((c) => c.closed);
+const rssOpenCountries = [...new Set(rssOpen.map((c) => c.countryName))].join("·");
+const rssAllCountries = [...new Set(Object.values(CAMPS).map((c) => c.countryName))].join("·");
 const rssItems = [
-  { title: `${SEASON_LABEL} 해외캠프 4종 모집 안내 — 캐나다·뉴질랜드·일본`, link: `${BASE_URL}/`, date: "Tue, 21 Jul 2026 09:00:00 +0900", desc: "캐나다 스쿨링 3주·7주, 뉴질랜드 영어캠프, 일본 교토 어학연수 모집 안내." },
+  { title: `${SEASON_LABEL} 해외캠프 ${CAMP_COUNT}종 — ${rssOpenCountries} 모집`, link: `${BASE_URL}/`, date: "Tue, 21 Jul 2026 09:00:00 +0900", desc: `${rssOpen.map((c) => c.name).join(", ")} 모집.${rssClosed.length ? ` ${rssClosed.map((c) => c.name).join(", ")} 모집 마감.` : ""}` },
   ...ALL_GUIDES.map((g) => ({ title: `[${g.cat === "study" ? "유학 가이드" : "캠프 가이드"}] ${g.title}`, link: `${BASE_URL}/${g.slug}.html`, date: new Date(g.date + "T09:00:00+09:00").toUTCString(), desc: g.desc })),
 ].map((it) => `  <item>\n    <title>${esc(it.title)}</title>\n    <link>${it.link}</link>\n    <guid isPermaLink="false">${it.link}#${esc(it.title)}</guid>\n    <pubDate>${it.date}</pubDate>\n    <description>${esc(it.desc)}</description>\n  </item>`).join("\n");
-fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>러닝트래블 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>캐나다·뉴질랜드·일본 해외캠프 모집 소식과 캠프 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
+fs.writeFileSync(path.join(OUT, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>러닝트래블 — 해외캠프 안내</title>\n  <link>${BASE_URL}</link>\n  <description>${rssAllCountries} 해외캠프 모집 소식과 캠프·유학 가이드</description>\n  <language>ko</language>\n${rssItems}\n</channel>\n</rss>`);
 
 console.log(`생성 완료: ${pages.length}개 페이지 + 404.html + style.css + sitemap/robots/rss/CNAME → docs/`);
 if (!FORM_ENDPOINT) console.warn("⚠ FORM_ENDPOINT 미설정 — 상담 양식 데모 모드 (gas-form.gs 배포 후 data.js에 입력)");
