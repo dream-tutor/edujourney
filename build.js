@@ -44,7 +44,8 @@ const promoBox = (p) => {
   </div>`;
 };
 // 모집 마감한 과정(data closed)은 날짜 대신 '모집 마감'
-const deadlineLine = (c) => (c.closed ? "모집 마감" : `모집 마감 ${c.deadline}`);
+// untilFull: 날짜 대신 "남은 자리가 차면 마감"처럼 적을 때(2026-11-16 캐나다 7주). deadline 은 대조용으로 남겨 둔다.
+const deadlineLine = (c) => (c.closed ? "모집 마감" : c.untilFull || `모집 마감 ${c.deadline}`);
 // 학년별 설명문: 모집 중인 과정은 "참가 가능", 마감한 과정은 "모집 마감"으로 나눠 적는다
 const campsDesc = (cs) => [cs.filter((c) => !c.closed), cs.filter((c) => c.closed)].map((g, i) => (g.length ? g.map((c) => (i ? c.name : `${c.name}(${c.price})`)).join(", ") + (i ? " 모집 마감." : " 참가 가능.") : "")).filter(Boolean).join(" ");
 const promoAttr = (p, plain) => (p && p.ends ? ` data-promo-until="${p.ends}"${plain != null ? ` data-plain="${escAttr(plain)}"` : ""}` : "");
@@ -374,7 +375,7 @@ function compareTable() {
       ${row("정원", (c) => c.capacity + (c.seats ? `<br><span class="promo-mini">남은 자리 ${c.seats.short} (${c.seats.asOf} 기준)</span>` : ""))}
       ${row("참가비", (c) => { const p = promoOf(c); return `<strong>${br(c.price)}</strong>${p ? `<span${promoAttr(p)}><br><span class="promo-mini">${p.cond} ${p.badge} → ${br(p.priceAfter)}</span></span>` : ""}`; })}
       ${row("숙소", (c) => c.stay)}
-      ${row("모집 마감", (c) => (c.closed ? "<strong>마감</strong>" : c.deadline))}
+      ${row("모집 마감", (c) => (c.closed ? "<strong>마감</strong>" : c.untilFull || c.deadline))}
     </tbody>
   </table></div>`;
 }
@@ -952,7 +953,7 @@ function buildCamp(key) {
         ? `<dd${promoAttr(p, `<strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span>`)}><strong class="now">${p.priceAfter}</strong> <s class="was">${c.price}</s><br><span class="dim">${p.cond} 적용되는 ${p.badge} 금액입니다 · ${c.priceNote}</span></dd>`
         : `<dd><strong>${c.price}</strong><br><span class="dim">${c.priceNote}</span></dd>`}</div>
       <div><dt>숙소</dt><dd>${c.stay}</dd></div>
-      <div><dt>모집 마감</dt><dd>${c.closed ? `<strong>마감</strong> <span class="dim">(${SEASON_LABEL} 모집 종료)</span>` : c.deadline}</dd></div>
+      <div><dt>모집 마감</dt><dd>${c.closed ? `<strong>마감</strong> <span class="dim">(${SEASON_LABEL} 모집 종료)</span>` : c.untilFull || c.deadline}</dd></div>
       <div><dt>문의·신청</dt><dd><a href="#consult">${c.closed ? "다음 시즌 안내를 상담으로 남겨 주세요 →" : "하단 상담 신청 양식으로 문의해 주세요 →"}</a></dd></div>
     </dl>
   </div>
@@ -1251,7 +1252,7 @@ function buildCalendar() {
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">${SEASON_LABEL} 전체 일정</h2>
   <dl class="info-list">
-    ${rows.map((c) => `<div><dt>${c.flag} ${c.countryName}</dt><dd><strong>${c.period}</strong><br><span class="dim">${c.target} · ${c.price} · ${c.closed ? "모집 마감" : `마감 ${c.deadline}`}</span></dd></div>`).join("")}
+    ${rows.map((c) => `<div><dt>${c.flag} ${c.countryName}</dt><dd><strong>${c.period}</strong><br><span class="dim">${c.target} · ${c.price} · ${c.closed ? "모집 마감" : c.untilFull || `마감 ${c.deadline}`}</span></dd></div>`).join("")}
   </dl>
   <p class="sec-sub" style="margin-top:18px">날짜별 상세 일정은 각 캠프 일정표에서 보실 수 있습니다:
     ${Object.keys(SCHEDULES).map((k) => `<a href="schedule-${k}.html">${CAMPS[k].name}</a>`).join(" · ")}</p>
