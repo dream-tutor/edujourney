@@ -545,6 +545,14 @@ const PH = {
   elcBuilding: P("elc-building.jpg", "서울 광진구 토플면제교육원 건물 외관", "교육원 건물 — 광진구 능동로 239"),
   elcLounge: P("elc-lounge.jpg", "교육원 1층 라운지 내부", "교육원 라운지"),
   elcTerrace: P("elc-terrace.jpg", "교육원 야외 테라스와 파라솔", "교육원 야외 테라스"),
+  // 2026-11-17 추가 — 교육원 공유 드라이브의 학교 제공·방문 사진 중 얼굴이 보이지 않는 건물·풍경만
+  fresnoLibrary: P("fresno-library.jpg", "프레즈노 캠퍼스 도서관 앞 국기 광장", "CSU 프레즈노 도서관 앞 광장"),
+  oswegoCupola: P("oswego-cupola.jpg", "온타리오 호수 해 질 녘 SUNY 오스위고 시계탑", "오스위고 시계탑과 온타리오 호수"),
+  oswegoShineman: P("oswego-shineman.jpg", "해 질 녘 SUNY 오스위고 캠퍼스 건물과 산책로", "오스위고 캠퍼스의 저녁"),
+  nycSkyline: P("berkeley-skyline.jpg", "강 건너에서 본 맨해튼 남쪽 야경", "맨해튼 야경 — 버클리컬리지가 있는 도시"),
+  uclaLuskin: P("ucla-luskin.jpg", "UCLA 캠퍼스 러스킨 컨퍼런스 센터 표지석과 건물", "UCLA 캠퍼스 — SMC 학생들의 주요 편입 목표"),
+  deanzaMuseum: P("deanza-museum.jpg", "디앤자컬리지 유프라트 미술관 건물", "디앤자컬리지 유프라트 미술관"),
+  deanzaServices: P("deanza-services.jpg", "디앤자컬리지 학사·학생지원 건물", "디앤자컬리지 학사·학생지원 건물"),
 };
 const ELC_PHOTOS = {
   "elc": [PH.elcBuilding, PH.elcLounge, PH.elcTerrace],
@@ -555,15 +563,15 @@ const ELC_PHOTOS = {
   "elc-uc-transfer-2": [PH.smc, PH.dvcSign, PH.deanza],
   "elc-settlement": [PH.dorm, PH.senecaHall, PH.etamuCampus],
   "elc-etamu": [PH.etamuDallas, PH.etamuCampus, PH.dallas],
-  "elc-fresno": [PH.fresno],
-  "elc-oswego": [PH.oswego],
+  "elc-fresno": [PH.fresno, PH.fresnoLibrary],
+  "elc-oswego": [PH.oswego, PH.oswegoCupola, PH.oswegoShineman],
   "elc-uco": [PH.ucoClock, PH.ucoBuilding],
   "elc-stonybrook": [PH.stonybrook],
-  "elc-berkeley-college": [PH.berkeley],
+  "elc-berkeley-college": [PH.berkeley, PH.nycSkyline],
   "elc-seneca": [PH.senecaCampus, PH.senecaHall, PH.dorm],
-  "elc-smc": [PH.smc],
+  "elc-smc": [PH.smc, PH.uclaLuskin],
   "elc-dvc": [PH.dvcSign, PH.dvcPost],
-  "elc-dac": [PH.deanza],
+  "elc-dac": [PH.deanza, PH.deanzaMuseum, PH.deanzaServices],
   "elc-unt": [PH.dallas],
 };
 
