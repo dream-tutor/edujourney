@@ -497,11 +497,10 @@ function consultSection(preset = {}) {
       <div class="form-row">
         <label class="agree"><input type="checkbox" name="개인정보동의" value="동의" checked required onclick="if(!this.checked){alert('체크를 해제하시면 상담 신청이 어렵습니다.');this.checked=true;}"> <span>개인정보 수집·이용에 동의합니다 <em class="lab-sub">(필수)</em></span></label>
         <details class="agree-more">
-          <summary>수집 항목·이용 목적·보유 기간 보기</summary>
+          <summary>수집 항목·이용 목적 보기</summary>
           <ul class="agree-note">
             <li><b>수집 항목</b> 학생 이름, 연락처, 자녀 학년, 관심 캠프, 외국어 수준, 해외 경험, 기대하는 점·상담 희망 내용, 문의 내용, 접수 시각과 접수한 페이지 주소</li>
             <li><b>이용 목적</b> 캠프·유학 상담 안내와 연락</li>
-            <li><b>보유 기간</b> 상담이 끝난 뒤 6개월 이내에 파기</li>
             <li><b>저장·전달</b> 접수 내용은 구글 스프레드시트에 저장되고 상담 담당자 메일로 전달됩니다. 전달되는 항목은 위 수집 항목과 같습니다.</li>
             <li><b>동의를 거부하실 수 있습니다</b> 다만 연락처를 받을 수 없어 상담 안내가 어렵습니다.</li>
             <li>만 14세 미만 학생은 학부모(법정대리인)가 작성·동의해 주세요.</li>
