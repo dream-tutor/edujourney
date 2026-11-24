@@ -2100,7 +2100,7 @@ function buildElc() {
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
   <div class="table-wrap" tabindex="0" role="region" aria-label="대학별 입학 요건·연간 예상 비용 표"><table class="cmp">
     <thead><tr><th>대학명</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
-    <tbody>${s.universities.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
+    <tbody>${s.universities.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${hsCell(u)}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
   <ul class="check-list" style="margin-top:20px">${s.universityNotes.map((n) => `<li>${n}</li>`).join("")}</ul>
   <p class="sec-sub" style="margin-top:14px">묶어서 보기: <a href="elc-texas.html">텍사스 주립대 5곳</a> · <a href="elc-suny.html">뉴욕주립대 SUNY</a> · <a href="elc-uc-transfer.html">UC 편입 컬리지 3곳</a> · 비용 순위는 <a href="elc-scholarship.html">장학금·비용 절감</a></p>
@@ -2129,8 +2129,9 @@ function buildElc() {
     <div><dt>대상</dt><dd>${s.warmup.target}</dd></div>
   </dl>
   <ul class="check-list" style="margin-top:18px">${s.warmup.points.map((p) => `<li>${p}</li>`).join("")}</ul>
-  <p class="sec-sub" style="margin-top:14px">일찍 합격해 두면 정식 개강 전 토요일 과정으로 영어 워밍업과 교양학점 선이수를 시작할 수 있습니다.</p>
+  <p class="sec-sub" style="margin-top:14px">일찍 합격해 두면 정식 개강 전 토요일 과정으로 영어 워밍업과 교양학점 선이수를 시작할 수 있습니다. 아직 등록 전이라면 상담 때 무료 체험 수업 날짜를 잡아 드립니다.</p>
 </div></section>
+${elcWebinars()}
 
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title-sm">자주 묻는 질문</h2>
@@ -2188,11 +2189,29 @@ function elcConsult(preset = {}) {
 }
 
 // 대학 개별 페이지 — 표의 한 줄을 검색 키워드가 붙는 한 장으로
+// 내신 칸 — hsWaive 학교(UTSA)는 '5.9등급 이상 · 교양 충족 시 면제'
+const hsCell = (u) => (u.hsWaive ? `${u.hs} 이상 · 교양 충족 시 면제` : u.hs);
+
+// 텍사스 대학 웨비나 — 날짜(ends)가 지나면 빌드가 빼고, 올라간 페이지는 data-promo-until 로 지운다
+function elcWebinars(slug) {
+  const list = (ELC.webinars || []).filter((w) => w.ends >= todayKst() && (!slug || w.slug === slug));
+  if (!list.length) return "";
+  return `<section class="section" data-promo-until="${list[list.length - 1].ends}"><div class="wrap narrow">
+  <h2 class="sec-title">한국어로 듣는 미국 텍사스 대학 웨비나</h2>
+  <p class="sec-sub">대학 교수가 직접 학교와 전공, 입학과 현지 취업을 설명하는 온라인 설명회입니다. 참가 신청은 아래 상담 양식에 '웨비나 참가'라고 남겨 주시면 신청 방법을 안내해 드립니다.</p>
+  ${list.map((w) => `<div class="promo-box" data-promo-until="${w.ends}" style="margin-top:16px">
+    <p><strong>${w.title}</strong> — <a href="${w.slug}.html">${w.univ}</a></p>
+    <dl class="info-list"><div><dt>일시</dt><dd>${w.date}</dd></div><div><dt>초청 연사</dt><dd>${w.speaker}</dd></div></dl>
+    <ul class="check-list" style="margin-top:12px">${w.topics.map((t) => `<li>${t}</li>`).join("")}</ul>
+  </div>`).join("\n  ")}
+</div></section>`;
+}
+
 function buildElcUniv(u) {
   const groupText = {
     waiver4: `이 학교는 별도 영어 시험이 필요 없는 <strong>공인영어 면제 대학</strong>입니다. ELC 6개월 과정에서 각 단계 평균 B(80점) 이상을 만들면 그 자체로 영어 요건이 끝나고, 국내대학 교양 ${u.credits}을 채우면 지원 준비가 완성됩니다. ${u.hs === "면제" ? "고교 내신은 보지 않습니다." : `고교 내신은 ${u.hs} 이상인지 확인합니다.`}`,
     cc: `커뮤니티컬리지는 4년제의 1·2학년 과정을 대신하는 학교입니다. ELC 수료로 공인영어가 면제된 상태로 입학한 뒤, 2년간 GPA와 이수 과목을 만들어 UC·CSU 계열 4년제로 편입하는 것이 기본 그림입니다. ELC의 UC/CSU 편입준비반이 GPA 관리·에세이·비교과 활동·TAG(편입보장) 전략까지 함께 잡습니다. ${u.hs === "면제" ? "고교 내신은 보지 않습니다." : `고교 내신은 ${u.hs} 이상을 확인합니다.`}`,
-    det: `이 학교는 ELC 수료에 더해 <strong>DET(듀오링고 영어 시험) ${u.english.replace("DET ", "")}점</strong>이 필요합니다. 명문대 패스웨이반에서 6개월 ESL 과정과 DET 준비를 병행하고, 점수를 만들면 ${u.hs === "면제" ? "고교 내신 없이" : `내신 ${u.hs} 확인을 거쳐`} 지원합니다. 국내대학 교양은 ${u.credits}이 기준입니다.`,
+    det: `이 학교는 ELC 수료에 더해 <strong>DET(듀오링고 영어 시험) ${u.english.replace("DET ", "")}점</strong>이 필요합니다. 명문대 패스웨이반에서 6개월 ESL 과정과 DET 준비를 병행하고, 점수를 만들면 ${u.hs === "면제" ? "고교 내신 없이" : u.hsWaive ? `고교 내신 ${u.hs} 이상이거나 교양 기준을 채운 상태로` : `내신 ${u.hs} 확인을 거쳐`} 지원합니다. 국내대학 교양은 ${u.credits}이 기준입니다.`,
   }[u.group];
   const groupLabel = { waiver4: "공인영어 면제 대학", cc: "UC 편입 커뮤니티컬리지", det: "DET 명문대 패스웨이" }[u.group];
   const siblings = ELC.universities.filter((x) => x.group === u.group && x.slug !== u.slug);
@@ -2208,7 +2227,7 @@ function buildElcUniv(u) {
     <div><dt>학교 형태</dt><dd>${u.kind} (${u.city})</dd></div>
     <div><dt>공인영어</dt><dd>${u.english === "면제" ? "면제 — ELC 6개월 공인 ESL 과정 이수로 대체" : `${u.english} (듀오링고 영어 시험 기준 점수)`}</dd></div>
     <div><dt>국내대학 교양</dt><dd>${u.credits} (미국 대학 인정 교양학점 기준)</dd></div>
-    <div><dt>고교 내신</dt><dd>${u.hs === "면제" ? "면제 — 내신 제출 없이 지원" : `${u.hs} 이상 확인`}</dd></div>
+    <div><dt>고교 내신</dt><dd>${u.hs === "면제" ? "면제 — 내신 제출 없이 지원" : u.hsWaive ? `${u.hs} 이상 — 국내 교양 ${u.credits}을 채우면 내신 면제` : `${u.hs} 이상 확인`}</dd></div>
     <div><dt>연간 학비</dt><dd>${u.tuition}</dd></div>
     <div><dt>기숙사·식비</dt><dd>${u.room}</dd></div>
     <div><dt>연간 합계</dt><dd><strong>${u.total}</strong> <span class="dim">(생활비·보험·항공·비자 별도, 2026~2027학년도 기준)</span></dd></div>
@@ -2223,6 +2242,7 @@ function buildElcUniv(u) {
   ${elcPhotos(u.slug)}
 </div></section>
 ${elcUnivDetail(u)}
+${elcWebinars(u.slug)}
 <section class="section"><div class="wrap narrow">
   <h2 class="sec-title">이 학교까지 가는 순서</h2>
   <ol class="step-list">
@@ -2245,7 +2265,7 @@ ${elcConsult({ title: `${u.name.split(" (")[0]} 진학 상담`, copy: "학생의
     file: `${u.slug}.html`,
     og: elcOg(u.slug),
     title: `${u.name.replace(" (", "(")} 입학 조건·연간 ${u.total} | ${u.english === "면제" ? (u.city.startsWith("캐나다") ? "토플 없이 캐나다 대학" : "토플 없이 미국 대학") : `${u.english} 토플면제 진학`}`,
-    desc: `${u.city} ${u.kind} ${u.name.split(" (")[0]} — 공인영어 ${u.english}, 국내 교양 ${u.credits}, 내신 ${u.hs}. 연간 예상 비용 ${u.total}(학비+기숙사·식비). 국내 6개월 ESL 과정으로 준비하는 진학 경로와 상담 안내.`,
+    desc: `${u.city} ${u.kind} ${u.name.split(" (")[0]} — 공인영어 ${u.english}, 국내 교양 ${u.credits}, 내신 ${hsCell(u)}. 연간 예상 비용 ${u.total}(학비+기숙사·식비). 국내 6개월 ESL 과정으로 준비하는 진학 경로와 상담 안내.`,
     hero, body,
     jsonld: { "@context": "https://schema.org", "@type": "Service", name: `${u.name} 진학 안내`, provider: { "@type": "Organization", name: "러닝트래블" } },
   });
@@ -2606,7 +2626,7 @@ function buildElcUcTransfer() {
   <p class="table-hint" style="margin-top:20px">← 옆으로 밀어서 보세요 →</p>
   <div class="table-wrap" tabindex="0" role="region" aria-label="파트너 컬리지 세 곳 비교표"><table class="cmp" style="min-width:600px">
     <thead><tr><th>컬리지</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
-    <tbody>${ccs.map((u) => `<tr><th><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("")}</tbody>
+    <tbody>${ccs.map((u) => `<tr><th><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></th><td>${u.english}</td><td>${u.credits}</td><td>${hsCell(u)}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("")}</tbody>
   </table></div>
   <p class="sec-sub" style="margin-top:14px">세 곳 모두 학비는 연 $10,000~13,000 수준이지만 LA·실리콘밸리·샌프란시스코권 물가 때문에 기숙사·식비가 학비보다 큽니다. 예산은 합계 기준으로 잡아야 합니다.</p>
   ${elcPhotos("elc-uc-transfer-2")}
@@ -2651,7 +2671,7 @@ function buildElcTexas() {
   <p class="table-hint">← 옆으로 밀어서 보세요 →</p>
   <div class="table-wrap" tabindex="0" role="region" aria-label="텍사스 5개 대학 비교표"><table class="cmp">
     <thead><tr><th>대학명</th><th>도시</th><th>공인영어</th><th>대학교양</th><th>내신</th><th>학비</th><th>기숙사·식비</th><th>연간 합계</th></tr></thead>
-    <tbody>${tx.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.city.replace("미국 텍사스 ", "")}</td><td>${u.english}</td><td>${u.credits}</td><td>${u.hs}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
+    <tbody>${tx.map((u) => `<tr><th><a href="${u.slug}.html">${u.name}</a></th><td>${u.city.replace("미국 텍사스 ", "")}</td><td>${u.english}</td><td>${u.credits}</td><td>${hsCell(u)}</td><td>${u.tuition}</td><td>${u.room}</td><td><strong>${u.total}</strong></td></tr>`).join("\n    ")}</tbody>
   </table></div>
   <div class="fit-grid" style="margin-top:20px">
     ${tx.map((u) => `<div><strong><a href="${u.slug}.html">${u.name.split(" (")[0]}</a></strong><p>${u.tag}</p></div>`).join("\n    ")}
